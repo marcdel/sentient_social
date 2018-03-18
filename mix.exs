@@ -5,7 +5,14 @@ defmodule SentientSocialUmbrella.MixProject do
     [
       apps_path: "apps",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
     ]
   end
 
@@ -19,6 +26,7 @@ defmodule SentientSocialUmbrella.MixProject do
       {:credo, "~> 0.9.0-rc1", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:inch_ex, "~> 0.5", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.8", only: :test},
       {:ex_doc, "~> 0.18", only: :dev, runtime: false},
       {:mix_test_watch, "~> 0.5", only: :dev, runtime: false}
     ]

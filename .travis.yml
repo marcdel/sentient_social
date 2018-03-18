@@ -1,8 +1,8 @@
 language: elixir
 elixir:
-  - 1.7.0-dev
+  - 1.6
 otp_release:
-  - 20
+  - 20.0
 cache:
   directories:
     - _build
@@ -14,5 +14,9 @@ notifications:
 script:
   - mix test
   - mix credo
-  - mix inch --pedantic
   - mix dialyzer
+  - mix inch --pedantic
+  - MIX_ENV=test mix do compile --warnings-as-errors, coveralls.json -u
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
