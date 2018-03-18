@@ -15,7 +15,7 @@ script:
   - mix test
   - mix credo
   - mix dialyzer
-  - mix inch --pedantic
+  # - mix inch --pedantic
   - MIX_ENV=test mix do compile --warnings-as-errors, coveralls.json -u
 
 after_success:

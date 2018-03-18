@@ -1,9 +1,9 @@
-defmodule SentientSocial.Mixfile do
+defmodule SentientSocialWeb.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :sentient_social,
+      app: :sentient_social_web,
       version: "0.0.1",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -11,6 +11,7 @@ defmodule SentientSocial.Mixfile do
       lockfile: "../../mix.lock",
       elixir: "~> 1.4",
       elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
@@ -23,7 +24,7 @@ defmodule SentientSocial.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {SentientSocial.Application, []},
+      mod: {SentientSocialWeb.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -37,23 +38,23 @@ defmodule SentientSocial.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:postgrex, ">= 0.0.0"},
-      {:ecto, "~> 2.1"},
+      {:phoenix, "~> 1.3.0"},
+      {:phoenix_pubsub, "~> 1.0"},
+      {:phoenix_ecto, "~> 3.2"},
+      {:phoenix_html, "~> 2.10"},
+      {:phoenix_live_reload, "~> 1.0", only: :dev},
+      {:gettext, "~> 0.11"},
+      {:sentient_social, in_umbrella: true},
+      {:cowboy, "~> 1.0"},
       {:excoveralls, "~> 0.8", only: :test}
     ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
-  # For example, to create, migrate and run the seeds file at once:
-  #
-  #     $ mix ecto.setup
+  # For example, we extend the test task to create and migrate the database.
   #
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
-    [
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"]
-    ]
+    [test: ["ecto.create --quiet", "ecto.migrate", "test"]]
   end
 end

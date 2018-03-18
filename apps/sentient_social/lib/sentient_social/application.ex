@@ -1,20 +1,23 @@
 defmodule SentientSocial.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
-  @moduledoc false
+  @moduledoc """
+  The SentientSocial Application Service.
 
+  The sentient_social system business domain lives in this application.
+
+  Exposes API to clients such as the `SentientSocialWeb` application
+  for use in channels, controllers, and elsewhere.
+  """
   use Application
 
   def start(_type, _args) do
-    # List all child processes to be supervised
-    children = [
-      # Starts a worker by calling: SentientSocial.Worker.start_link(arg)
-      # {SentientSocial.Worker, arg},
-    ]
+    import Supervisor.Spec, warn: false
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: SentientSocial.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(
+      [
+        supervisor(SentientSocial.Repo, [])
+      ],
+      strategy: :one_for_one,
+      name: SentientSocial.Supervisor
+    )
   end
 end

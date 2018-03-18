@@ -1,4 +1,4 @@
-defmodule SentientSocialUmbrella.MixProject do
+defmodule SentientSocial.Umbrella.Mixfile do
   use Mix.Project
 
   def project do
@@ -6,13 +6,7 @@ defmodule SentientSocialUmbrella.MixProject do
       apps_path: "apps",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
-      ]
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
