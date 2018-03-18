@@ -11,12 +11,22 @@ notifications:
   email:
     on_success: never
     on_failure: always
-script:
-  - mix test
-  - mix credo
-  - mix dialyzer
-  # - mix inch --pedantic
-  - MIX_ENV=test mix do compile --warnings-as-errors, coveralls.json -u
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+jobs:
+  include:
+    - stage: code quality
+      script:
+        - mix test
+    - stage: code quality
+      script:
+        - MIX_ENV=test mix coveralls.json -u
+        - bash <(curl -s https://codecov.io/bash)
+    - stage: code quality
+      script:
+        - mix credo
+    - stage: code quality
+      script:
+        - mix dialyzer
+    - stage: code quality
+      script:
+        - mix inch
+        - mix inch.report
