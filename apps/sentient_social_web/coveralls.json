@@ -1,0 +1,21 @@
+{
+  "terminal_options": {
+    "file_column_width": 60
+  },
+  "coverage_options": {
+    "treat_no_relevant_lines_as_covered": true
+  },
+  "skip_files": [
+    "test/support",
+    "lib/sentient_social_web.ex",
+    "lib/sentient_social_web/application.ex",
+    "lib/sentient_social_web/channels/user_socket.ex",
+    "lib/sentient_social_web/endpoint.ex",
+    "lib/sentient_social_web/gettext.ex",
+    "lib/sentient_social_web/router.ex",
+    "lib/sentient_social_web/views/error_helpers.ex",
+    "lib/sentient_social_web/views/error_view.ex",
+    "lib/sentient_social_web/views/layout_view.ex",
+    "lib/sentient_social_web/views/page_view.ex"
+  ]
+}

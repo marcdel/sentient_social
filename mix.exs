@@ -1,4 +1,4 @@
-defmodule SentientSocial.MixProject do
+defmodule SentientSocialUmbrella.MixProject do
   use Mix.Project
 
   def project do
@@ -15,6 +15,12 @@ defmodule SentientSocial.MixProject do
   #
   # Run "mix help deps" for examples and options.
   defp deps do
-    []
+    [
+      {:credo, "~> 0.9.0-rc1", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
+      {:inch_ex, "~> 0.5", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.18", only: :dev, runtime: false},
+      {:mix_test_watch, "~> 0.5", only: :dev, runtime: false}
+    ]
   end
 end
