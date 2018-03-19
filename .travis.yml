@@ -30,3 +30,13 @@ jobs:
       script:
         - mix inch
         - mix inch.report
+    - stage: deploy to staging
+      script: skip
+      deploy: &heroku
+        provider: heroku
+        app: sentient-social-staging
+        api_key: $HEROKU_AUTH_TOKEN
+        on:
+          branch: master
+    - stage: test staging
+      script: 'curl http://sentient-social-staging.herokuapp.com'
