@@ -10,6 +10,7 @@
     <meta name="description" content="We're using artificial intelligence and automation to find and organically engage with your target audience. We weed out the bots and provide opportunities for authentic interactions with potential customers or fans.">
     <link rel="icon" type="image/png" href="<%= static_path(@conn, "/images/favicon.png") %>" />
     <link rel="apple-touch-icon" sizes="76x76" href="<%= static_path(@conn, "/images/apple-icon.png") %>" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
 
     <title>Sentient Social</title>
