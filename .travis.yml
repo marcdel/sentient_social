@@ -38,5 +38,11 @@ jobs:
         api_key: $HEROKU_AUTH_TOKEN
         on:
           branch: master
+      run:
+        - 'mix deps.get --only prod'
+        - 'MIX_ENV=prod mix compile'
+        - 'MIX_ENV=prod mix ecto.migrate'
+        - 'brunch build --production'
+        - 'mix phx.digest'
     - stage: test staging
       script: 'curl http://sentient-social-staging.herokuapp.com'
