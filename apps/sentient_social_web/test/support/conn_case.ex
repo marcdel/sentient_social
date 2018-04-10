@@ -23,6 +23,16 @@ defmodule SentientSocialWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint SentientSocialWeb.Endpoint
+
+      @spec sign_in(map, %{id: integer}) :: map
+      def sign_in(conn, user) do
+        conn
+        |> bypass_through(SentientSocialWeb.Router, :browser)
+        |> get("/")
+        |> put_session(:current_user, user.id)
+        |> send_resp(:ok, "")
+        |> recycle()
+      end
     end
   end
 

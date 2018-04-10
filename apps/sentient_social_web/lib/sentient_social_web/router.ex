@@ -1,5 +1,6 @@
 defmodule SentientSocialWeb.Router do
   use SentientSocialWeb, :router
+  alias SentientSocialWeb.Plug.Authenticate
 
   pipeline :browser do
     plug(:accepts, ["html"])
@@ -9,6 +10,10 @@ defmodule SentientSocialWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :login_required do
+    plug(Authenticate)
+  end
+
   pipeline :api do
     plug(:accepts, ["json"])
   end
@@ -16,6 +21,7 @@ defmodule SentientSocialWeb.Router do
   scope "/", SentientSocialWeb do
     # Use the default browser stack
     pipe_through(:browser)
+    pipe_through(:login_required)
 
     get("/", PageController, :index)
   end
