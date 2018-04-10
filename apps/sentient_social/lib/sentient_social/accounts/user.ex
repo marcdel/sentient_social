@@ -1,4 +1,8 @@
 defmodule SentientSocial.Accounts.User do
+  @moduledoc """
+  A sentient social user
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -11,6 +15,7 @@ defmodule SentientSocial.Accounts.User do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: %Ecto.Changeset{}
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:username, :name, :profile_image_url])

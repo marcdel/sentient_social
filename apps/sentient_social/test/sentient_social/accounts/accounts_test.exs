@@ -18,6 +18,7 @@ defmodule SentientSocial.AccountsTest do
     }
     @invalid_attrs %{name: nil, profile_image_url: nil, username: nil}
 
+    @spec user_fixture(map) :: %User{}
     def user_fixture(attrs \\ %{}) do
       {:ok, user} =
         attrs
