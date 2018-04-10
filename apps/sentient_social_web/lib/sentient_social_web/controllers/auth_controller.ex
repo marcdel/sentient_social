@@ -4,6 +4,17 @@ defmodule SentientSocialWeb.AuthController do
   plug(Ueberauth)
 
   @doc """
+  Drop the current user's session
+  """
+  @spec logout(map, map) :: map
+  def logout(conn, _params) do
+    conn
+    |> put_flash(:info, "Successfully signed out.")
+    |> configure_session(drop: true)
+    |> redirect(to: "/")
+  end
+
+  @doc """
   Handle successful ueberauth response
   """
   @spec callback(map, map) :: map
@@ -21,7 +32,7 @@ defmodule SentientSocialWeb.AuthController do
 
         conn
         |> put_flash(:info, "Successfully authenticated.")
-        |> put_session(:current_user, user.username)
+        |> put_session(:current_user, user.id)
         |> redirect(to: "/")
     end
   end

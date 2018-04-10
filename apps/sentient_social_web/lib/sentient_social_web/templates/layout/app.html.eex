@@ -80,7 +80,11 @@
                   </a>
                   <ul class="dropdown-menu">
                     <li>
-                      <a href="/logout">Log Out</a>
+                      <%= if Plug.Conn.get_session(@conn, :current_user) do %>
+                        <%= link "Sign Out", to: auth_path(@conn, :logout), method: :delete %>
+                      <% else %>
+                        <a href="/auth/twitter">Log In</a>
+                      <% end %>
                     </li>
                   </ul>
                 </li>

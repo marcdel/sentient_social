@@ -113,4 +113,10 @@ defmodule SentientSocialWeb.AuthControllerTest do
 
     assert %User{username: "handle"} = Accounts.get_user_by_username("handle")
   end
+
+  test "handles user sign out", %{conn: conn} do
+    conn = delete(conn, "/auth/logout")
+
+    assert get_flash(conn, :info) == "Successfully signed out."
+  end
 end
