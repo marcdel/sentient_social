@@ -19,3 +19,8 @@ erl_crash.dump
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
 
+# Coveralls output
+apps/sentient_social/cover/
+apps/sentient_social/docs/
+apps/sentient_social_web/cover/
+apps/sentient_social_web/docs/
