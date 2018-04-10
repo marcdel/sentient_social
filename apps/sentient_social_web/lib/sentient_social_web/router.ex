@@ -20,6 +20,13 @@ defmodule SentientSocialWeb.Router do
     get("/", PageController, :index)
   end
 
+  scope "/auth", SentientSocialWeb do
+    pipe_through(:browser)
+
+    get("/:provider", AuthController, :request)
+    get("/:provider/callback", AuthController, :callback)
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", SentientSocialWeb do
   #   pipe_through :api

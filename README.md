@@ -11,3 +11,7 @@
 * `heroku addons:create heroku-postgresql:hobby-dev`
 * `heroku config:set POOL_SIZE=18`
 * `heroku config:set SECRET_KEY_BASE="$(mix phx.gen.secret)"`
+
+## Twitter Integration Env Vars
+`TWITTER_CONSUMER_KEY=`
+`TWITTER_CONSUMER_SECRET=`
