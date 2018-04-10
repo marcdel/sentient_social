@@ -18,7 +18,6 @@ defmodule SentientSocialWeb.Plug.Authenticate do
       assign(conn, :current_user, current_user)
     else
       conn
-      |> put_flash(:error, "You need to be signed in to view this page")
       |> redirect(to: "/auth/twitter")
       |> halt
     end
