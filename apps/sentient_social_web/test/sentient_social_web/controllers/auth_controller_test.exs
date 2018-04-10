@@ -1,5 +1,7 @@
 defmodule SentientSocialWeb.AuthControllerTest do
   use SentientSocialWeb.ConnCase
+  alias SentientSocial.Accounts
+  alias SentientSocial.Accounts.User
 
   test "handles authentication failure", %{conn: conn} do
     conn =
@@ -73,7 +75,7 @@ defmodule SentientSocialWeb.AuthControllerTest do
           "time_zone" => "Pacific Time (US & Canada)",
           "profile_banner_url" => "http://pbs.twimg.com/profile_images/123456789_normal.jpg",
           "follow_request_sent" => false,
-          "screen_name" => "user"
+          "screen_name" => "handle"
         }
       }
     },
@@ -102,5 +104,13 @@ defmodule SentientSocialWeb.AuthControllerTest do
       |> get("/auth/twitter/callback")
 
     assert get_flash(conn, :info) == "Successfully authenticated."
+  end
+
+  test "creates or updates a user on log in", %{conn: conn} do
+    conn
+    |> assign(:ueberauth_auth, @ueberauth_auth)
+    |> get("/auth/twitter/callback")
+
+    assert %User{username: "handle"} = Accounts.get_user_by_username("handle")
   end
 end

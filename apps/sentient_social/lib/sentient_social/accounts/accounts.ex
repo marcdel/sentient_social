@@ -40,6 +40,23 @@ defmodule SentientSocial.Accounts do
   def get_user!(id), do: Repo.get!(User, id)
 
   @doc """
+  Gets a single user.
+
+  Returns nil if the User does not exist.
+
+  ## Examples
+
+      iex> get_user_by_username(123)
+      %User{}
+
+      iex> get_user_by_username(456)
+      nil
+
+  """
+  @spec get_user_by_username(String) :: %User{} | nil
+  def get_user_by_username(username), do: Repo.get_by(User, %{username: username})
+
+  @doc """
   Creates a user.
 
   ## Examples
@@ -56,6 +73,47 @@ defmodule SentientSocial.Accounts do
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Creates or updates an existing user from auth payload
+
+  ## Examples
+
+    iex> create_or_update_from_twitter(%{screen_name: "user1"})
+    {:ok, %User{}}
+
+    iex> create_or_update_from_twitter(%{screen_name: "user2"})
+    {:error, %Ecto.Changeset{}}
+
+  """
+  @spec create_or_update_from_twitter(%{
+          screen_name: String,
+          name: String,
+          profile_image_url: String
+        }) :: {:ok, %User{}} | {:error, %Ecto.Changeset{}}
+  def create_or_update_from_twitter(%{screen_name: username} = attrs) do
+    user_attrs = user_attrs_from_twitter(attrs)
+
+    case get_user_by_username(username) do
+      nil ->
+        create_user(user_attrs)
+
+      user ->
+        update_user(user, user_attrs)
+    end
+  end
+
+  defp user_attrs_from_twitter(%{
+         screen_name: username,
+         name: name,
+         profile_image_url: profile_image_url
+       }) do
+    %{
+      username: username,
+      name: name,
+      profile_image_url: profile_image_url
+    }
   end
 
   @doc """

@@ -38,6 +38,46 @@ defmodule SentientSocial.AccountsTest do
       assert Accounts.get_user!(user.id) == user
     end
 
+    test "get_user_by_username/1 returns an existing user" do
+      user = user_fixture()
+      assert user == Accounts.get_user_by_username(user.username)
+    end
+
+    test "create_or_update_from_twitter/1 creates a new user" do
+      auth_user = %{
+        name: "John Doe 3",
+        profile_image_url: "www.website.com/image3.png",
+        screen_name: "johndoe3"
+      }
+
+      result = Accounts.create_or_update_from_twitter(auth_user)
+      assert {:ok, user} = result
+      assert user.name == "John Doe 3"
+      assert user.profile_image_url == "www.website.com/image3.png"
+      assert user.username == "johndoe3"
+    end
+
+    test "create_or_update_from_twitter/1 updates an existing user" do
+      auth_user = %{
+        name: "John Doe 3",
+        profile_image_url: "www.website.com/image3.png",
+        screen_name: "johndoe"
+      }
+
+      assert {:ok, user} =
+               Accounts.create_user(%{
+                 username: auth_user.screen_name,
+                 profile_image_url: auth_user.profile_image_url,
+                 name: auth_user.name
+               })
+
+      result = Accounts.create_or_update_from_twitter(auth_user)
+      assert {:ok, user} = result
+      assert user.name == "John Doe 3"
+      assert user.profile_image_url == "www.website.com/image3.png"
+      assert user.username == "johndoe"
+    end
+
     test "create_user/1 with valid data creates a user" do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
       assert user.name == "John Doe"
