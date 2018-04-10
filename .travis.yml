@@ -44,4 +44,5 @@ jobs:
         - 'MIX_ENV=prod mix ecto.migrate'
         - 'brunch build --production'
         - 'mix phx.digest'
-        - 'curl http://sentient-social-staging.herokuapp.com'
+    - stage: verify staging
+      script: 'curl http://sentient-social-staging.herokuapp.com'
