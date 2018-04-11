@@ -5,7 +5,7 @@ defmodule SentientSocialWeb.AuthenticateTest do
 
   test "user is redirected when current_user is not set", %{conn: conn} do
     conn = get(conn, page_path(conn, :index))
-    assert redirected_to(conn) == "/auth/twitter"
+    assert redirected_to(conn) == "/login"
   end
 
   test "user passes through when current_user is set", %{conn: conn} do

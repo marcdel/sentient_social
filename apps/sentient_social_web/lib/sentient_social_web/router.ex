@@ -21,9 +21,13 @@ defmodule SentientSocialWeb.Router do
   scope "/", SentientSocialWeb do
     # Use the default browser stack
     pipe_through(:browser)
-    pipe_through(:login_required)
 
-    get("/", PageController, :index)
+    get("/login", LoginController, :index)
+
+    scope "/" do
+      pipe_through(:login_required)
+      get("/", PageController, :index)
+    end
   end
 
   scope "/auth", SentientSocialWeb do
