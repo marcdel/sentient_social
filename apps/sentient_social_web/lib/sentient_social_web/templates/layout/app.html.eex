@@ -24,9 +24,9 @@
     <div class="wrapper">
       <div class="sidebar" data-color="purple" data-image="<%= static_path(@conn, "/images/sidebar-1.jpg") %>">
         <div class="logo">
-          <a href="/" class="simple-text">
-            Twitter Handle
-          </a>
+          <span class="simple-text">
+            <%= current_user(@conn).username %>
+          </span>
         </div>
         <div class="sidebar-wrapper">
           <ul class="nav">

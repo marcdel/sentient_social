@@ -14,6 +14,7 @@ defmodule SentientSocialWeb.ConnCase do
   """
 
   use ExUnit.CaseTemplate
+  alias SentientSocial.Accounts
 
   using do
     quote do
@@ -32,6 +33,17 @@ defmodule SentientSocialWeb.ConnCase do
         |> put_session(:current_user, user.id)
         |> send_resp(:ok, "")
         |> recycle()
+      end
+
+      def sign_in(conn) do
+        {:ok, user} =
+          Accounts.create_user(%{
+            username: "testuser",
+            name: "Test User",
+            profile_image_url: "image.png"
+          })
+
+        sign_in(conn, user)
       end
     end
   end
