@@ -5,11 +5,13 @@ defmodule SentientSocial.Accounts.User do
 
   use Ecto.Schema
   import Ecto.Changeset
+  alias SentientSocial.Accounts.Keyword
 
   schema "users" do
     field(:name, :string)
     field(:profile_image_url, :string)
     field(:username, :string)
+    has_many(:keywords, Keyword)
 
     timestamps()
   end

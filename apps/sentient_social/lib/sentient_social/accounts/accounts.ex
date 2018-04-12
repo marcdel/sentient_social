@@ -165,4 +165,82 @@ defmodule SentientSocial.Accounts do
   def change_user(%User{} = user) do
     User.changeset(user, %{})
   end
+
+  alias SentientSocial.Accounts.Keyword
+
+  @doc """
+  Returns the list of keywords.
+
+  ## Examples
+
+      iex> list_keywords(%User{})
+      [%Keyword{}, ...]
+
+  """
+  @spec list_keywords(%User{}) :: list(%Keyword{})
+  def list_keywords(user) do
+    user
+    |> Ecto.assoc(:keywords)
+    |> Repo.all()
+
+    # Repo.all(Keyword)
+  end
+
+  @doc """
+  Gets a single keyword.
+
+  Raises `Ecto.NoResultsError` if the Keyword does not exist.
+
+  ## Examples
+
+      iex> get_keyword!(123, %User{})
+      %Keyword{}
+
+      iex> get_keyword!(456, %User{})
+      ** (Ecto.NoResultsError)
+
+  """
+  @spec get_keyword!(integer, %User{}) :: %Keyword{}
+  def get_keyword!(id, user) do
+    user
+    |> Ecto.assoc(:keywords)
+    |> Repo.get!(id)
+  end
+
+  @doc """
+  Creates a keyword.
+
+  ## Examples
+
+      iex> create_keyword(%{field: value}, %User{})
+      {:ok, %Keyword{}}
+
+      iex> create_keyword(%{field: bad_value}, %User{})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  @spec create_keyword(map, %User{}) :: {:ok, %Keyword{}} | {:error, %Ecto.Changeset{}}
+  def create_keyword(attrs \\ %{}, user) do
+    user
+    |> Ecto.build_assoc(:keywords)
+    |> Keyword.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Deletes a Keyword.
+
+  ## Examples
+
+      iex> delete_keyword(keyword)
+      {:ok, %Keyword{}}
+
+      iex> delete_keyword(keyword)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  @spec delete_keyword(%Keyword{}) :: {:ok, %Keyword{}} | {:error, %Ecto.Changeset{}}
+  def delete_keyword(%Keyword{} = keyword) do
+    Repo.delete(keyword)
+  end
 end

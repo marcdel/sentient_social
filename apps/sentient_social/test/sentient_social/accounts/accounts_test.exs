@@ -115,4 +115,65 @@ defmodule SentientSocial.AccountsTest do
       assert %Ecto.Changeset{} = Accounts.change_user(user)
     end
   end
+
+  describe "keywords" do
+    alias SentientSocial.Accounts.Keyword
+
+    @valid_attrs %{text: "some text"}
+    @invalid_attrs %{text: nil}
+
+    defp keyword_fixture do
+      user = user_fixture()
+      keyword_fixture(%{}, user)
+    end
+
+    defp keyword_fixture(user) do
+      keyword_fixture(%{}, user)
+    end
+
+    defp keyword_fixture(attrs, user) do
+      {:ok, keyword} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Accounts.create_keyword(user)
+
+      keyword
+    end
+
+    test "list_keywords/1 returns keywords for user" do
+      user = user_fixture()
+      keyword = keyword_fixture(user)
+      assert Accounts.list_keywords(user) == [keyword]
+    end
+
+    test "get_keyword!/1 returns the keyword with given id" do
+      user = user_fixture()
+      keyword = keyword_fixture(user)
+      assert Accounts.get_keyword!(keyword.id, user) == keyword
+    end
+
+    test "get_keyword!/1 returns an error if it doesn't belong to the user" do
+      keyword = keyword_fixture()
+      another_user = user_fixture()
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_keyword!(keyword.id, another_user) end
+    end
+
+    test "create_keyword/1 with valid data creates a keyword" do
+      user = user_fixture()
+      assert {:ok, %Keyword{} = keyword} = Accounts.create_keyword(@valid_attrs, user)
+      assert keyword.text == "some text"
+    end
+
+    test "create_keyword/1 with invalid data returns error changeset" do
+      user = user_fixture()
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_keyword(@invalid_attrs, user)
+    end
+
+    test "delete_keyword/1 deletes the keyword" do
+      user = user_fixture()
+      keyword = keyword_fixture(user)
+      assert {:ok, %Keyword{}} = Accounts.delete_keyword(keyword)
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_keyword!(keyword.id, user) end
+    end
+  end
 end
