@@ -1,0 +1,30 @@
+<div class="col-lg-3 col-md-6">
+  <div class="card card-nav-tabs">
+    <div class="card-header" data-background-color="purple">
+      <h4 class="title">Keywords</h4>
+    </div>
+    <div class="card-content">
+      <table class="table">
+        <thead>
+          <%= form_for @conn, keywords_path(@conn, :create), fn f -> %>
+            <div class="form-group label-floating is-empty">
+              <label class="control-label">New keyword</label>
+              <%= text_input f, :text, class: "form-control" %>
+              <span class="material-input"></span>
+            </div>
+          <% end %>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#something</td>
+            <td class="td-actions text-right">
+              <button type="button" rel="tooltip" title="" class="btn btn-danger btn-simple btn-xs" data-original-title="Remove">
+                <i class="material-icons">close</i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
