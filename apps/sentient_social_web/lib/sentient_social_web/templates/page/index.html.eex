@@ -23,9 +23,15 @@
             <tr>
               <td><%= keyword.text %></td>
               <td class="td-actions text-right">
-                <button type="button" rel="tooltip" title="" class="btn btn-danger btn-simple btn-xs" data-original-title="Remove">
+                <%= button(
+                  to: keywords_path(@conn, :delete, keyword.id),
+                  method: "delete",
+                  rel: "tooltip",
+                  data: [original_title: "Remove"],
+                  class: "btn btn-danger btn-simple btn-xs"
+                ) do %>
                   <i class="material-icons">close</i>
-                </button>
+                <% end %>
               </td>
             </tr>
           <% end %>

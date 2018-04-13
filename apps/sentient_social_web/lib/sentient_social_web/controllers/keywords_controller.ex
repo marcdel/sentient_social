@@ -22,4 +22,19 @@ defmodule SentientSocialWeb.KeywordsController do
         |> redirect(to: "/")
     end
   end
+
+  @doc """
+  Removes the selected keyword
+  """
+  @spec delete(map, map) :: map
+  def delete(conn, %{"id" => id}) do
+    current_user =
+      conn
+      |> get_session(:current_user)
+      |> Accounts.get_user!()
+
+    keyword = Accounts.get_keyword!(id, current_user)
+    {:ok, _} = Accounts.delete_keyword(keyword)
+    redirect(conn, to: "/")
+  end
 end

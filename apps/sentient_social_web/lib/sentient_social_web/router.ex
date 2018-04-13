@@ -27,7 +27,8 @@ defmodule SentientSocialWeb.Router do
     scope "/" do
       pipe_through(:login_required)
       get("/", PageController, :index)
-      post("/", KeywordsController, :create)
+      post("/keywords", KeywordsController, :create)
+      delete("/keywords/:id", KeywordsController, :delete)
     end
   end
 
