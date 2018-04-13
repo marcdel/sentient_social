@@ -1,11 +1,17 @@
 defmodule SentientSocialWeb.PageController do
   use SentientSocialWeb, :controller
+  alias SentientSocial.Accounts
 
   @spec index(map, map) :: map
   def index(conn, _params) do
+    keywords =
+      conn
+      |> get_session(:current_user)
+      |> Accounts.get_user!()
+      |> Accounts.list_keywords()
+
     conn
-    # |> put_flash(:info, "This is a warning")
-    # |> put_flash(:error, "This is an error")
+    |> assign(:keywords, keywords)
     |> render("index.html")
   end
 end
