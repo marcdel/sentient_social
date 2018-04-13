@@ -4,26 +4,20 @@
       <h4 class="title">Keywords</h4>
     </div>
     <div class="card-content">
+      <%= form_for @conn, keywords_path(@conn, :create), fn f -> %>
+        <div class="form-group label-floating is-empty">
+          <label class="control-label">Add a keyword</label>
+          <%= text_input f, :text, class: "form-control" %>
+          <span class="material-input"></span>
+        </div>
+      <% end %>
       <table class="table">
-        <thead>
-          <tr>
-            <td colspan="2">
-              <%= form_for @conn, keywords_path(@conn, :create), fn f -> %>
-                <div class="form-group label-floating is-empty">
-                  <label class="control-label">New keyword</label>
-                  <%= text_input f, :text, class: "form-control" %>
-                  <span class="material-input"></span>
-                </div>
-              <% end %>
-            </td>
-          </tr>
-        </thead>
         <tbody>
           <%= for keyword <- @keywords do %>
             <tr>
               <td><%= keyword.text %></td>
-              <td class="td-actions text-right">
-                <%= button(
+              <td class="td-actions text-right" style="display: block">
+                <%= link(
                   to: keywords_path(@conn, :delete, keyword.id),
                   method: "delete",
                   rel: "tooltip",
