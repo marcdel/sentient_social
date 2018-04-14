@@ -208,6 +208,27 @@ defmodule SentientSocial.Accounts do
   end
 
   @doc """
+  Gets a single keyword by its text.
+
+  Raises `Ecto.NoResultsError` if the Keyword does not exist.
+
+  ## Examples
+
+      iex> find_keyword("something", %User{})
+      %Keyword{}
+
+      iex> find_keyword("something_else", %User{})
+      nil
+
+  """
+  @spec find_keyword(String.t(), %User{}) :: %Keyword{}
+  def find_keyword(text, user) do
+    user
+    |> Ecto.assoc(:keywords)
+    |> Repo.get_by(text: text)
+  end
+
+  @doc """
   Creates a keyword.
 
   ## Examples

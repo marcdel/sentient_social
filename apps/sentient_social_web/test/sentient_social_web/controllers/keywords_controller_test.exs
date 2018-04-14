@@ -35,6 +35,25 @@ defmodule SentientSocialWeb.KeywordsControllerTest do
 
       assert Accounts.list_keywords(user) == []
     end
+
+    test "returns error if keyword exists", %{conn: conn} do
+      {:ok, user} =
+        Accounts.create_user(%{
+          username: "testuser",
+          name: "Test User",
+          profile_image_url: "image.png"
+        })
+
+      {:ok, _} = Accounts.create_keyword(%{text: "keyword1"}, user)
+
+      conn =
+        conn
+        |> sign_in(user)
+        |> post(keywords_path(conn, :create), text: "keyword1")
+
+      assert redirected_to(conn) == "/"
+      assert get_flash(conn, :error) == "Unable to add keyword."
+    end
   end
 
   describe "DELETE /keywords" do
