@@ -10,6 +10,6 @@ defmodule SentientSocial.Repo.Migrations.CreateKeywords do
     end
 
     create(index(:keywords, [:user_id]))
-    create(unique_index(:keywords, [:text]))
+    create(unique_index(:keywords, [:user_id, :text]))
   end
 end

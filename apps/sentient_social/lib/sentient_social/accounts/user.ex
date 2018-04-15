@@ -22,5 +22,6 @@ defmodule SentientSocial.Accounts.User do
     user
     |> cast(attrs, [:username, :name, :profile_image_url])
     |> validate_required([:username, :name, :profile_image_url])
+    |> unique_constraint(:username)
   end
 end

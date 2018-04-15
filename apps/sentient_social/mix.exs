@@ -39,7 +39,9 @@ defmodule SentientSocial.Mixfile do
     [
       {:postgrex, ">= 0.0.0"},
       {:ecto, "~> 2.1"},
-      {:excoveralls, "~> 0.8", only: :test}
+      {:excoveralls, "~> 0.8", only: :test},
+      {:mox, "~> 0.3", only: :test},
+      {:extwitter, "~> 0.8"}
     ]
   end
 

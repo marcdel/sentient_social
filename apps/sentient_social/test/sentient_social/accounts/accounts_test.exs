@@ -89,6 +89,11 @@ defmodule SentientSocial.AccountsTest do
       assert {:error, %Ecto.Changeset{}} = Accounts.create_user(@invalid_attrs)
     end
 
+    test "create_user/1 with a duplicate user returns error changeset" do
+      assert {:ok, %User{}} = Accounts.create_user(@valid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_user(@valid_attrs)
+    end
+
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
       assert {:ok, user} = Accounts.update_user(user, @update_attrs)
@@ -154,7 +159,7 @@ defmodule SentientSocial.AccountsTest do
 
     test "get_keyword!/2 returns an error if it doesn't belong to the user" do
       keyword = keyword_fixture()
-      another_user = user_fixture()
+      another_user = user_fixture(%{username: "another_user"})
       assert_raise Ecto.NoResultsError, fn -> Accounts.get_keyword!(keyword.id, another_user) end
     end
 
@@ -166,7 +171,7 @@ defmodule SentientSocial.AccountsTest do
 
     test "find_keyword/2 returns an error if it doesn't belong to the user" do
       keyword_fixture()
-      another_user = user_fixture()
+      another_user = user_fixture(%{username: "another_user"})
       assert Accounts.find_keyword("something", another_user) == nil
     end
 
@@ -177,9 +182,11 @@ defmodule SentientSocial.AccountsTest do
     end
 
     test "create_keyword/2 returns an error if keyword exists" do
-      user = user_fixture()
-      assert {:ok, %Keyword{} = keyword} = Accounts.create_keyword(%{text: "something"}, user)
-      assert {:error, %Ecto.Changeset{}} = Accounts.create_keyword(%{text: "something"}, user)
+      user1 = user_fixture(%{username: "user1"})
+      user2 = user_fixture(%{username: "user2"})
+      assert {:ok, %Keyword{} = keyword} = Accounts.create_keyword(%{text: "something"}, user1)
+      assert {:ok, %Keyword{} = keyword} = Accounts.create_keyword(%{text: "something"}, user2)
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_keyword(%{text: "something"}, user1)
     end
 
     test "create_keyword/2 with invalid data returns error changeset" do

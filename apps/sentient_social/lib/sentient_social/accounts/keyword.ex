@@ -20,6 +20,6 @@ defmodule SentientSocial.Accounts.Keyword do
     keyword
     |> cast(attrs, [:text])
     |> validate_required([:text])
-    |> unique_constraint(:text)
+    |> unique_constraint(:user_id_text)
   end
 end

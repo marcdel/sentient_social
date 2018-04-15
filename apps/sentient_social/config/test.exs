@@ -8,3 +8,5 @@ config :sentient_social, SentientSocial.Repo,
   database: "sentient_social_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :sentient_social, twitter_client: SentientSocial.Twitter.MockTwitterClient
