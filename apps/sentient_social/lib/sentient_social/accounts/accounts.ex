@@ -90,7 +90,9 @@ defmodule SentientSocial.Accounts do
   @spec create_or_update_from_twitter(%{
           screen_name: String,
           name: String,
-          profile_image_url: String
+          profile_image_url: String,
+          access_token: String,
+          access_token_secret: String
         }) :: {:ok, %User{}} | {:error, %Ecto.Changeset{}}
   def create_or_update_from_twitter(%{screen_name: username} = attrs) do
     user_attrs = user_attrs_from_twitter(attrs)
@@ -107,12 +109,16 @@ defmodule SentientSocial.Accounts do
   defp user_attrs_from_twitter(%{
          screen_name: username,
          name: name,
-         profile_image_url: profile_image_url
+         profile_image_url: profile_image_url,
+         access_token: access_token,
+         access_token_secret: access_token_secret
        }) do
     %{
       username: username,
       name: name,
-      profile_image_url: profile_image_url
+      profile_image_url: profile_image_url,
+      access_token: access_token,
+      access_token_secret: access_token_secret
     }
   end
 

@@ -9,4 +9,15 @@ config :sentient_social, SentientSocial.Repo,
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
+config :cloak, Cloak.AES.GCM,
+  default: true,
+  tag: "GCM",
+  keys: [
+    %{
+      tag: <<1>>,
+      key: Base.decode64!("lMJpRrFo4m9dGhKcGXywBFtqMQGhY8FpDevwB3NMIXo="),
+      default: true
+    }
+  ]
+
 config :sentient_social, twitter_client: SentientSocial.Twitter.MockTwitterClient

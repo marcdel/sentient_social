@@ -2,7 +2,6 @@ defmodule SentientSocialWeb.AuthControllerTest do
   use SentientSocialWeb.ConnCase, async: true
 
   alias SentientSocial.Accounts
-  alias SentientSocial.Accounts.User
 
   test "handles authentication failure", %{conn: conn} do
     conn =
@@ -15,7 +14,13 @@ defmodule SentientSocialWeb.AuthControllerTest do
 
   @ueberauth_auth %Ueberauth.Auth{
     credentials: %Ueberauth.Auth.Credentials{
-      token: "abcd4321",
+      expires: nil,
+      expires_at: nil,
+      other: %{},
+      refresh_token: nil,
+      scopes: [],
+      secret: 'secret',
+      token: 'token',
       token_type: nil
     },
     extra: %Ueberauth.Auth.Extra{
@@ -112,7 +117,12 @@ defmodule SentientSocialWeb.AuthControllerTest do
     |> assign(:ueberauth_auth, @ueberauth_auth)
     |> get("/auth/twitter/callback")
 
-    assert %User{username: "handle"} = Accounts.get_user_by_username("handle")
+    user = Accounts.get_user_by_username("handle")
+    assert user.username == "handle"
+    assert user.name == "User's Full Name"
+    assert user.profile_image_url == "http://pbs.twimg.com/profile_images/123456789_normal.jpg"
+    assert user.access_token == "token"
+    assert user.access_token_secret == "secret"
   end
 
   test "handles user sign out", %{conn: conn} do

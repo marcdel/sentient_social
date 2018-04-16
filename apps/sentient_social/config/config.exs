@@ -8,6 +8,17 @@ config :extwitter, :oauth,
   access_token: System.get_env("TWITTER_ACCESS_TOKEN"),
   access_token_secret: System.get_env("TWITTER_ACCESS_SECRET")
 
+config :cloak, Cloak.AES.GCM,
+  default: true,
+  tag: "GCM",
+  keys: [
+    %{
+      tag: <<1>>,
+      key: {:system, "CLOAK_KEY"},
+      default: true
+    }
+  ]
+
 config :sentient_social, twitter_client: SentientSocial.Twitter.ExTwitterClient
 
 import_config "#{Mix.env()}.exs"

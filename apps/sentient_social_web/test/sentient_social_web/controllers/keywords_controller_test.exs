@@ -1,15 +1,30 @@
 defmodule SentientSocialWeb.KeywordsControllerTest do
   use SentientSocialWeb.ConnCase
+
   alias SentientSocial.Accounts
+  alias SentientSocial.Accounts.User
 
   describe "POST /keywords" do
-    test "adds a keyword for the current user", %{conn: conn} do
+    @valid_user_attrs %{
+      name: "John Doe",
+      profile_image_url: "www.website.com/image.png",
+      username: "johndoe",
+      access_token: "token",
+      access_token_secret: "secret"
+    }
+
+    @spec user_fixture(map) :: %User{}
+    def user_fixture(attrs \\ %{}) do
       {:ok, user} =
-        Accounts.create_user(%{
-          username: "testuser",
-          name: "Test User",
-          profile_image_url: "image.png"
-        })
+        attrs
+        |> Enum.into(@valid_user_attrs)
+        |> Accounts.create_user()
+
+      user
+    end
+
+    test "adds a keyword for the current user", %{conn: conn} do
+      user = user_fixture()
 
       conn
       |> sign_in(user)
@@ -22,12 +37,7 @@ defmodule SentientSocialWeb.KeywordsControllerTest do
     end
 
     test "shows an error when keyword invalid", %{conn: conn} do
-      {:ok, user} =
-        Accounts.create_user(%{
-          username: "testuser",
-          name: "Test User",
-          profile_image_url: "image.png"
-        })
+      user = user_fixture()
 
       conn
       |> sign_in(user)
@@ -37,12 +47,7 @@ defmodule SentientSocialWeb.KeywordsControllerTest do
     end
 
     test "returns error if keyword exists", %{conn: conn} do
-      {:ok, user} =
-        Accounts.create_user(%{
-          username: "testuser",
-          name: "Test User",
-          profile_image_url: "image.png"
-        })
+      user = user_fixture()
 
       {:ok, _} = Accounts.create_keyword(%{text: "keyword1"}, user)
 
@@ -58,12 +63,7 @@ defmodule SentientSocialWeb.KeywordsControllerTest do
 
   describe "DELETE /keywords" do
     test "removes the selected keyword", %{conn: conn} do
-      {:ok, user} =
-        Accounts.create_user(%{
-          username: "testuser",
-          name: "Test User",
-          profile_image_url: "image.png"
-        })
+      user = user_fixture()
 
       {:ok, keyword} = Accounts.create_keyword(%{text: "keyword1"}, user)
 
@@ -75,19 +75,8 @@ defmodule SentientSocialWeb.KeywordsControllerTest do
     end
 
     test "raises if unable to find keyword to be deleted", %{conn: conn} do
-      {:ok, user1} =
-        Accounts.create_user(%{
-          username: "testuser1",
-          name: "Test User 1",
-          profile_image_url: "image.png"
-        })
-
-      {:ok, user2} =
-        Accounts.create_user(%{
-          username: "testuser2",
-          name: "Test User 2",
-          profile_image_url: "image.png"
-        })
+      user1 = user_fixture(username: "testuser1")
+      user2 = user_fixture(username: "testuser2")
 
       {:ok, keyword} = Accounts.create_keyword(%{text: "keyword1"}, user1)
 

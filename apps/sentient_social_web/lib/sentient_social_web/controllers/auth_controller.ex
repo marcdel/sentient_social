@@ -22,12 +22,15 @@ defmodule SentientSocialWeb.AuthController do
     case auth.provider do
       :twitter ->
         auth_user = auth.extra.raw_info.user
+        credentials = auth.credentials
 
         {:ok, user} =
           Accounts.create_or_update_from_twitter(%{
             screen_name: auth_user["screen_name"],
             name: auth_user["name"],
-            profile_image_url: auth_user["profile_image_url"]
+            profile_image_url: auth_user["profile_image_url"],
+            access_token: credentials.token,
+            access_token_secret: credentials.secret
           })
 
         conn

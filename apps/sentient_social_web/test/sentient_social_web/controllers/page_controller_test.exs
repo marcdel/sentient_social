@@ -15,9 +15,11 @@ defmodule SentientSocialWeb.PageControllerTest do
     test "lists current user's keywords", %{conn: conn} do
       {:ok, user} =
         Accounts.create_user(%{
-          username: "testuser",
-          name: "Test User",
-          profile_image_url: "image.png"
+          name: "John Doe",
+          profile_image_url: "www.website.com/image.png",
+          username: "johndoe",
+          access_token: "token",
+          access_token_secret: "secret"
         })
 
       Accounts.create_keyword(%{text: "keyword1"}, user)

@@ -8,7 +8,9 @@ defmodule SentientSocialWeb.LayoutViewTest do
       Accounts.create_user(%{
         username: "testuser",
         name: "Test User",
-        profile_image_url: "image.png"
+        profile_image_url: "image.png",
+        access_token: "token",
+        access_token_secret: "secret"
       })
 
     current_user =

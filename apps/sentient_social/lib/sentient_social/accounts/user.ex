@@ -11,6 +11,8 @@ defmodule SentientSocial.Accounts.User do
     field(:name, :string)
     field(:profile_image_url, :string)
     field(:username, :string)
+    field(:access_token, Cloak.EncryptedBinaryField)
+    field(:access_token_secret, Cloak.EncryptedBinaryField)
     has_many(:keywords, Keyword)
 
     timestamps()
@@ -20,8 +22,14 @@ defmodule SentientSocial.Accounts.User do
   @spec changeset(%__MODULE__{}, map()) :: %Ecto.Changeset{}
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:username, :name, :profile_image_url])
-    |> validate_required([:username, :name, :profile_image_url])
+    |> cast(attrs, [:username, :name, :profile_image_url, :access_token, :access_token_secret])
+    |> validate_required([
+      :username,
+      :name,
+      :profile_image_url,
+      :access_token,
+      :access_token_secret
+    ])
     |> unique_constraint(:username)
   end
 end

@@ -38,9 +38,11 @@ defmodule SentientSocialWeb.ConnCase do
       def sign_in(conn) do
         {:ok, user} =
           Accounts.create_user(%{
-            username: "testuser",
-            name: "Test User",
-            profile_image_url: "image.png"
+            name: "John Doe",
+            profile_image_url: "www.website.com/image.png",
+            username: "johndoe",
+            access_token: "token",
+            access_token_secret: "secret"
           })
 
         sign_in(conn, user)
