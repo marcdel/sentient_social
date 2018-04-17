@@ -1,5 +1,5 @@
 defmodule SentientSocial.KeywordTest do
-  use SentientSocial.DataCase
+  use SentientSocial.DataCase, async: true
 
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.{User, Keyword}
