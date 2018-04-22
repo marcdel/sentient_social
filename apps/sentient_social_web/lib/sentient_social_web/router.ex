@@ -18,6 +18,8 @@ defmodule SentientSocialWeb.Router do
     plug(:accepts, ["json"])
   end
 
+  forward("/wobserver", Wobserver.Web.Router)
+
   scope "/", SentientSocialWeb do
     # Use the default browser stack
     pipe_through(:browser)

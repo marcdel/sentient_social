@@ -2,6 +2,7 @@ defmodule SentientSocialWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :sentient_social_web
 
   socket("/socket", SentientSocialWeb.UserSocket)
+  socket("/wobserver", Wobserver.Web.PhoenixSocket)
 
   # Serve at "/" the static files from "priv/static" directory.
   #
