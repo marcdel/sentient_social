@@ -1,5 +1,5 @@
 defmodule SentientSocialWeb.LoginControllerTest do
-  use SentientSocialWeb.ConnCase
+  use SentientSocialWeb.ConnCase, async: true
 
   describe "index" do
     test "shows login button", %{conn: conn} do

@@ -1,5 +1,5 @@
 defmodule SentientSocialWeb.KeywordsControllerTest do
-  use SentientSocialWeb.ConnCase
+  use SentientSocialWeb.ConnCase, async: true
 
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User

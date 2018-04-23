@@ -5,3 +5,5 @@ use Mix.Config
 config :sentient_social_web, SentientSocialWeb.Endpoint,
   http: [port: 4001],
   server: false
+
+config :phoenix_integration, endpoint: SentientSocialWeb.Endpoint
