@@ -1,6 +1,7 @@
 defmodule SentientSocialWeb.AuthController do
   use SentientSocialWeb, :controller
   alias SentientSocial.Accounts
+  alias SentientSocial.Accounts.UserSupervisor
   plug(Ueberauth)
 
   @doc """
@@ -32,6 +33,8 @@ defmodule SentientSocialWeb.AuthController do
             access_token: credentials.token,
             access_token_secret: credentials.secret
           })
+
+        UserSupervisor.start_user(user.username)
 
         conn
         |> put_flash(:info, "Successfully authenticated.")

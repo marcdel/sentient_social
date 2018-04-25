@@ -47,8 +47,4 @@ defmodule SentientSocial.Accounts.UserServer do
   def terminate(_reason, _state) do
     :ok
   end
-
-  # defp my_username do
-  #   Registry.keys(UserRegistry, self()) |> List.first()
-  # end
 end
