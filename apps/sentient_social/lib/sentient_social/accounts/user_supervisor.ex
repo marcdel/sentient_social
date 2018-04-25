@@ -12,21 +12,6 @@ defmodule SentientSocial.Accounts.UserSupervisor do
     DynamicSupervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  # @spec init(atom) :: {:ok, DynamicSupervisor.sup_flags()} | :ignore
-  # @spec init(atom) :: {:ok, map} | :ignore
-
-  # @opaque sup_flags() :: %{
-  #           strategy: strategy(),
-  #           intensity: non_neg_integer(),
-  #           period: pos_integer(),
-  #           max_children: non_neg_integer() | :infinity,
-  #           extra_arguments: [term()]
-  #         }
-  #
-  # @type strategy :: :one_for_one
-  #
-  # @spec init(atom()) :: {:ok, sup_flags()} | :ignore
-
   # credo:disable-for-next-line Credo.Check.Readability.Specs
   def init(:ok) do
     DynamicSupervisor.init(strategy: :one_for_one)
