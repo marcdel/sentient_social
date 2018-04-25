@@ -14,6 +14,8 @@ defmodule SentientSocial.Application do
 
     Supervisor.start_link(
       [
+        {Registry, keys: :unique, name: SentientSocial.Accounts.UserRegistry},
+        SentientSocial.Accounts.UserSupervisor,
         supervisor(SentientSocial.Repo, [])
       ],
       strategy: :one_for_one,
