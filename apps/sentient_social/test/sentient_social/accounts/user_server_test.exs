@@ -1,7 +1,31 @@
 defmodule UserServerTest do
   use SentientSocial.DataCase
+  import Mox
 
-  alias SentientSocial.Accounts.UserServer
+  alias ExTwitter.Model.Tweet
+  alias SentientSocial.Accounts
+  alias SentientSocial.Accounts.{User, UserServer}
+
+  @twitter_client Application.get_env(:sentient_social, :twitter_client)
+  setup :verify_on_exit!
+
+  @valid_user_attrs %{
+    name: "John Doe",
+    profile_image_url: "www.website.com/image.png",
+    username: "johndoe",
+    access_token: "token",
+    access_token_secret: "secret"
+  }
+
+  @spec user_fixture(map) :: %User{}
+  defp user_fixture(attrs) do
+    {:ok, user} =
+      attrs
+      |> Enum.into(@valid_user_attrs)
+      |> Accounts.create_user()
+
+    user
+  end
 
   @spec generate_user_name() :: String.t()
   defp generate_user_name do
@@ -33,6 +57,24 @@ defmodule UserServerTest do
 
     test "returns nil if the user process does not exist" do
       refute UserServer.user_pid("nonexistent-user")
+    end
+  end
+
+  describe "favorite_some_tweets" do
+    test "searches for and likes tweets" do
+      username = generate_user_name()
+      user = user_fixture(%{username: username})
+      Accounts.create_keyword(%{text: "keyword1"}, user)
+
+      {:ok, pid} = UserServer.start_link(username)
+
+      # This should probably test that it calls Engagement.favorite_new_keyword_tweets
+      # so that I can call send instead of GenServer.call
+      expect(@twitter_client, :search, 1, fn _, _ -> [%Tweet{}, %Tweet{}, %Tweet{}, %Tweet{}] end)
+      expect(@twitter_client, :create_favorite, 4, fn _id -> {:ok, %Tweet{}} end)
+      allow(@twitter_client, self(), pid)
+
+      assert username |> UserServer.favorite_some_tweets() |> Enum.count() == 4
     end
   end
 end

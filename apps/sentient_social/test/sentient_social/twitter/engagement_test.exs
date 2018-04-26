@@ -2,9 +2,9 @@ defmodule SentientSocial.Twitter.EngagementTest do
   use SentientSocial.DataCase, async: true
   import Mox
 
+  alias ExTwitter.Model.Tweet
   alias SentientSocial.Accounts
   alias SentientSocial.Twitter.Engagement
-  alias ExTwitter.Model.Tweet
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
 
