@@ -68,13 +68,14 @@ defmodule UserServerTest do
 
       {:ok, pid} = UserServer.start_link(username)
 
-      # This should probably test that it calls Engagement.favorite_new_keyword_tweets
-      # so that I can call send instead of GenServer.call
       expect(@twitter_client, :search, 1, fn _, _ -> [%Tweet{}, %Tweet{}, %Tweet{}, %Tweet{}] end)
       expect(@twitter_client, :create_favorite, 4, fn _id -> {:ok, %Tweet{}} end)
       allow(@twitter_client, self(), pid)
 
-      assert username |> UserServer.favorite_some_tweets() |> Enum.count() == 4
+      username |> UserServer.favorite_some_tweets()
+
+      # Wait for Kernel.send/2 which is async
+      :timer.sleep(20)
     end
   end
 end
