@@ -7,8 +7,6 @@ defmodule SentientSocial.Accounts.UserServer do
 
   require Logger
 
-  alias ExTwitter.Model.Tweet
-  alias SentientSocial.Accounts
   alias SentientSocial.Accounts.{UserRegistry}
   alias SentientSocial.Twitter.Engagement
 
@@ -20,16 +18,6 @@ defmodule SentientSocial.Accounts.UserServer do
   @spec start_link(String.t()) :: GenServer.on_start()
   def start_link(username) do
     GenServer.start_link(__MODULE__, username, name: via_tuple(username))
-  end
-
-  @doc """
-  Finds and favorites new tweets and automatically re-runs after the specified amount of time
-  """
-  @spec favorite_some_tweets(String.t()) :: list(%Tweet{})
-  def favorite_some_tweets(username) do
-    username
-    |> user_pid()
-    |> send({:favorite_tweets, username})
   end
 
   @doc """
@@ -59,14 +47,6 @@ defmodule SentientSocial.Accounts.UserServer do
     Process.send_after(self(), {:favorite_tweets, username}, @favorite_interval)
   end
 
-  defp fave_and_reschedule(username) do
-    favorited_tweets = Engagement.favorite_new_keyword_tweets(username)
-
-    schedule_favoriting_tweets(username)
-
-    favorited_tweets
-  end
-
   @spec init(String.t()) :: {:ok, map}
   def init(username) do
     Logger.info("Spawned user server process named '#{username}'.")
@@ -77,7 +57,8 @@ defmodule SentientSocial.Accounts.UserServer do
 
   # credo:disable-for-next-line Credo.Check.Readability.Specs
   def handle_info({:favorite_tweets, username}, state) do
-    fave_and_reschedule(username)
+    Engagement.favorite_new_keyword_tweets(username)
+    schedule_favoriting_tweets(username)
 
     {:noreply, state}
   end
