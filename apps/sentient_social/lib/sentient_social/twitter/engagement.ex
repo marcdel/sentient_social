@@ -3,6 +3,8 @@ defmodule SentientSocial.Twitter.Engagement do
   Finds tweets matching the specified user's keywords
   """
 
+  require Logger
+
   alias ExTwitter.Config
   alias ExTwitter.Model.Tweet
   alias SentientSocial.Accounts
@@ -15,12 +17,20 @@ defmodule SentientSocial.Twitter.Engagement do
   @doc """
   Find and favorite tweets for the given user
   """
-  @spec favorite_new_keyword_tweets(%User{}) :: [%Tweet{}]
-  def favorite_new_keyword_tweets(user) do
-    user
-    |> set_access_tokens()
-    |> find_tweets()
-    |> favorite_tweets()
+  @spec favorite_new_keyword_tweets(String) :: [%Tweet{}]
+  def favorite_new_keyword_tweets(username) do
+    Logger.info("Looking for tweets to favorite for '#{username}' now.")
+
+    favorited_tweets =
+      username
+      |> Accounts.get_user_by_username()
+      |> set_access_tokens()
+      |> find_tweets()
+      |> favorite_tweets()
+
+    Logger.info("Favorited #{Enum.count(favorited_tweets)} tweets for '#{username}'.")
+
+    favorited_tweets
   end
 
   @spec find_tweets(%User{}) :: [%Tweet{}]

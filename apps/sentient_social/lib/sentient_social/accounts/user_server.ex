@@ -29,7 +29,7 @@ defmodule SentientSocial.Accounts.UserServer do
   def favorite_some_tweets(username) do
     username
     |> user_pid()
-    |> send({:favorite_tweets, username})
+    |> GenServer.call({:favorite_tweets, username})
   end
 
   @doc """
@@ -59,6 +59,14 @@ defmodule SentientSocial.Accounts.UserServer do
     Process.send_after(self(), {:favorite_tweets, username}, @favorite_interval)
   end
 
+  defp fave_and_reschedule(username) do
+    favorited_tweets = Engagement.favorite_new_keyword_tweets(username)
+
+    schedule_favoriting_tweets(username)
+
+    favorited_tweets
+  end
+
   @spec init(String.t()) :: {:ok, map}
   def init(username) do
     Logger.info("Spawned user server process named '#{username}'.")
@@ -68,14 +76,15 @@ defmodule SentientSocial.Accounts.UserServer do
   end
 
   # credo:disable-for-next-line Credo.Check.Readability.Specs
+  def handle_call({:favorite_tweets, username}, _from, state) do
+    favorited_tweets = fave_and_reschedule(username)
+
+    {:reply, favorited_tweets, state}
+  end
+
+  # credo:disable-for-next-line Credo.Check.Readability.Specs
   def handle_info({:favorite_tweets, username}, state) do
-    Logger.info("Looking for tweets to favorite for '#{username}' now.")
-
-    username
-    |> Accounts.get_user_by_username()
-    |> Engagement.favorite_new_keyword_tweets()
-
-    schedule_favoriting_tweets(username)
+    fave_and_reschedule(username)
 
     {:noreply, state}
   end
