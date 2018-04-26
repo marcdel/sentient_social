@@ -29,7 +29,7 @@ defmodule SentientSocial.Accounts.UserServer do
   def favorite_some_tweets(username) do
     username
     |> user_pid()
-    |> GenServer.call({:favorite_tweets, username})
+    |> send({:favorite_tweets, username})
   end
 
   @doc """
@@ -73,13 +73,6 @@ defmodule SentientSocial.Accounts.UserServer do
     schedule_favoriting_tweets(username)
 
     {:ok, %{}}
-  end
-
-  # credo:disable-for-next-line Credo.Check.Readability.Specs
-  def handle_call({:favorite_tweets, username}, _from, state) do
-    favorited_tweets = fave_and_reschedule(username)
-
-    {:reply, favorited_tweets, state}
   end
 
   # credo:disable-for-next-line Credo.Check.Readability.Specs

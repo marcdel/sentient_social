@@ -72,7 +72,10 @@ defmodule UserServerTest do
       expect(@twitter_client, :create_favorite, 4, fn _id -> {:ok, %Tweet{}} end)
       allow(@twitter_client, self(), pid)
 
-      assert username |> UserServer.favorite_some_tweets() |> Enum.count() == 4
+      username |> UserServer.favorite_some_tweets()
+
+      # Wait for Kernel.send/2 which is async
+      :timer.sleep(20)
     end
   end
 end
