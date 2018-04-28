@@ -46,3 +46,7 @@ config :sentient_social_web, SentientSocialWeb.Endpoint,
       ~r{lib/sentient_social_web/templates/.*(eex)$}
     ]
   ]
+
+config :ueberauth, Ueberauth.Strategy.Twitter.OAuth,
+  consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
+  consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET")

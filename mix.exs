@@ -17,6 +17,7 @@ defmodule SentientSocial.Umbrella.Mixfile do
   # Run "mix help deps" for examples and options.
   defp deps do
     [
+      {:distillery, "~> 1.0.0"},
       {:credo, "~> 0.9.0-rc1", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
       {:inch_ex, "~> 0.5", only: [:dev, :test], runtime: false},

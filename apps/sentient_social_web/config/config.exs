@@ -30,8 +30,8 @@ config :ueberauth, Ueberauth,
   ]
 
 config :ueberauth, Ueberauth.Strategy.Twitter.OAuth,
-  consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
-  consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET")
+  consumer_key: "${TWITTER_CONSUMER_KEY}",
+  consumer_secret: "${TWITTER_CONSUMER_SECRET}"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
