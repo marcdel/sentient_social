@@ -39,5 +39,7 @@ release :sentient_social do
     ]
   )
 
-  set(post_start_hook: "rel/hooks/post_start")
+  # set(commands: [migrate: "rel/commands/migrate.sh"])
+
+  set(pre_start_hook: "rel/hooks/pre_start_hook")
 end
