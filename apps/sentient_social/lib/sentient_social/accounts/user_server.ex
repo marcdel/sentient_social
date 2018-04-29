@@ -10,7 +10,8 @@ defmodule SentientSocial.Accounts.UserServer do
   alias SentientSocial.Accounts.{UserRegistry}
   alias SentientSocial.Twitter.Engagement
 
-  @favorite_interval :timer.minutes(30)
+  @min_interval 1
+  @max_interval 30
 
   @doc """
   Spawns a new user server process registered under the given `username`.
@@ -39,12 +40,24 @@ defmodule SentientSocial.Accounts.UserServer do
     |> GenServer.whereis()
   end
 
+  @doc """
+  Returns a random time in milliseconds between the min and max
+  """
+  @spec favorite_interval() :: integer
+  def favorite_interval do
+    @min_interval..@max_interval
+    |> Enum.random()
+    |> :timer.minutes()
+  end
+
   defp schedule_favoriting_tweets(username) do
+    next_interval = favorite_interval()
+
     Logger.info(
-      "Scheduling next favorites for '#{username}' in #{@favorite_interval / 60000} minutes."
+      "Scheduling next favorites for '#{username}' in #{next_interval / 60_000} minutes."
     )
 
-    Process.send_after(self(), {:favorite_tweets, username}, @favorite_interval)
+    Process.send_after(self(), {:favorite_tweets, username}, next_interval)
   end
 
   @spec init(String.t()) :: {:ok, map}

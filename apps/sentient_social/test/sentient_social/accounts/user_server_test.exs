@@ -60,6 +60,14 @@ defmodule UserServerTest do
     end
   end
 
+  describe "favorite_interval" do
+    test "returns a number between @min_interval and @max_interval in milliseconds" do
+      next_interval = UserServer.favorite_interval() / 60_000
+      assert next_interval >= 1
+      assert next_interval <= 30
+    end
+  end
+
   describe "handle_info({:favorite_tweets, username}, state)" do
     test "searches for and likes tweets" do
       username = generate_user_name()
