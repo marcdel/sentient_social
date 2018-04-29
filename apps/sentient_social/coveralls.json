@@ -8,6 +8,6 @@
   "skip_files": [
     "test/support",
     "lib/sentient_social/twitter/ex_twitter_client.ex",
-    "lib/sentient_social/release_tasks.ex"
+    "lib/release_tasks.ex"
   ]
 }

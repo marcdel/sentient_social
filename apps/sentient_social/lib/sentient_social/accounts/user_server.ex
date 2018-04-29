@@ -49,7 +49,7 @@ defmodule SentientSocial.Accounts.UserServer do
 
   @spec init(String.t()) :: {:ok, map}
   def init(username) do
-    Logger.info("Spawned user server process named '#{username}'.")
+    Logger.info("Spawned user server process for '#{username}'.")
     schedule_favoriting_tweets(username)
 
     {:ok, %{}}

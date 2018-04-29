@@ -33,9 +33,10 @@ defmodule UserSupervisorTest do
 
       assert {:ok, _pid} = UserSupervisor.start_user(user.username)
 
-      via = UserServer.via_tuple(user.username)
-
-      assert via |> GenServer.whereis() |> Process.alive?()
+      assert user.username
+             |> UserServer.via_tuple()
+             |> GenServer.whereis()
+             |> Process.alive?()
     end
 
     test "returns an error if user is already started" do
