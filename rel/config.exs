@@ -35,7 +35,8 @@ release :sentient_social do
   set(
     applications: [
       sentient_social: :permanent,
-      sentient_social_web: :permanent
+      sentient_social_web: :permanent,
+      oauther: :load
     ]
   )
 
