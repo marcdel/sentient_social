@@ -76,7 +76,12 @@ defmodule UserServerTest do
 
       {:ok, pid} = UserServer.start_link(username)
 
-      expect(@twitter_client, :search, 1, fn _, _ -> [%Tweet{}, %Tweet{}, %Tweet{}, %Tweet{}] end)
+      test_tweet = %Tweet{text: "keyword1"}
+
+      expect(@twitter_client, :search, 1, fn _, _ ->
+        [test_tweet, test_tweet, test_tweet, test_tweet]
+      end)
+
       expect(@twitter_client, :create_favorite, 4, fn _id -> {:ok, %Tweet{}} end)
       allow(@twitter_client, self(), pid)
 

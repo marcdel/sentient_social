@@ -9,6 +9,7 @@ defmodule SentientSocial.Twitter.Engagement do
   alias ExTwitter.Model.Tweet
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
+  alias SentientSocial.Twitter.TweetFilter
 
   @max_engagements 1
 
@@ -17,8 +18,8 @@ defmodule SentientSocial.Twitter.Engagement do
   @doc """
   Find and favorite tweets for the given user
   """
-  @spec favorite_new_keyword_tweets(String) :: [%Tweet{}]
-  def favorite_new_keyword_tweets(username) do
+  @spec favorite_new_keyword_tweets(String, module) :: {:ok, [%Tweet{}]}
+  def favorite_new_keyword_tweets(username, tweet_filter \\ TweetFilter) do
     Logger.info("Looking for tweets to favorite for '#{username}' now.")
 
     favorited_tweets =
@@ -26,11 +27,12 @@ defmodule SentientSocial.Twitter.Engagement do
       |> Accounts.get_user_by_username()
       |> set_access_tokens()
       |> find_tweets()
+      |> tweet_filter.filter()
       |> favorite_tweets()
 
     Logger.info("Favorited #{Enum.count(favorited_tweets)} tweets for '#{username}'.")
 
-    favorited_tweets
+    {:ok, favorited_tweets}
   end
 
   @spec find_tweets(%User{}) :: [%Tweet{}]

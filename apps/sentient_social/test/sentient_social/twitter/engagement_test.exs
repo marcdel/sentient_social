@@ -21,7 +21,8 @@ defmodule SentientSocial.Twitter.EngagementTest do
           access_token_secret: "secret"
         })
 
-      assert Engagement.favorite_new_keyword_tweets(user.username) == []
+      {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
+      assert tweets == []
     end
 
     test "finds and favorites tweets based on user keywords" do
@@ -44,7 +45,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
       expect(@twitter_client, :search, 1, fn "keyword2", [count: _count] -> [tweet2] end)
       expect(@twitter_client, :create_favorite, 1, fn 2 -> {:ok, tweet2} end)
 
-      tweets = Engagement.favorite_new_keyword_tweets(user.username)
+      {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
 
       assert Enum.count(tweets) == 2
       assert Enum.member?(tweets, tweet1)
@@ -67,7 +68,35 @@ defmodule SentientSocial.Twitter.EngagementTest do
 
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:error, ""} end)
 
-      tweets = Engagement.favorite_new_keyword_tweets(user.username)
+      {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
+
+      assert tweets == []
+    end
+
+    defmodule FakeTweetFilter do
+      alias ExTwitter.Model.Tweet
+
+      @spec filter(list(%Tweet{})) :: []
+      def filter(_tweets) do
+        []
+      end
+    end
+
+    test "does not favorite filtered tweets" do
+      {:ok, user} =
+        Accounts.create_user(%{
+          username: "testuser",
+          name: "Test User",
+          profile_image_url: "image.png",
+          access_token: "token",
+          access_token_secret: "secret"
+        })
+
+      tweet = %Tweet{id: 1, text: "Tweet keyword1 text"}
+      Accounts.create_keyword(%{text: "keyword1"}, user)
+      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
+
+      {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username, FakeTweetFilter)
 
       assert tweets == []
     end
