@@ -1,36 +1,14 @@
 defmodule UserLoaderTest do
   use SentientSocial.DataCase, async: true
 
-  alias SentientSocial.Accounts
-  alias SentientSocial.Accounts.{UserLoader, UserServer, User}
+  import SentientSocial.Factory
 
-  @valid_user_attrs %{
-    name: "John Doe",
-    profile_image_url: "www.website.com/image.png",
-    username: "johndoe",
-    access_token: "token",
-    access_token_secret: "secret"
-  }
-
-  @spec user_fixture(map) :: %User{}
-  defp user_fixture(attrs) do
-    {:ok, user} =
-      attrs
-      |> Enum.into(@valid_user_attrs)
-      |> Accounts.create_user()
-
-    user
-  end
-
-  @spec generate_user_name() :: String.t()
-  defp generate_user_name do
-    "user-#{:rand.uniform(1_000_000)}"
-  end
+  alias SentientSocial.Accounts.{UserLoader, UserServer}
 
   test "starts a user server for each user in the database" do
-    user1 = user_fixture(%{username: generate_user_name()})
-    user2 = user_fixture(%{username: generate_user_name()})
-    user3 = user_fixture(%{username: generate_user_name()})
+    user1 = insert(:user)
+    user2 = insert(:user)
+    user3 = insert(:user)
 
     assert :ok = UserLoader.load()
 

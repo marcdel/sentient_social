@@ -1,30 +1,12 @@
 defmodule SentientSocialWeb.KeywordsControllerTest do
   use SentientSocialWeb.ConnCase, async: true
+  import SentientSocial.Factory
 
   alias SentientSocial.Accounts
-  alias SentientSocial.Accounts.User
 
   describe "POST /keywords" do
-    @valid_user_attrs %{
-      name: "John Doe",
-      profile_image_url: "www.website.com/image.png",
-      username: "johndoe",
-      access_token: "token",
-      access_token_secret: "secret"
-    }
-
-    @spec user_fixture(map) :: %User{}
-    def user_fixture(attrs \\ %{}) do
-      {:ok, user} =
-        attrs
-        |> Enum.into(@valid_user_attrs)
-        |> Accounts.create_user()
-
-      user
-    end
-
     test "adds a keyword for the current user", %{conn: conn} do
-      user = user_fixture()
+      user = insert(:user)
 
       conn
       |> sign_in(user)
@@ -37,7 +19,7 @@ defmodule SentientSocialWeb.KeywordsControllerTest do
     end
 
     test "shows an error when keyword invalid", %{conn: conn} do
-      user = user_fixture()
+      user = insert(:user)
 
       conn
       |> sign_in(user)
@@ -47,9 +29,9 @@ defmodule SentientSocialWeb.KeywordsControllerTest do
     end
 
     test "returns error if keyword exists", %{conn: conn} do
-      user = user_fixture()
+      user = insert(:user)
 
-      {:ok, _} = Accounts.create_keyword(%{text: "keyword1"}, user)
+      insert(:keyword, %{text: "keyword1", user: user})
 
       conn =
         conn
@@ -63,9 +45,9 @@ defmodule SentientSocialWeb.KeywordsControllerTest do
 
   describe "DELETE /keywords" do
     test "removes the selected keyword", %{conn: conn} do
-      user = user_fixture()
+      user = insert(:user)
 
-      {:ok, keyword} = Accounts.create_keyword(%{text: "keyword1"}, user)
+      keyword = insert(:keyword, %{text: "keyword1", user: user})
 
       conn
       |> sign_in(user)
@@ -75,10 +57,10 @@ defmodule SentientSocialWeb.KeywordsControllerTest do
     end
 
     test "raises if unable to find keyword to be deleted", %{conn: conn} do
-      user1 = user_fixture(username: "testuser1")
-      user2 = user_fixture(username: "testuser2")
+      user1 = insert(:user, %{username: "testuser1"})
+      user2 = insert(:user, %{username: "testuser2"})
 
-      {:ok, keyword} = Accounts.create_keyword(%{text: "keyword1"}, user1)
+      keyword = insert(:keyword, %{text: "keyword1", user: user1})
 
       assert_raise Ecto.NoResultsError, fn ->
         conn

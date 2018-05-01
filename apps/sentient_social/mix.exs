@@ -41,6 +41,7 @@ defmodule SentientSocial.Mixfile do
       {:ecto, "~> 2.1"},
       {:excoveralls, "~> 0.8", only: :test},
       {:mox, "~> 0.3", only: :test},
+      {:ex_machina, "~> 2.2", only: :test},
       {:extwitter, "~> 0.8"},
       {:cloak, "~> 0.6"}
     ]

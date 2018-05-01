@@ -1,6 +1,8 @@
 defmodule SentientSocial.UserTest do
   use SentientSocial.DataCase
 
+  import SentientSocial.Factory
+
   alias SentientSocial.Accounts
 
   describe "users" do
@@ -33,17 +35,17 @@ defmodule SentientSocial.UserTest do
     end
 
     test "list_users/0 returns all users" do
-      user = user_fixture()
+      user = insert(:user)
       assert Accounts.list_users() == [user]
     end
 
     test "get_user!/1 returns the user with given id" do
-      user = user_fixture()
+      user = insert(:user)
       assert Accounts.get_user!(user.id) == user
     end
 
     test "get_user_by_username/1 returns an existing user" do
-      user = user_fixture()
+      user = insert(:user)
       assert user == Accounts.get_user_by_username(user.username)
     end
 
@@ -109,7 +111,7 @@ defmodule SentientSocial.UserTest do
     end
 
     test "update_user/2 with valid data updates the user" do
-      user = user_fixture()
+      user = insert(:user)
       assert {:ok, user} = Accounts.update_user(user, @update_attrs)
       assert %User{} = user
       assert user.name == "Jane Doe"
@@ -120,19 +122,19 @@ defmodule SentientSocial.UserTest do
     end
 
     test "update_user/2 with invalid data returns error changeset" do
-      user = user_fixture()
+      user = insert(:user)
       assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, @invalid_attrs)
       assert user == Accounts.get_user!(user.id)
     end
 
     test "delete_user/1 deletes the user" do
-      user = user_fixture()
+      user = insert(:user)
       assert {:ok, %User{}} = Accounts.delete_user(user)
       assert_raise Ecto.NoResultsError, fn -> Accounts.get_user!(user.id) end
     end
 
     test "change_user/1 returns a user changeset" do
-      user = user_fixture()
+      user = build(:user)
       assert %Ecto.Changeset{} = Accounts.change_user(user)
     end
   end

@@ -1,6 +1,7 @@
 defmodule SentientSocialWeb.PageControllerTest do
   use SentientSocialWeb.ConnCase, async: true
-  alias SentientSocial.Accounts
+
+  import SentientSocial.Factory
 
   describe "GET /" do
     test "shows log out link", %{conn: conn} do
@@ -13,17 +14,9 @@ defmodule SentientSocialWeb.PageControllerTest do
     end
 
     test "lists current user's keywords", %{conn: conn} do
-      {:ok, user} =
-        Accounts.create_user(%{
-          name: "John Doe",
-          profile_image_url: "www.website.com/image.png",
-          username: "johndoe",
-          access_token: "token",
-          access_token_secret: "secret"
-        })
-
-      Accounts.create_keyword(%{text: "keyword1"}, user)
-      Accounts.create_keyword(%{text: "keyword2"}, user)
+      user = insert(:user)
+      insert(:keyword, %{text: "keyword1", user: user})
+      insert(:keyword, %{text: "keyword2", user: user})
 
       conn =
         conn

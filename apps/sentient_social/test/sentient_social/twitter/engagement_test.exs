@@ -1,9 +1,9 @@
 defmodule SentientSocial.Twitter.EngagementTest do
   use SentientSocial.DataCase, async: true
   import Mox
+  import SentientSocial.Factory
 
   alias ExTwitter.Model.Tweet
-  alias SentientSocial.Accounts
   alias SentientSocial.Twitter.Engagement
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
@@ -12,36 +12,22 @@ defmodule SentientSocial.Twitter.EngagementTest do
 
   describe "favorite_new_keyword_tweets/1" do
     test "returns an empty list when no keywords found" do
-      {:ok, user} =
-        Accounts.create_user(%{
-          username: "testuser",
-          name: "Test User",
-          profile_image_url: "image.png",
-          access_token: "token",
-          access_token_secret: "secret"
-        })
+      user = insert(:user, %{username: "testuser"})
 
       {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
       assert tweets == []
     end
 
     test "finds and favorites tweets based on user keywords" do
-      {:ok, user} =
-        Accounts.create_user(%{
-          username: "testuser",
-          name: "Test User",
-          profile_image_url: "image.png",
-          access_token: "token",
-          access_token_secret: "secret"
-        })
+      user = insert(:user, %{username: "testuser"})
 
       tweet1 = %Tweet{id: 1, text: "Tweet keyword1 text"}
-      Accounts.create_keyword(%{text: "keyword1"}, user)
+      insert(:keyword, %{text: "keyword1", user: user})
       expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet1] end)
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet1} end)
 
       tweet2 = %Tweet{id: 2, text: "Tweet keyword2 text"}
-      Accounts.create_keyword(%{text: "keyword2"}, user)
+      insert(:keyword, %{text: "keyword2", user: user})
       expect(@twitter_client, :search, 1, fn "keyword2", [count: _count] -> [tweet2] end)
       expect(@twitter_client, :create_favorite, 1, fn 2 -> {:ok, tweet2} end)
 
@@ -53,17 +39,10 @@ defmodule SentientSocial.Twitter.EngagementTest do
     end
 
     test "does not return tweets that have already been favorited" do
-      {:ok, user} =
-        Accounts.create_user(%{
-          username: "testuser",
-          name: "Test User",
-          profile_image_url: "image.png",
-          access_token: "token",
-          access_token_secret: "secret"
-        })
+      user = insert(:user)
 
       tweet1 = %Tweet{id: 1, text: "Tweet keyword1 text"}
-      Accounts.create_keyword(%{text: "keyword1"}, user)
+      insert(:keyword, %{text: "keyword1", user: user})
       expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet1] end)
 
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:error, ""} end)
@@ -83,17 +62,10 @@ defmodule SentientSocial.Twitter.EngagementTest do
     end
 
     test "does not favorite filtered tweets" do
-      {:ok, user} =
-        Accounts.create_user(%{
-          username: "testuser",
-          name: "Test User",
-          profile_image_url: "image.png",
-          access_token: "token",
-          access_token_secret: "secret"
-        })
+      user = insert(:user)
 
       tweet = %Tweet{id: 1, text: "Tweet keyword1 text"}
-      Accounts.create_keyword(%{text: "keyword1"}, user)
+      insert(:keyword, %{text: "keyword1", user: user})
       expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
 
       {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username, FakeTweetFilter)
