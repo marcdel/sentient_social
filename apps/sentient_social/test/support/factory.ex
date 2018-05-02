@@ -18,6 +18,15 @@ defmodule SentientSocial.Factory do
   def keyword_factory do
     %Keyword{
       text: sequence(:text, &"hashtag-#{&1}"),
+      muted: false,
+      user: build(:user)
+    }
+  end
+
+  def muted_keyword_factory do
+    %Keyword{
+      text: sequence(:text, &"hashtag-#{&1}"),
+      muted: true,
       user: build(:user)
     }
   end

@@ -175,7 +175,7 @@ defmodule SentientSocial.Accounts do
   alias SentientSocial.Accounts.Keyword
 
   @doc """
-  Returns the list of keywords.
+  Returns the list of keywords for the user.
 
   ## Examples
 
@@ -187,6 +187,26 @@ defmodule SentientSocial.Accounts do
   def list_keywords(user) do
     user
     |> Ecto.assoc(:keywords)
+    |> where([keyword], keyword.muted == false)
+    |> Repo.all()
+
+    # Repo.all(Keyword)
+  end
+
+  @doc """
+  Returns the list of muted keywords for the user.
+
+  ## Examples
+
+      iex> list_muted_keywords(%User{})
+      [%Keyword{}, ...]
+
+  """
+  @spec list_muted_keywords(%User{}) :: list(%Keyword{})
+  def list_muted_keywords(user) do
+    user
+    |> Ecto.assoc(:keywords)
+    |> where([keyword], keyword.muted == true)
     |> Repo.all()
 
     # Repo.all(Keyword)
@@ -252,6 +272,25 @@ defmodule SentientSocial.Accounts do
     |> Ecto.build_assoc(:keywords)
     |> Keyword.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Creates a muted keyword.
+
+  ## Examples
+
+      iex> create_muted_keyword(%{field: value}, %User{})
+      {:ok, %Keyword{}}
+
+      iex> create_muted_keyword(%{field: bad_value}, %User{})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  @spec create_muted_keyword(map, %User{}) :: {:ok, %Keyword{}} | {:error, %Ecto.Changeset{}}
+  def create_muted_keyword(attrs \\ %{}, user) do
+    %{muted: true}
+    |> Enum.into(attrs)
+    |> create_keyword(user)
   end
 
   @doc """

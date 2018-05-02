@@ -16,9 +16,46 @@ defmodule SentientSocial.KeywordTest do
       user = insert(:user)
       keyword = insert(:keyword, user: user)
 
-      assert user
-             |> Accounts.list_keywords()
-             |> Repo.preload(:user) == [keyword]
+      assert [^keyword] =
+               user
+               |> Accounts.list_keywords()
+               |> Repo.preload(:user)
+    end
+
+    test "list_keywords/1 does not return muted keywords" do
+      user = insert(:user)
+      insert(:muted_keyword, user: user)
+      keyword = insert(:keyword, user: user)
+
+      assert [^keyword] =
+               user
+               |> Accounts.list_keywords()
+               |> Repo.preload(:user)
+    end
+
+    test "list_muted_keywords/1 returns keywords for user" do
+      user = insert(:user)
+      muted_keyword = insert(:muted_keyword, user: user)
+
+      keywords =
+        user
+        |> Accounts.list_muted_keywords()
+        |> Repo.preload(:user)
+
+      assert [^muted_keyword] = keywords
+    end
+
+    test "list_muted_keywords/1 does not return non-muted keywords" do
+      user = insert(:user)
+      insert(:keyword, user: user)
+      muted_keyword = insert(:muted_keyword, user: user)
+
+      keywords =
+        user
+        |> Accounts.list_muted_keywords()
+        |> Repo.preload(:user)
+
+      assert [^muted_keyword] = keywords
     end
 
     test "get_keyword!/2 returns the keyword with given id" do
@@ -55,6 +92,13 @@ defmodule SentientSocial.KeywordTest do
       user = insert(:user)
       assert {:ok, %Keyword{} = keyword} = Accounts.create_keyword(@valid_attrs, user)
       assert keyword.text == "some text"
+    end
+
+    test "create_muted_keyword/2 creates a muted keyword" do
+      user = insert(:user)
+      assert {:ok, %Keyword{} = keyword} = Accounts.create_muted_keyword(@valid_attrs, user)
+      assert keyword.text == "some text"
+      assert keyword.muted
     end
 
     test "create_keyword/2 returns an error if keyword exists" do

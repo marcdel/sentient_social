@@ -27,5 +27,20 @@ defmodule SentientSocialWeb.PageControllerTest do
       assert html_response(conn, 200) =~ "keyword1"
       assert html_response(conn, 200) =~ "keyword2"
     end
+
+    test "lists current user's muted keywords", %{conn: conn} do
+      user = insert(:user)
+      insert(:muted_keyword, %{text: "keyword1", user: user})
+      insert(:muted_keyword, %{text: "keyword2", user: user})
+
+      conn =
+        conn
+        |> sign_in(user)
+        |> get("/")
+
+      assert html_response(conn, 200) =~ "Keywords"
+      assert html_response(conn, 200) =~ "keyword1"
+      assert html_response(conn, 200) =~ "keyword2"
+    end
   end
 end

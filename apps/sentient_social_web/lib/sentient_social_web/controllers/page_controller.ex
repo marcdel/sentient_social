@@ -10,8 +10,15 @@ defmodule SentientSocialWeb.PageController do
       |> Accounts.get_user!()
       |> Accounts.list_keywords()
 
+    muted_keywords =
+      conn
+      |> get_session(:current_user)
+      |> Accounts.get_user!()
+      |> Accounts.list_muted_keywords()
+
     conn
     |> assign(:keywords, keywords)
+    |> assign(:muted_keywords, muted_keywords)
     |> render("index.html")
   end
 end

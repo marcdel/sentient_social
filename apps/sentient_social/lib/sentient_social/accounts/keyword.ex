@@ -9,6 +9,7 @@ defmodule SentientSocial.Accounts.Keyword do
 
   schema "keywords" do
     field(:text, :string)
+    field(:muted, :boolean)
     belongs_to(:user, User)
 
     timestamps()
@@ -18,7 +19,7 @@ defmodule SentientSocial.Accounts.Keyword do
   @spec changeset(%__MODULE__{}, map()) :: %Ecto.Changeset{}
   def changeset(keyword, attrs) do
     keyword
-    |> cast(attrs, [:text])
+    |> cast(attrs, [:text, :muted])
     |> validate_required([:text])
     |> unique_constraint(:user_id_text)
   end
