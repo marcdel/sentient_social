@@ -22,12 +22,15 @@ defmodule SentientSocial.Twitter.Engagement do
   def favorite_new_keyword_tweets(username, tweet_filter \\ TweetFilter) do
     Logger.info("Looking for tweets to favorite for '#{username}' now.")
 
-    favorited_tweets =
+    user =
       username
       |> Accounts.get_user_by_username()
+
+    favorited_tweets =
+      user
       |> set_access_tokens()
       |> find_tweets()
-      |> tweet_filter.filter()
+      |> tweet_filter.filter(user)
       |> favorite_tweets()
 
     Logger.info("Favorited #{Enum.count(favorited_tweets)} tweets for '#{username}'.")

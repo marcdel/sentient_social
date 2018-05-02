@@ -4,6 +4,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
   import SentientSocial.Factory
 
   alias ExTwitter.Model.Tweet
+  alias SentientSocial.Accounts.User
   alias SentientSocial.Twitter.Engagement
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
@@ -55,8 +56,8 @@ defmodule SentientSocial.Twitter.EngagementTest do
     defmodule FakeTweetFilter do
       alias ExTwitter.Model.Tweet
 
-      @spec filter(list(%Tweet{})) :: []
-      def filter(_tweets) do
+      @spec filter(list(%Tweet{}), %User{}) :: []
+      def filter(_tweets, _user) do
         []
       end
     end
