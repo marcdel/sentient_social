@@ -52,8 +52,12 @@ defmodule SentientSocial.Twitter.Engagement do
     tweets
     |> Enum.map(fn tweet ->
       case @twitter_client.create_favorite(tweet.id) do
-        {:ok, tweet} -> tweet
-        {:error, _message} -> nil
+        {:ok, tweet} ->
+          Logger.info("Favoriting tweet '#{tweet.text}'")
+          tweet
+
+        {:error, _message} ->
+          nil
       end
     end)
     |> Enum.reject(&is_nil/1)

@@ -46,6 +46,7 @@ defmodule SentientSocialWeb.Mixfile do
       {:gettext, "~> 0.11"},
       {:sentient_social, in_umbrella: true},
       {:cowboy, "~> 1.0"},
+      {:mix_test_watch, "~> 0.5", only: :dev, runtime: false},
       {:excoveralls, "~> 0.8", only: :test},
       {:ueberauth_twitter, "~> 0.2"},
       {:oauth, github: "tim/erlang-oauth"},
