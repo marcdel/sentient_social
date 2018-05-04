@@ -65,7 +65,9 @@ defmodule SentientSocial.AutomatedInteractionTest do
 
     test "create_automated_interaction/2 with invalid data returns error changeset" do
       user = insert(:user)
-      new_automated_interaction = params_for(:automated_interaction, %{tweet_user_handle: nil})
+
+      new_automated_interaction =
+        params_for(:automated_interaction, %{tweet_user_screen_name: nil})
 
       assert {:error, %Ecto.Changeset{}} =
                Twitter.create_automated_interaction(new_automated_interaction, user)

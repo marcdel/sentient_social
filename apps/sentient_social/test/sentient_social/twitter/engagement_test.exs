@@ -3,8 +3,8 @@ defmodule SentientSocial.Twitter.EngagementTest do
   import Mox
   import SentientSocial.Factory
 
-  alias ExTwitter.Model.Tweet
   alias SentientSocial.Accounts.User
+  alias SentientSocial.Twitter
   alias SentientSocial.Twitter.Engagement
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
@@ -22,12 +22,14 @@ defmodule SentientSocial.Twitter.EngagementTest do
     test "finds and favorites tweets based on user keywords" do
       user = insert(:user, %{username: "testuser"})
 
-      tweet1 = %Tweet{id: 1, text: "Tweet keyword1 text"}
+      tweet1 = build(:ex_twitter_tweet, %{id: 1, text: "Tweet keyword1 text"})
+
       insert(:keyword, %{text: "keyword1", user: user})
       expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet1] end)
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet1} end)
 
-      tweet2 = %Tweet{id: 2, text: "Tweet keyword2 text"}
+      tweet2 = build(:ex_twitter_tweet, %{id: 2, text: "Tweet keyword2 text"})
+
       insert(:keyword, %{text: "keyword2", user: user})
       expect(@twitter_client, :search, 1, fn "keyword2", [count: _count] -> [tweet2] end)
       expect(@twitter_client, :create_favorite, 1, fn 2 -> {:ok, tweet2} end)
@@ -39,12 +41,41 @@ defmodule SentientSocial.Twitter.EngagementTest do
       assert Enum.member?(tweets, tweet2)
     end
 
+    test "saves favorited tweets as automated interactions" do
+      user = insert(:user, %{username: "testuser"})
+
+      tweet1 = build(:ex_twitter_tweet, %{id: 1, text: "Tweet keyword1 text"})
+
+      insert(:keyword, %{text: "keyword1", user: user})
+      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet1] end)
+      expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet1} end)
+
+      tweet2 = build(:ex_twitter_tweet, %{id: 2, text: "Tweet keyword2 text"})
+
+      insert(:keyword, %{text: "keyword2", user: user})
+      expect(@twitter_client, :search, 1, fn "keyword2", [count: _count] -> [tweet2] end)
+      expect(@twitter_client, :create_favorite, 1, fn 2 -> {:ok, tweet2} end)
+
+      Engagement.favorite_new_keyword_tweets(user.username)
+
+      automated_interactions = Twitter.list_automated_interactions(user)
+      assert Enum.count(automated_interactions) == 2
+
+      assert automated_interactions
+             |> Enum.map(fn interaction -> interaction.tweet_id end)
+             |> Enum.member?(tweet1.id)
+
+      assert automated_interactions
+             |> Enum.map(fn interaction -> interaction.tweet_id end)
+             |> Enum.member?(tweet2.id)
+    end
+
     test "does not return tweets that have already been favorited" do
       user = insert(:user)
 
-      tweet1 = %Tweet{id: 1, text: "Tweet keyword1 text"}
+      tweet = build(:ex_twitter_tweet, %{id: 1, text: "Tweet keyword1 text"})
       insert(:keyword, %{text: "keyword1", user: user})
-      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet1] end)
+      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
 
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:error, ""} end)
 
@@ -65,7 +96,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
     test "does not favorite filtered tweets" do
       user = insert(:user)
 
-      tweet = %Tweet{id: 1, text: "Tweet keyword1 text"}
+      tweet = build(:ex_twitter_tweet, %{id: 1, text: "Tweet keyword1 text"})
       insert(:keyword, %{text: "keyword1", user: user})
       expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
 

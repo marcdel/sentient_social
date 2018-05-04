@@ -4,7 +4,6 @@ defmodule UserServerTest do
   import Mox
   import SentientSocial.Factory
 
-  alias ExTwitter.Model.Tweet
   alias SentientSocial.Accounts.UserServer
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
@@ -51,13 +50,13 @@ defmodule UserServerTest do
 
       {:ok, pid} = UserServer.start_link(user.username)
 
-      test_tweet = %Tweet{text: "keyword1"}
+      test_tweet = build(:ex_twitter_tweet, %{text: "keyword1"})
 
       expect(@twitter_client, :search, 1, fn _, _ ->
-        [test_tweet, test_tweet, test_tweet, test_tweet]
+        [test_tweet]
       end)
 
-      expect(@twitter_client, :create_favorite, 4, fn _id -> {:ok, %Tweet{}} end)
+      expect(@twitter_client, :create_favorite, 1, fn _id -> {:ok, test_tweet} end)
       allow(@twitter_client, self(), pid)
 
       UserServer.handle_info({:favorite_tweets, user.username}, %{})

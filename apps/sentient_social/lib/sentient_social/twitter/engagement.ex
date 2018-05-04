@@ -9,6 +9,7 @@ defmodule SentientSocial.Twitter.Engagement do
   alias ExTwitter.Model.Tweet
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
+  alias SentientSocial.Twitter
   alias SentientSocial.Twitter.TweetFilter
 
   @max_engagements 1
@@ -31,7 +32,7 @@ defmodule SentientSocial.Twitter.Engagement do
       |> set_access_tokens()
       |> find_tweets()
       |> tweet_filter.filter(user)
-      |> favorite_tweets()
+      |> favorite_tweets(user)
 
     Logger.info("Favorited #{Enum.count(favorited_tweets)} tweets for '#{username}'.")
 
@@ -47,13 +48,28 @@ defmodule SentientSocial.Twitter.Engagement do
     end)
   end
 
-  @spec favorite_tweets([%Tweet{}]) :: [%Tweet{}]
-  defp favorite_tweets(tweets) do
+  @spec favorite_tweets([%Tweet{}], %User{}) :: [%Tweet{}]
+  defp favorite_tweets(tweets, user) do
     tweets
     |> Enum.map(fn tweet ->
       case @twitter_client.create_favorite(tweet.id) do
-        {:ok, tweet} -> tweet
-        {:error, _message} -> nil
+        {:ok, tweet} ->
+          {:ok, _} =
+            Twitter.create_automated_interaction(
+              %{
+                tweet_id: tweet.id,
+                tweet_user_screen_name: tweet.user.screen_name,
+                tweet_text: tweet.text,
+                tweet_user_description: tweet.user.description,
+                interaction_type: "favorite"
+              },
+              user
+            )
+
+          tweet
+
+        {:error, _message} ->
+          nil
       end
     end)
     |> Enum.reject(&is_nil/1)

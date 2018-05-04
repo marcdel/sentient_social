@@ -42,5 +42,31 @@ defmodule SentientSocialWeb.PageControllerTest do
       assert html_response(conn, 200) =~ "keyword1"
       assert html_response(conn, 200) =~ "keyword2"
     end
+
+    test "lists current user's automated interactions", %{conn: conn} do
+      user = insert(:user)
+
+      insert(:automated_interaction, %{
+        tweet_text: "keyword1",
+        tweet_user_screen_name: "user",
+        user: user
+      })
+
+      insert(:automated_interaction, %{
+        tweet_text: "keyword2",
+        tweet_user_screen_name: "user",
+        user: user
+      })
+
+      conn =
+        conn
+        |> sign_in(user)
+        |> get("/")
+
+      assert html_response(conn, 200) =~ "Automated Interactions"
+      assert html_response(conn, 200) =~ "keyword1"
+      assert html_response(conn, 200) =~ "keyword2"
+      assert html_response(conn, 200) =~ "user"
+    end
   end
 end

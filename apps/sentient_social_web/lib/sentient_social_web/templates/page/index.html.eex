@@ -2,6 +2,7 @@
   <div class="card card-nav-tabs">
     <div class="card-header" data-background-color="purple">
       <h4 class="title">Keywords</h4>
+      <p class="category">We'll use these keywords to find posts to interact with.</p>
     </div>
     <div class="card-content">
       <%= form_for @conn, keywords_path(@conn, :create), fn f -> %>
@@ -37,8 +38,9 @@
 
 <div class="col-lg-3 col-md-6">
   <div class="card card-nav-tabs">
-    <div class="card-header" data-background-color="purple">
+    <div class="card-header" data-background-color="red">
       <h4 class="title">Muted Keywords</h4>
+      <p class="category">Posts containing these keywords will be ignored.</p>
     </div>
     <div class="card-content">
       <%= form_for @conn, muted_keywords_path(@conn, :create), fn f -> %>
@@ -64,6 +66,35 @@
                   <i class="material-icons">close</i>
                 <% end %>
               </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="col-lg-6 col-md-12">
+  <div class="card">
+    <div class="card-header" data-background-color="orange">
+      <h4 class="title">Automated Interactions</h4>
+      <p class="category">Interactions with other users we've had on your behalf.</p>
+    </div>
+    <div class="card-content table-responsive">
+      <table class="table table-hover">
+        <thead class="text-warning">
+          <tr>
+            <th>Username</th>
+            <th>Tweet</th>
+            <th>When</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for automated_interaction <- @automated_interactions do %>
+            <tr>
+              <td><%= automated_interaction.tweet_user_screen_name %></td>
+              <td><%= automated_interaction.tweet_text %></td>
+              <td><%= automated_interaction.inserted_at %></td>
             </tr>
           <% end %>
         </tbody>

@@ -13,7 +13,7 @@ defmodule SentientSocial.Twitter.AutomatedInteraction do
     field(:tweet_id, :integer)
     field(:tweet_text, :string)
     field(:tweet_user_description, :string)
-    field(:tweet_user_handle, :string)
+    field(:tweet_user_screen_name, :string)
     belongs_to(:user, User)
 
     timestamps()
@@ -26,12 +26,12 @@ defmodule SentientSocial.Twitter.AutomatedInteraction do
     |> cast(attrs, [
       :tweet_id,
       :tweet_text,
-      :tweet_user_handle,
+      :tweet_user_screen_name,
       :tweet_user_description,
       :interaction_type
     ])
     |> validate_required([
-      :tweet_user_handle,
+      :tweet_user_screen_name,
       :interaction_type
     ])
     |> unique_constraint(:user_id_tweet_id_interaction_type)

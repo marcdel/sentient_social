@@ -5,7 +5,7 @@ defmodule SentientSocial.Repo.Migrations.CreateAutomatedInteractions do
     create table(:automated_interactions) do
       add(:tweet_id, :integer)
       add(:tweet_text, :string)
-      add(:tweet_user_handle, :string)
+      add(:tweet_user_screen_name, :string)
       add(:tweet_user_description, :string)
       add(:interaction_type, :string)
       add(:user_id, references(:users, on_delete: :nothing))

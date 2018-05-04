@@ -3,6 +3,7 @@ defmodule SentientSocial.Factory do
 
   use ExMachina.Ecto, repo: SentientSocial.Repo
 
+  alias ExTwitter.Model.Tweet
   alias SentientSocial.Accounts.{User, Keyword}
   alias SentientSocial.Twitter.AutomatedInteraction
 
@@ -35,9 +36,24 @@ defmodule SentientSocial.Factory do
   def automated_interaction_factory do
     %AutomatedInteraction{
       tweet_text: sequence(:text, &"hashtag-#{&1}"),
-      tweet_user_handle: sequence(:text, &"user_#{&1}"),
+      tweet_user_screen_name: sequence(:text, &"user_#{&1}"),
       interaction_type: "favorite",
       user: build(:user)
+    }
+  end
+
+  def ex_twitter_tweet_factory do
+    %Tweet{
+      id: 1,
+      text: "Tweet keyword1 text",
+      user: build(:ex_twitter_user)
+    }
+  end
+
+  def ex_twitter_user_factory do
+    %ExTwitter.Model.User{
+      screen_name: "user",
+      description: "description"
     }
   end
 end
