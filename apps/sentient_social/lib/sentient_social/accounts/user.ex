@@ -6,6 +6,7 @@ defmodule SentientSocial.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
   alias SentientSocial.Accounts.Keyword
+  alias SentientSocial.Twitter.AutomatedInteraction
 
   schema "users" do
     field(:name, :string)
@@ -13,6 +14,7 @@ defmodule SentientSocial.Accounts.User do
     field(:username, :string)
     field(:access_token, Cloak.EncryptedBinaryField)
     field(:access_token_secret, Cloak.EncryptedBinaryField)
+    has_many(:automated_interactions, AutomatedInteraction)
     has_many(:keywords, Keyword)
 
     timestamps()

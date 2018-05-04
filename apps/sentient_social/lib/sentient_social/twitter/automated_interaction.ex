@@ -1,0 +1,39 @@
+defmodule SentientSocial.Twitter.AutomatedInteraction do
+  @moduledoc """
+  An interaction (favorite, retweet, follow) created by the system on behalf of a user.
+  """
+
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  alias SentientSocial.Accounts.User
+
+  schema "automated_interactions" do
+    field(:interaction_type, :string)
+    field(:tweet_id, :integer)
+    field(:tweet_text, :string)
+    field(:tweet_user_description, :string)
+    field(:tweet_user_handle, :string)
+    belongs_to(:user, User)
+
+    timestamps()
+  end
+
+  @doc false
+  @spec changeset(%__MODULE__{}, map()) :: %Ecto.Changeset{}
+  def changeset(automated_interaction, attrs) do
+    automated_interaction
+    |> cast(attrs, [
+      :tweet_id,
+      :tweet_text,
+      :tweet_user_handle,
+      :tweet_user_description,
+      :interaction_type
+    ])
+    |> validate_required([
+      :tweet_user_handle,
+      :interaction_type
+    ])
+    |> unique_constraint(:user_id_tweet_id_interaction_type)
+  end
+end

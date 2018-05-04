@@ -189,8 +189,6 @@ defmodule SentientSocial.Accounts do
     |> Ecto.assoc(:keywords)
     |> where([keyword], keyword.muted == false)
     |> Repo.all()
-
-    # Repo.all(Keyword)
   end
 
   @doc """
@@ -208,8 +206,6 @@ defmodule SentientSocial.Accounts do
     |> Ecto.assoc(:keywords)
     |> where([keyword], keyword.muted == true)
     |> Repo.all()
-
-    # Repo.all(Keyword)
   end
 
   @doc """
