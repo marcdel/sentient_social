@@ -10,7 +10,7 @@ defmodule SentientSocial.Twitter.Engagement do
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
   alias SentientSocial.Twitter
-  alias SentientSocial.Twitter.TweetFilter
+  alias SentientSocial.Twitter.{TweetFilter, AutomatedInteraction}
 
   @max_engagements 1
 
@@ -54,18 +54,7 @@ defmodule SentientSocial.Twitter.Engagement do
     |> Enum.map(fn tweet ->
       case @twitter_client.create_favorite(tweet.id) do
         {:ok, tweet} ->
-          {:ok, _} =
-            Twitter.create_automated_interaction(
-              %{
-                tweet_id: tweet.id,
-                tweet_user_screen_name: tweet.user.screen_name,
-                tweet_text: tweet.text,
-                tweet_user_description: tweet.user.description,
-                interaction_type: "favorite"
-              },
-              user
-            )
-
+          {:ok, _} = save_automated_interaction(tweet, user)
           tweet
 
         {:error, _message} ->
@@ -89,5 +78,39 @@ defmodule SentientSocial.Twitter.Engagement do
     )
 
     user
+  end
+
+  @spec save_automated_interaction(%Tweet{} | %{}, %User{}) :: {:ok, %AutomatedInteraction{}}
+  defp save_automated_interaction(%Tweet{retweeted_status: nil} = tweet, user) do
+    tweet = Map.delete(tweet, :retweeted_status)
+    save_automated_interaction(tweet, user)
+  end
+
+  defp save_automated_interaction(%Tweet{retweeted_status: retweeted_status} = tweet, user) do
+    Twitter.create_automated_interaction(
+      %{
+        tweet_id: tweet.id,
+        tweet_user_screen_name: retweeted_status.user.screen_name,
+        tweet_text: retweeted_status.text,
+        tweet_url: "https://twitter.com/statuses/#{tweet.id}",
+        tweet_user_description: retweeted_status.user.description,
+        interaction_type: "favorite"
+      },
+      user
+    )
+  end
+
+  defp save_automated_interaction(tweet, user) do
+    Twitter.create_automated_interaction(
+      %{
+        tweet_id: tweet.id,
+        tweet_user_screen_name: tweet.user.screen_name,
+        tweet_text: tweet.text,
+        tweet_url: "https://twitter.com/statuses/#{tweet.id}",
+        tweet_user_description: tweet.user.description,
+        interaction_type: "favorite"
+      },
+      user
+    )
   end
 end

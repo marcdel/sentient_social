@@ -48,12 +48,14 @@ defmodule SentientSocialWeb.PageControllerTest do
 
       insert(:automated_interaction, %{
         tweet_text: "keyword1",
+        tweet_url: "www.twitter.com/i/web/status/1",
         tweet_user_screen_name: "user",
         user: user
       })
 
       insert(:automated_interaction, %{
         tweet_text: "keyword2",
+        tweet_url: "www.twitter.com/i/web/status/2",
         tweet_user_screen_name: "user",
         user: user
       })
@@ -67,6 +69,8 @@ defmodule SentientSocialWeb.PageControllerTest do
       assert html_response(conn, 200) =~ "keyword1"
       assert html_response(conn, 200) =~ "keyword2"
       assert html_response(conn, 200) =~ "user"
+      assert html_response(conn, 200) =~ "www.twitter.com/i/web/status/1"
+      assert html_response(conn, 200) =~ "www.twitter.com/i/web/status/2"
     end
   end
 end

@@ -93,7 +93,7 @@
           <%= for automated_interaction <- @automated_interactions do %>
             <tr>
               <td><%= automated_interaction.tweet_user_screen_name %></td>
-              <td><%= automated_interaction.tweet_text %></td>
+              <td><a href="<%= automated_interaction.tweet_url %>"><%= automated_interaction.tweet_text %></a></td>
               <td><%= automated_interaction.inserted_at %></td>
             </tr>
           <% end %>

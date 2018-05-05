@@ -36,6 +36,7 @@ defmodule SentientSocial.Factory do
   def automated_interaction_factory do
     %AutomatedInteraction{
       tweet_text: sequence(:text, &"hashtag-#{&1}"),
+      tweet_url: sequence(:tweet_url, &"www.twitter.com/i/web/status/#{&1}"),
       tweet_user_screen_name: sequence(:text, &"user_#{&1}"),
       interaction_type: "favorite",
       user: build(:user)
@@ -46,6 +47,7 @@ defmodule SentientSocial.Factory do
     %Tweet{
       id: 1,
       text: "Tweet keyword1 text",
+      entities: %{},
       user: build(:ex_twitter_user)
     }
   end

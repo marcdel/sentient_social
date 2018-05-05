@@ -44,30 +44,62 @@ defmodule SentientSocial.Twitter.EngagementTest do
     test "saves favorited tweets as automated interactions" do
       user = insert(:user, %{username: "testuser"})
 
-      tweet1 = build(:ex_twitter_tweet, %{id: 1, text: "Tweet keyword1 text"})
+      tweet =
+        build(:ex_twitter_tweet, %{
+          id: 1,
+          text: "Tweet keyword1 text",
+          user: %{
+            screen_name: "user",
+            description: "description"
+          }
+        })
 
       insert(:keyword, %{text: "keyword1", user: user})
-      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet1] end)
-      expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet1} end)
-
-      tweet2 = build(:ex_twitter_tweet, %{id: 2, text: "Tweet keyword2 text"})
-
-      insert(:keyword, %{text: "keyword2", user: user})
-      expect(@twitter_client, :search, 1, fn "keyword2", [count: _count] -> [tweet2] end)
-      expect(@twitter_client, :create_favorite, 1, fn 2 -> {:ok, tweet2} end)
+      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
+      expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet} end)
 
       Engagement.favorite_new_keyword_tweets(user.username)
 
       automated_interactions = Twitter.list_automated_interactions(user)
-      assert Enum.count(automated_interactions) == 2
+      assert Enum.count(automated_interactions) == 1
 
-      assert automated_interactions
-             |> Enum.map(fn interaction -> interaction.tweet_id end)
-             |> Enum.member?(tweet1.id)
+      [automated_interaction] = automated_interactions
+      assert automated_interaction.tweet_id == 1
+      assert automated_interaction.tweet_text == "Tweet keyword1 text"
+      assert automated_interaction.tweet_url == "https://twitter.com/statuses/1"
+      assert automated_interaction.interaction_type == "favorite"
+      assert automated_interaction.tweet_user_screen_name == "user"
+      assert automated_interaction.tweet_user_description == "description"
+    end
 
-      assert automated_interactions
-             |> Enum.map(fn interaction -> interaction.tweet_id end)
-             |> Enum.member?(tweet2.id)
+    test "handles retweets" do
+      user = insert(:user, %{username: "testuser"})
+
+      tweet =
+        build(:ex_twitter_tweet, %{
+          id: 1,
+          retweeted_status: %{
+            text: "Tweet keyword1 text",
+            user: %{
+              screen_name: "user",
+              description: "description"
+            }
+          }
+        })
+
+      insert(:keyword, %{text: "keyword1", user: user})
+      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
+      expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet} end)
+
+      {:ok, _} = Engagement.favorite_new_keyword_tweets(user.username)
+      [automated_interaction] = Twitter.list_automated_interactions(user)
+
+      assert automated_interaction.tweet_id == 1
+      assert automated_interaction.tweet_text == "Tweet keyword1 text"
+      assert automated_interaction.tweet_url == "https://twitter.com/statuses/1"
+      assert automated_interaction.interaction_type == "favorite"
+      assert automated_interaction.tweet_user_screen_name == "user"
+      assert automated_interaction.tweet_user_description == "description"
     end
 
     test "does not return tweets that have already been favorited" do

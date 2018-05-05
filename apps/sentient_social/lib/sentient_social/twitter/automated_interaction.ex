@@ -12,6 +12,7 @@ defmodule SentientSocial.Twitter.AutomatedInteraction do
     field(:interaction_type, :string)
     field(:tweet_id, :integer)
     field(:tweet_text, :string)
+    field(:tweet_url, :string)
     field(:tweet_user_description, :string)
     field(:tweet_user_screen_name, :string)
     belongs_to(:user, User)
@@ -26,6 +27,7 @@ defmodule SentientSocial.Twitter.AutomatedInteraction do
     |> cast(attrs, [
       :tweet_id,
       :tweet_text,
+      :tweet_url,
       :tweet_user_screen_name,
       :tweet_user_description,
       :interaction_type
