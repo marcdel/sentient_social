@@ -80,13 +80,8 @@ defmodule SentientSocial.Twitter.Engagement do
     user
   end
 
-  @spec save_automated_interaction(%Tweet{} | %{}, %User{}) :: {:ok, %AutomatedInteraction{}}
-  defp save_automated_interaction(%Tweet{retweeted_status: nil} = tweet, user) do
-    tweet = Map.delete(tweet, :retweeted_status)
-    save_automated_interaction(tweet, user)
-  end
-
-  defp save_automated_interaction(%Tweet{retweeted_status: retweeted_status} = tweet, user) do
+  @spec save_automated_interaction(%Tweet{}, %User{}) :: {:ok, %AutomatedInteraction{}}
+  defp save_automated_interaction(%Tweet{retweeted_status: %{} = retweeted_status} = tweet, user) do
     Twitter.create_automated_interaction(
       %{
         tweet_id: tweet.id,

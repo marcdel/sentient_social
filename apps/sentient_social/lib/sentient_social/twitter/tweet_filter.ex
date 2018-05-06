@@ -14,7 +14,7 @@ defmodule SentientSocial.Twitter.TweetFilter do
   @spec filter(list(Tweet.t()), %User{}) :: list(Tweet.t())
   def filter(tweets, user) do
     Enum.reject(tweets, fn tweet ->
-      too_many_hashtags?(tweet) || all_hashtags?(tweet) || contains_muted_keyword?(tweet, user)
+      too_many_hashtags?(tweet) || only_hashtags?(tweet) || contains_muted_keyword?(tweet, user)
     end)
   end
 
@@ -23,9 +23,19 @@ defmodule SentientSocial.Twitter.TweetFilter do
     count_hashtags(tweet) > @max_hashtags
   end
 
-  @spec all_hashtags?(Tweet.t()) :: boolean
-  defp all_hashtags?(tweet) do
-    words_in_tweet(tweet) == hashtags_in_tweet(tweet)
+  @spec only_hashtags?(Tweet.t()) :: boolean
+  defp only_hashtags?(tweet) do
+    word_count =
+      tweet
+      |> words_in_tweet()
+      |> Enum.count()
+
+    hashtag_count =
+      tweet
+      |> hashtags_in_tweet()
+      |> Enum.count()
+
+    word_count == hashtag_count
   end
 
   @spec contains_muted_keyword?(Tweet.t(), %User{}) :: boolean
@@ -42,23 +52,25 @@ defmodule SentientSocial.Twitter.TweetFilter do
     end)
   end
 
-  @spec words_in_tweet(Tweet.t()) :: list(String.t())
-  defp words_in_tweet(tweet) do
-    tweet.text
-    |> String.split(" ")
-  end
-
-  @spec hashtags_in_tweet(Tweet.t()) :: list(String.t())
-  defp hashtags_in_tweet(tweet) do
-    tweet
-    |> words_in_tweet()
-    |> Enum.filter(fn word -> String.starts_with?(word, "#") end)
-  end
-
   @spec count_hashtags(Tweet.t()) :: integer
   defp count_hashtags(tweet) do
     tweet
     |> hashtags_in_tweet()
     |> Enum.count()
+  end
+
+  @spec words_in_tweet(Tweet.t()) :: list(String.t())
+  defp words_in_tweet(%Tweet{retweeted_status: nil} = tweet), do: String.split(tweet.text, " ")
+  defp words_in_tweet(%Tweet{retweeted_status: tweet}), do: String.split(tweet.text, " ")
+
+  @spec hashtags_in_tweet(Tweet.t()) :: list(String.t())
+  defp hashtags_in_tweet(%Tweet{retweeted_status: nil} = tweet) do
+    tweet.entities.hashtags
+    |> Enum.map(fn hashtag -> hashtag.text end)
+  end
+
+  defp hashtags_in_tweet(%Tweet{retweeted_status: tweet}) do
+    tweet.entities.hashtags
+    |> Enum.map(fn hashtag -> hashtag.text end)
   end
 end

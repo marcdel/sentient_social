@@ -35,7 +35,7 @@ defmodule SentientSocial.Factory do
 
   def automated_interaction_factory do
     %AutomatedInteraction{
-      tweet_text: sequence(:text, &"hashtag-#{&1}"),
+      tweet_text: sequence(:text, &"tweet with hashtag-#{&1}"),
       tweet_url: sequence(:tweet_url, &"www.twitter.com/i/web/status/#{&1}"),
       tweet_user_screen_name: sequence(:text, &"user_#{&1}"),
       interaction_type: "favorite",
@@ -46,8 +46,12 @@ defmodule SentientSocial.Factory do
   def ex_twitter_tweet_factory do
     %Tweet{
       id: 1,
-      text: "Tweet keyword1 text",
-      entities: %{},
+      text: "Tweet #keyword1 text",
+      entities: %{
+        hashtags: [
+          %{text: "keyword1"}
+        ]
+      },
       user: build(:ex_twitter_user)
     }
   end
@@ -56,6 +60,18 @@ defmodule SentientSocial.Factory do
     %ExTwitter.Model.User{
       screen_name: "user",
       description: "description"
+    }
+  end
+
+  @spec make_retweet(%Tweet{}) :: %Tweet{}
+  def make_retweet(tweet) do
+    %{
+      tweet
+      | retweeted_status: %{
+          text: tweet.text,
+          entities: tweet.entities,
+          user: tweet.user
+        }
     }
   end
 end

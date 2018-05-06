@@ -50,7 +50,7 @@ defmodule UserServerTest do
 
       {:ok, pid} = UserServer.start_link(user.username)
 
-      test_tweet = build(:ex_twitter_tweet, %{text: "keyword1"})
+      test_tweet = build(:ex_twitter_tweet, %{text: "Tweet #keyword1 text"})
 
       expect(@twitter_client, :search, 1, fn _, _ ->
         [test_tweet]

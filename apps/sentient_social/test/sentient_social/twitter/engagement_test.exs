@@ -78,14 +78,16 @@ defmodule SentientSocial.Twitter.EngagementTest do
       tweet =
         build(:ex_twitter_tweet, %{
           id: 1,
-          retweeted_status: %{
-            text: "Tweet keyword1 text",
-            user: %{
-              screen_name: "user",
-              description: "description"
-            }
+          text: "Tweet keyword1 text",
+          entities: %{
+            hashtags: []
+          },
+          user: %{
+            screen_name: "user",
+            description: "description"
           }
         })
+        |> make_retweet()
 
       insert(:keyword, %{text: "keyword1", user: user})
       expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
