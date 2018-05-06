@@ -26,6 +26,24 @@ defmodule SentientSocial.Twitter do
   end
 
   @doc """
+  Returns the latest automated_interactions for the user.
+
+  ## Examples
+
+      iex> latest_automated_interactions(%User{})
+      [%AutomatedInteraction{}, ...]
+
+  """
+  @spec latest_automated_interactions(%User{}) :: list(%AutomatedInteraction{})
+  def latest_automated_interactions(user) do
+    user
+    |> Ecto.assoc(:automated_interactions)
+    |> order_by(desc: :inserted_at)
+    |> limit(10)
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single automated_interaction.
 
   Raises `Ecto.NoResultsError` if the AutomatedInteraction does not exist.

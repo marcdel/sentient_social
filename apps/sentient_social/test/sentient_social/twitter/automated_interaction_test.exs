@@ -17,6 +17,29 @@ defmodule SentientSocial.AutomatedInteractionTest do
                |> Repo.preload(:user)
     end
 
+    test "latest_automated_interactions/1 limits results to 10" do
+      user = insert(:user)
+
+      Enum.each(1..11, fn _ ->
+        insert(:automated_interaction, user: user)
+      end)
+
+      assert user
+             |> Twitter.latest_automated_interactions()
+             |> Enum.count() == 10
+    end
+
+    test "latest_automated_interactions/1 orders by inserted_at time" do
+      user = insert(:user)
+      insert(:automated_interaction, id: 1, inserted_at: ~N[2000-01-03 00:00:00.00], user: user)
+      insert(:automated_interaction, id: 2, inserted_at: ~N[2000-01-01 00:00:00.00], user: user)
+      insert(:automated_interaction, id: 3, inserted_at: ~N[2000-01-02 00:00:00.00], user: user)
+
+      assert user
+             |> Twitter.latest_automated_interactions()
+             |> Enum.map(fn x -> x.id end) == [1, 3, 2]
+    end
+
     test "get_automated_interactions!/2 returns the automated_interaction with given id" do
       user = insert(:user)
       automated_interaction = insert(:automated_interaction, user: user)
