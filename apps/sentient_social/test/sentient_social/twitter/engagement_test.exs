@@ -104,6 +104,31 @@ defmodule SentientSocial.Twitter.EngagementTest do
       assert automated_interaction.tweet_user_description == "description"
     end
 
+    test "schedules interactions to be undone" do
+      user = insert(:user, %{username: "testuser"})
+
+      tweet =
+        build(:ex_twitter_tweet, %{
+          id: 1,
+          text: "Tweet keyword1 text",
+          user: %{
+            screen_name: "user",
+            description: "description"
+          }
+        })
+
+      insert(:keyword, %{text: "keyword1", user: user})
+      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
+      expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet} end)
+
+      Engagement.favorite_new_keyword_tweets(user.username)
+
+      automated_interactions = Twitter.list_automated_interactions(user)
+
+      [automated_interaction] = automated_interactions
+      assert automated_interaction.undo_at == Date.utc_today() |> Date.add(7)
+    end
+
     test "does not return tweets that have already been favorited" do
       user = insert(:user)
 

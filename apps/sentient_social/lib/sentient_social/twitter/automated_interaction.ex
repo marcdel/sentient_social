@@ -15,6 +15,7 @@ defmodule SentientSocial.Twitter.AutomatedInteraction do
     field(:tweet_url, :string)
     field(:tweet_user_description, :string)
     field(:tweet_user_screen_name, :string)
+    field(:undo_at, :date)
     belongs_to(:user, User)
 
     timestamps()
@@ -30,7 +31,8 @@ defmodule SentientSocial.Twitter.AutomatedInteraction do
       :tweet_url,
       :tweet_user_screen_name,
       :tweet_user_description,
-      :interaction_type
+      :interaction_type,
+      :undo_at
     ])
     |> validate_required([
       :tweet_user_screen_name,

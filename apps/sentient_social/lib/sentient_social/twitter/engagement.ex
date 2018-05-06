@@ -89,7 +89,8 @@ defmodule SentientSocial.Twitter.Engagement do
         tweet_text: retweeted_status.text,
         tweet_url: "https://twitter.com/statuses/#{tweet.id}",
         tweet_user_description: retweeted_status.user.description,
-        interaction_type: "favorite"
+        interaction_type: "favorite",
+        undo_at: generate_undo_at_date()
       },
       user
     )
@@ -103,9 +104,15 @@ defmodule SentientSocial.Twitter.Engagement do
         tweet_text: tweet.text,
         tweet_url: "https://twitter.com/statuses/#{tweet.id}",
         tweet_user_description: tweet.user.description,
-        interaction_type: "favorite"
+        interaction_type: "favorite",
+        undo_at: generate_undo_at_date()
       },
       user
     )
+  end
+
+  @spec generate_undo_at_date() :: Date.t()
+  defp generate_undo_at_date do
+    Date.utc_today() |> Date.add(7)
   end
 end
