@@ -44,6 +44,25 @@ defmodule SentientSocial.Twitter do
   end
 
   @doc """
+  Returns automated_interactions scheduled to be undone
+
+  ## Examples
+
+      iex> automated_interactions_to_be_undone(%User{})
+      [%AutomatedInteraction{}, ...]
+
+  """
+  @spec automated_interactions_to_be_undone(%User{}) :: list(%AutomatedInteraction{})
+  def automated_interactions_to_be_undone(user) do
+    today = Date.utc_today()
+
+    user
+    |> Ecto.assoc(:automated_interactions)
+    |> where([interaction], interaction.undo_at == ^today)
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single automated_interaction.
 
   Raises `Ecto.NoResultsError` if the AutomatedInteraction does not exist.

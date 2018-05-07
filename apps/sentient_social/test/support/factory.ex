@@ -39,6 +39,7 @@ defmodule SentientSocial.Factory do
       tweet_url: sequence(:tweet_url, &"www.twitter.com/i/web/status/#{&1}"),
       tweet_user_screen_name: sequence(:text, &"user_#{&1}"),
       interaction_type: "favorite",
+      undo_at: Date.utc_today() |> Date.add(7),
       user: build(:user)
     }
   end

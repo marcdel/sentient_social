@@ -39,6 +39,28 @@ defmodule SentientSocial.Twitter.Engagement do
     {:ok, favorited_tweets}
   end
 
+  @doc """
+  Find and unfavorite tweets for the given user
+  """
+  @spec undo_automated_interactions(String, module) :: {:ok, [%Tweet{}]}
+  def undo_automated_interactions(username, tweet_filter \\ TweetFilter) do
+    Logger.info("Looking for tweets to unfavorite for '#{username}' now.")
+
+    user =
+      username
+      |> Accounts.get_user_by_username()
+
+    unfavorited_tweets =
+      user
+      |> set_access_tokens()
+      |> Twitter.automated_interactions_to_be_undone()
+      |> unfavorite_tweets()
+
+    Logger.info("Unfavorited #{Enum.count(unfavorited_tweets)} tweets for '#{username}'.")
+
+    {:ok, unfavorited_tweets}
+  end
+
   @spec find_tweets(%User{}) :: [%Tweet{}]
   defp find_tweets(user) do
     user
@@ -59,6 +81,18 @@ defmodule SentientSocial.Twitter.Engagement do
 
         {:error, _message} ->
           nil
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
+  end
+
+  @spec unfavorite_tweets([%AutomatedInteraction{}]) :: [%AutomatedInteraction{}]
+  defp unfavorite_tweets(interactions) do
+    interactions
+    |> Enum.map(fn interaction ->
+      case @twitter_client.destroy_favorite(interaction.id) do
+        {:ok, tweet} -> tweet
+        {:error, _message} -> nil
       end
     end)
     |> Enum.reject(&is_nil/1)

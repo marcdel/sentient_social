@@ -5,5 +5,5 @@ defmodule SentientSocial.Twitter.TwitterClient do
 
   @callback search(String.t(), count: integer) :: [%Tweet{}]
   @callback create_favorite(Integer) :: {:ok, %Tweet{}} | {:error, String.t()}
-  @callback create_favorite!(Integer) :: %Tweet{}
+  @callback destroy_favorite(Integer) :: {:ok, %Tweet{}} | {:error, String.t()}
 end

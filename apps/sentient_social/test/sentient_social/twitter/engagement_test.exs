@@ -164,4 +164,17 @@ defmodule SentientSocial.Twitter.EngagementTest do
       assert tweets == []
     end
   end
+
+  describe "undo_automated_interactions/1" do
+    test "finds favorites scheduled to be undone today and unfavorites them" do
+      user = insert(:user, %{username: "testuser"})
+
+      insert(:automated_interaction, %{undo_at: Date.utc_today(), user: user})
+
+      tweet = build(:ex_twitter_tweet)
+      expect(@twitter_client, :destroy_favorite, 1, fn _id -> {:ok, tweet} end)
+
+      Engagement.undo_automated_interactions(user.username)
+    end
+  end
 end

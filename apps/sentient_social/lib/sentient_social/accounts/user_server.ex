@@ -60,10 +60,17 @@ defmodule SentientSocial.Accounts.UserServer do
     Process.send_after(self(), {:favorite_tweets, username}, next_interval)
   end
 
+  defp schedule_undoing_interactions(username) do
+    Logger.info("Scheduling undoing interactions for '#{username}' in 24 hours.")
+
+    Process.send_after(self(), {:undo_interactions, username}, :timer.hours(24))
+  end
+
   @spec init(String.t()) :: {:ok, map}
   def init(username) do
     Logger.info("Spawned user server process for '#{username}'.")
     schedule_favoriting_tweets(username)
+    schedule_undoing_interactions(username)
 
     {:ok, %{}}
   end
@@ -72,6 +79,14 @@ defmodule SentientSocial.Accounts.UserServer do
   def handle_info({:favorite_tweets, username}, state) do
     Engagement.favorite_new_keyword_tweets(username)
     schedule_favoriting_tweets(username)
+
+    {:noreply, state}
+  end
+
+  # credo:disable-for-next-line Credo.Check.Readability.Specs
+  def handle_info({:undo_interactions, username}, state) do
+    Engagement.undo_automated_interactions(username)
+    schedule_undoing_interactions(username)
 
     {:noreply, state}
   end

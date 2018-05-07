@@ -44,22 +44,38 @@ defmodule UserServerTest do
   end
 
   describe "handle_info({:favorite_tweets, username}, state)" do
-    test "searches for and likes tweets" do
+    test "searches for and favorites tweets" do
       user = insert(:user)
       insert(:keyword, %{text: "keyword1", user: user})
 
       {:ok, pid} = UserServer.start_link(user.username)
 
-      test_tweet = build(:ex_twitter_tweet, %{text: "Tweet #keyword1 text"})
+      tweet = build(:ex_twitter_tweet, %{text: "Tweet #keyword1 text"})
 
       expect(@twitter_client, :search, 1, fn _, _ ->
-        [test_tweet]
+        [tweet]
       end)
 
-      expect(@twitter_client, :create_favorite, 1, fn _id -> {:ok, test_tweet} end)
+      expect(@twitter_client, :create_favorite, 1, fn _id -> {:ok, tweet} end)
       allow(@twitter_client, self(), pid)
 
       UserServer.handle_info({:favorite_tweets, user.username}, %{})
+    end
+  end
+
+  describe "handle_info({:undo_interactions, username}, state)" do
+    test "undoes automated_interactions with undo_at with the current date" do
+      user = insert(:user)
+      insert(:automated_interaction, %{undo_at: Date.utc_today(), user: user})
+
+      {:ok, pid} = UserServer.start_link(user.username)
+
+      tweet = build(:ex_twitter_tweet, %{text: "Tweet #keyword1 text"})
+
+      expect(@twitter_client, :destroy_favorite, 1, fn _id -> {:ok, tweet} end)
+      allow(@twitter_client, self(), pid)
+
+      UserServer.handle_info({:undo_interactions, user.username}, %{})
     end
   end
 end
