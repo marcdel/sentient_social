@@ -14,12 +14,12 @@ defmodule SentientSocialWeb.KeywordsController do
 
     case Accounts.create_keyword(%{text: text}, current_user) do
       {:ok, _} ->
-        redirect(conn, to: "/")
+        redirect(conn, to: "/dashboard")
 
       {:error, _error} ->
         conn
         |> put_flash(:error, "Unable to add keyword.")
-        |> redirect(to: "/")
+        |> redirect(to: "/dashboard")
     end
   end
 
@@ -35,6 +35,6 @@ defmodule SentientSocialWeb.KeywordsController do
 
     keyword = Accounts.get_keyword!(id, current_user)
     {:ok, _} = Accounts.delete_keyword(keyword)
-    redirect(conn, to: "/")
+    redirect(conn, to: "/dashboard")
   end
 end

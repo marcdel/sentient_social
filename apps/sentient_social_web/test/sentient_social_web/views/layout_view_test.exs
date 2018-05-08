@@ -16,7 +16,7 @@ defmodule SentientSocialWeb.LayoutViewTest do
     current_user =
       conn
       |> sign_in(user)
-      |> get("/")
+      |> get("/dashboard")
       |> LayoutView.current_user()
 
     assert current_user.username == "testuser"

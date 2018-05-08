@@ -11,6 +11,7 @@ defmodule SentientSocialWeb.AuthControllerTest do
       |> get("/auth/twitter/callback")
 
     assert get_flash(conn, :error) == "Failed to authenticate."
+    assert redirected_to(conn, 302) == "/"
   end
 
   @ueberauth_auth %Ueberauth.Auth{
@@ -111,6 +112,7 @@ defmodule SentientSocialWeb.AuthControllerTest do
       |> get("/auth/twitter/callback")
 
     assert get_flash(conn, :info) == "Successfully authenticated."
+    assert redirected_to(conn, 302) == "/dashboard"
   end
 
   test "creates or updates a user on log in", %{conn: conn} do
@@ -139,5 +141,6 @@ defmodule SentientSocialWeb.AuthControllerTest do
     conn = delete(conn, "/auth/logout")
 
     assert get_flash(conn, :info) == "Successfully signed out."
+    assert redirected_to(conn, 302) == "/"
   end
 end

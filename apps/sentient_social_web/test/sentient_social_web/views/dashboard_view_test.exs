@@ -1,3 +1,3 @@
-defmodule SentientSocialWeb.PageViewTest do
+defmodule SentientSocialWeb.DashboardViewTest do
   use SentientSocialWeb.ConnCase, async: true
 end

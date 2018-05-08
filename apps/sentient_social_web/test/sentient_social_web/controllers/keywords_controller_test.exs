@@ -21,11 +21,14 @@ defmodule SentientSocialWeb.KeywordsControllerTest do
     test "shows an error when keyword invalid", %{conn: conn} do
       user = insert(:user)
 
-      conn
-      |> sign_in(user)
-      |> post(keywords_path(conn, :create), text: "")
+      conn =
+        conn
+        |> sign_in(user)
+        |> post(keywords_path(conn, :create), text: "")
 
       assert Accounts.list_keywords(user) == []
+      assert redirected_to(conn) == "/dashboard"
+      assert get_flash(conn, :error) == "Unable to add keyword."
     end
 
     test "returns error if keyword exists", %{conn: conn} do
@@ -38,7 +41,7 @@ defmodule SentientSocialWeb.KeywordsControllerTest do
         |> sign_in(user)
         |> post(keywords_path(conn, :create), text: "keyword1")
 
-      assert redirected_to(conn) == "/"
+      assert redirected_to(conn) == "/dashboard"
       assert get_flash(conn, :error) == "Unable to add keyword."
     end
   end

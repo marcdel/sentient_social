@@ -1,14 +1,14 @@
-defmodule SentientSocialWeb.PageControllerTest do
+defmodule SentientSocialWeb.DashboardControllerTest do
   use SentientSocialWeb.ConnCase, async: true
 
   import SentientSocial.Factory
 
-  describe "GET /" do
+  describe "GET /dashboard" do
     test "shows log out link", %{conn: conn} do
       conn =
         conn
         |> sign_in()
-        |> get("/")
+        |> get("/dashboard")
 
       assert html_response(conn, 200) =~ "Log Out"
     end
@@ -21,7 +21,7 @@ defmodule SentientSocialWeb.PageControllerTest do
       conn =
         conn
         |> sign_in(user)
-        |> get("/")
+        |> get("/dashboard")
 
       assert html_response(conn, 200) =~ "Keywords"
       assert html_response(conn, 200) =~ "keyword1"
@@ -36,7 +36,7 @@ defmodule SentientSocialWeb.PageControllerTest do
       conn =
         conn
         |> sign_in(user)
-        |> get("/")
+        |> get("/dashboard")
 
       assert html_response(conn, 200) =~ "Keywords"
       assert html_response(conn, 200) =~ "keyword1"
@@ -63,7 +63,7 @@ defmodule SentientSocialWeb.PageControllerTest do
       conn =
         conn
         |> sign_in(user)
-        |> get("/")
+        |> get("/dashboard")
 
       assert html_response(conn, 200) =~ "Automated Interactions"
       assert html_response(conn, 200) =~ "keyword1"

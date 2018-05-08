@@ -15,6 +15,10 @@
 * `heroku config:set POOL_SIZE=18`
 * `heroku config:set SECRET_KEY_BASE="$(mix phx.gen.secret)"`
 
+## Gigalixir Setup
+* `gigalixir set_config sentient-social-stg TWITTER_CONSUMER_SECRET supersecret`
+* ...etc.
+
 ## Twitter Integration Env Vars
 `TWITTER_CONSUMER_KEY=`
 `TWITTER_CONSUMER_SECRET=`
@@ -22,3 +26,6 @@
 
 ## Key generation
 * `:crypto.strong_rand_bytes(32) |> Base.encode64()`
+
+## Find latest interactions to be undone
+* `SentientSocial.Twitter.AutomatedInteraction |> Ecto.Query.where([ai], not is_nil(ai.undo_at)) |> Ecto.Query.order_by(asc: :undo_at) |> SentientSocial.Repo.all() |> Enum.map(fn ai -> ai.undo_at end)`

@@ -20,11 +20,14 @@ defmodule SentientSocialWeb.MutedKeywordsControllerTest do
     test "shows an error when muted keyword invalid", %{conn: conn} do
       user = insert(:user)
 
-      conn
-      |> sign_in(user)
-      |> post(muted_keywords_path(conn, :create), text: "")
+      conn =
+        conn
+        |> sign_in(user)
+        |> post(muted_keywords_path(conn, :create), text: "")
 
       assert Accounts.list_muted_keywords(user) == []
+      assert redirected_to(conn) == "/dashboard"
+      assert get_flash(conn, :error) == "Unable to add muted keyword."
     end
 
     test "returns error if muted keyword exists", %{conn: conn} do
@@ -37,7 +40,7 @@ defmodule SentientSocialWeb.MutedKeywordsControllerTest do
         |> sign_in(user)
         |> post(muted_keywords_path(conn, :create), text: "muted keyword1")
 
-      assert redirected_to(conn) == "/"
+      assert redirected_to(conn) == "/dashboard"
       assert get_flash(conn, :error) == "Unable to add muted keyword."
     end
   end

@@ -39,7 +39,7 @@ defmodule SentientSocialWeb.AuthController do
         conn
         |> put_flash(:info, "Successfully authenticated.")
         |> put_session(:current_user, user.id)
-        |> redirect(to: "/")
+        |> redirect(to: "/dashboard")
     end
   end
 

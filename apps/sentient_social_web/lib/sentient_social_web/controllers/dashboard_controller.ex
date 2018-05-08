@@ -1,4 +1,4 @@
-defmodule SentientSocialWeb.PageController do
+defmodule SentientSocialWeb.DashboardController do
   use SentientSocialWeb, :controller
   alias SentientSocial.Accounts
   alias SentientSocial.Twitter

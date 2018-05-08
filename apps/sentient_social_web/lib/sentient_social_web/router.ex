@@ -24,11 +24,12 @@ defmodule SentientSocialWeb.Router do
     # Use the default browser stack
     pipe_through(:browser)
 
+    get("/", LandingPageController, :index)
     get("/login", LoginController, :index)
 
     scope "/" do
       pipe_through(:login_required)
-      get("/", PageController, :index)
+      get("/dashboard", DashboardController, :index)
       resources("/keywords", KeywordsController, only: [:create, :delete])
       resources("/muted_keywords", MutedKeywordsController, only: [:create, :delete])
     end
