@@ -7,5 +7,10 @@ defmodule SentientSocialWeb.LandingPageControllerTest do
              |> get("/")
              |> html_response(200)
     end
+
+    test "shows login button", %{conn: conn} do
+      conn = get(conn, landing_page_path(conn, :index))
+      assert html_response(conn, 200) =~ "Log In"
+    end
   end
 end

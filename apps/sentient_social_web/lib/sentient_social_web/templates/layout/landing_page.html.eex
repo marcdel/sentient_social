@@ -14,9 +14,9 @@
 
 
     <title>Sentient Social</title>
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
     <link href='//fonts.googleapis.com/css?family=Roboto:400,700,300|Material+Icons' rel='stylesheet' type='text/css'>
+    <link href='<%= static_path(@conn, "/css/material-kit.min.css") %>' rel='stylesheet' type='text/css'>
     <link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>
 

@@ -1,7 +1,5 @@
 defmodule SentientSocialWeb.LandingPageController do
   use SentientSocialWeb, :controller
-  alias SentientSocial.Accounts
-  alias SentientSocial.Twitter
 
   plug(:put_layout, "landing_page.html")
 
