@@ -27,7 +27,7 @@ config :sentient_social_web, SentientSocialWeb.Endpoint,
   load_from_system_env: true,
   server: true,
   secret_key_base: "${SECRET_KEY_BASE}",
-  url: [host: "example.com", port: 80],
+  url: [host: "sentientsocial.io", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # ## SSL Support
