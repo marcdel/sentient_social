@@ -18,7 +18,7 @@ defmodule SentientSocialWeb.Plug.Authenticate do
       assign(conn, :current_user, current_user)
     else
       conn
-      |> redirect(to: "/login")
+      |> redirect(to: "/")
       |> halt
     end
   end
