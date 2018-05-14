@@ -149,4 +149,64 @@ defmodule SentientSocial.Twitter do
     |> AutomatedInteraction.changeset(attrs)
     |> Repo.insert()
   end
+
+  alias SentientSocial.Twitter.HistoricalFollowerCount
+
+  @doc """
+  Returns the list of historical_follower_counts.
+
+  ## Examples
+
+      iex> list_historical_follower_counts(%User{})
+      [%HistoricalFollowerCount{}, ...]
+
+  """
+  @spec list_historical_follower_counts(%User{}) :: list(%HistoricalFollowerCount{})
+  def list_historical_follower_counts(user) do
+    user
+    |> Ecto.assoc(:historical_follower_counts)
+    |> Repo.all()
+  end
+
+  @doc """
+  Gets a single historical_follower_count.
+
+  Raises `Ecto.NoResultsError` if the Historical follower count does not exist.
+
+  ## Examples
+
+      iex> get_historical_follower_count!(123, %User{})
+      %HistoricalFollowerCount{}
+
+      iex> get_historical_follower_count!(456, %User{})
+      ** (Ecto.NoResultsError)
+
+  """
+  @spec get_historical_follower_count!(integer, %User{}) :: %HistoricalFollowerCount{}
+  def get_historical_follower_count!(id, user) do
+    user
+    |> Ecto.assoc(:historical_follower_counts)
+    |> Repo.get!(id)
+  end
+
+  @doc """
+  Creates a historical_follower_count.
+
+  ## Examples
+
+      iex> create_historical_follower_count(%{field: value}, %User{})
+      {:ok, %HistoricalFollowerCount{}}
+
+      iex> create_historical_follower_count(%{field: bad_value}, %User{})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  @spec create_historical_follower_count(map, %User{}) ::
+          {:ok, %HistoricalFollowerCount{}} | {:error, %Ecto.Changeset{}}
+  def create_historical_follower_count(attrs \\ %{}, user) do
+    user
+    |> Ecto.build_assoc(:historical_follower_counts)
+    |> HistoricalFollowerCount.changeset(attrs)
+    |> Repo.insert()
+  end
 end

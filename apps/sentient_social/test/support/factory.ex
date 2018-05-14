@@ -5,7 +5,7 @@ defmodule SentientSocial.Factory do
 
   alias ExTwitter.Model.Tweet
   alias SentientSocial.Accounts.{User, Keyword}
-  alias SentientSocial.Twitter.AutomatedInteraction
+  alias SentientSocial.Twitter.{AutomatedInteraction, HistoricalFollowerCount}
 
   def user_factory do
     %User{
@@ -14,6 +14,13 @@ defmodule SentientSocial.Factory do
       username: sequence(:username, &"johndoe#{&1}"),
       access_token: "token",
       access_token_secret: "secret"
+    }
+  end
+
+  def historical_follower_count_factory do
+    %HistoricalFollowerCount{
+      count: sequence(:historical_follower_count, &"#{&1}"),
+      user: build(:user)
     }
   end
 
