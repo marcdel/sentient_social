@@ -30,6 +30,7 @@ defmodule SentientSocialWeb.AuthController do
             screen_name: auth_user["screen_name"],
             name: auth_user["name"],
             profile_image_url: auth_user["profile_image_url"],
+            followers_count: auth_user["followers_count"],
             access_token: credentials.token,
             access_token_secret: credentials.secret
           })

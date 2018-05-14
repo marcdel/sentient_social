@@ -6,7 +6,8 @@ defmodule SentientSocial.Umbrella.Mixfile do
       apps_path: "apps",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      test_coverage: [tool: ExCoveralls]
+      test_coverage: [tool: ExCoveralls],
+      dialyzer: [ignore_warnings: "dialyzer.ignore-warnings"]
     ]
   end
 

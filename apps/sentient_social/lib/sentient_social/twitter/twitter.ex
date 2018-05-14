@@ -6,8 +6,54 @@ defmodule SentientSocial.Twitter do
   import Ecto.Query, warn: false
   alias SentientSocial.Repo
 
+  alias ExTwitter.Config
+  alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
   alias SentientSocial.Twitter.AutomatedInteraction
+
+  @twitter_client Application.get_env(:sentient_social, :twitter_client)
+
+  @doc """
+  Retrieves the specified user's follower count and updates the users table
+
+  ## Examples
+
+      iex> update_twitter_followers("username")
+      100
+
+  """
+  @spec update_twitter_followers(String.t()) :: {:ok, %User{}}
+  def update_twitter_followers(username) do
+    user =
+      username
+      |> Accounts.get_user_by_username()
+      |> set_access_tokens()
+
+    {:ok, twitter_user} = @twitter_client.user(username)
+
+    {:ok, user} =
+      Accounts.update_user(user, %{twitter_followers_count: twitter_user.followers_count})
+
+    {:ok, user}
+  end
+
+  # Configure ExTwitter for the current process with the user's access tokens.
+  # This allows the app to take actions on behalf of the user.
+  @spec set_access_tokens(%User{} | nil) :: %User{}
+  def set_access_tokens(nil), do: nil
+
+  def set_access_tokens(user) do
+    ExTwitter.configure(
+      :process,
+      Enum.concat(
+        Config.get_tuples(),
+        access_token: user.access_token,
+        access_token_secret: user.access_token_secret
+      )
+    )
+
+    user
+  end
 
   @doc """
   Returns the list of automated_interactions for the user.

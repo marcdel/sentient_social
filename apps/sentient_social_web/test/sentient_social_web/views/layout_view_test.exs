@@ -1,17 +1,11 @@
 defmodule SentientSocialWeb.LayoutViewTest do
   use SentientSocialWeb.ConnCase, async: true
+  import SentientSocial.Factory
+
   alias SentientSocialWeb.LayoutView
-  alias SentientSocial.Accounts
 
   test "current_user returns the currently logged in user", %{conn: conn} do
-    {:ok, user} =
-      Accounts.create_user(%{
-        username: "testuser",
-        name: "Test User",
-        profile_image_url: "image.png",
-        access_token: "token",
-        access_token_secret: "secret"
-      })
+    user = insert(:user, %{username: "testuser"})
 
     current_user =
       conn

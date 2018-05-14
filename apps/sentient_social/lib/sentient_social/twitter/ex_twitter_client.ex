@@ -5,13 +5,19 @@ defmodule SentientSocial.Twitter.ExTwitterClient do
 
   @behaviour SentientSocial.Twitter.TwitterClient
 
-  alias ExTwitter.Model.Tweet
+  alias ExTwitter.Model.{Tweet, User}
 
   @doc """
   Search for tweets matching the specified string
   """
   @spec search(String.t(), count: integer) :: [%Tweet{}]
   def search(query, options \\ []), do: ExTwitter.search(query, options)
+
+  @doc """
+  Get user information by id
+  """
+  @spec user(String.t() | Integer) :: {:ok, %User{}}
+  def user(user), do: {:ok, ExTwitter.user(user)}
 
   @doc """
   Favorite the specified tweet by id and return an :ok or an :error tuple

@@ -14,7 +14,7 @@ defmodule SentientSocialWeb.ConnCase do
   """
 
   use ExUnit.CaseTemplate
-  alias SentientSocial.Accounts
+  import SentientSocial.Factory
 
   using do
     quote do
@@ -36,14 +36,7 @@ defmodule SentientSocialWeb.ConnCase do
       end
 
       def sign_in(conn) do
-        {:ok, user} =
-          Accounts.create_user(%{
-            name: "John Doe",
-            profile_image_url: "www.website.com/image.png",
-            username: "johndoe",
-            access_token: "token",
-            access_token_secret: "secret"
-          })
+        user = insert(:user)
 
         sign_in(conn, user)
       end

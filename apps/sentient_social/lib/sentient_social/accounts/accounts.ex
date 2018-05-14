@@ -91,6 +91,7 @@ defmodule SentientSocial.Accounts do
           screen_name: String,
           name: String,
           profile_image_url: String,
+          followers_count: integer,
           access_token: String,
           access_token_secret: String
         }) :: {:ok, %User{}} | {:error, %Ecto.Changeset{}}
@@ -110,6 +111,7 @@ defmodule SentientSocial.Accounts do
          screen_name: username,
          name: name,
          profile_image_url: profile_image_url,
+         followers_count: twitter_followers_count,
          access_token: access_token,
          access_token_secret: access_token_secret
        }) do
@@ -117,6 +119,7 @@ defmodule SentientSocial.Accounts do
       username: username,
       name: name,
       profile_image_url: profile_image_url,
+      twitter_followers_count: twitter_followers_count,
       access_token: access_token,
       access_token_secret: access_token_secret
     }

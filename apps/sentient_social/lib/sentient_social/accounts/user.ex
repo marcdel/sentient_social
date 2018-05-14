@@ -12,6 +12,7 @@ defmodule SentientSocial.Accounts.User do
     field(:name, :string)
     field(:profile_image_url, :string)
     field(:username, :string)
+    field(:twitter_followers_count, :integer)
     field(:access_token, Cloak.EncryptedBinaryField)
     field(:access_token_secret, Cloak.EncryptedBinaryField)
     has_many(:automated_interactions, AutomatedInteraction)
@@ -24,7 +25,14 @@ defmodule SentientSocial.Accounts.User do
   @spec changeset(%__MODULE__{}, map()) :: %Ecto.Changeset{}
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:username, :name, :profile_image_url, :access_token, :access_token_secret])
+    |> cast(attrs, [
+      :username,
+      :name,
+      :profile_image_url,
+      :twitter_followers_count,
+      :access_token,
+      :access_token_secret
+    ])
     |> validate_required([
       :username,
       :name,

@@ -5,7 +5,6 @@ defmodule SentientSocial.Twitter.Engagement do
 
   require Logger
 
-  alias ExTwitter.Config
   alias ExTwitter.Model.Tweet
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
@@ -29,7 +28,7 @@ defmodule SentientSocial.Twitter.Engagement do
 
     favorited_tweets =
       user
-      |> set_access_tokens()
+      |> Twitter.set_access_tokens()
       |> find_tweets()
       |> tweet_filter.filter(user)
       |> favorite_tweets(user)
@@ -42,8 +41,8 @@ defmodule SentientSocial.Twitter.Engagement do
   @doc """
   Find and unfavorite tweets for the given user
   """
-  @spec undo_automated_interactions(String, module) :: {:ok, [%Tweet{}]}
-  def undo_automated_interactions(username, tweet_filter \\ TweetFilter) do
+  @spec undo_automated_interactions(String) :: {:ok, [%Tweet{}]}
+  def undo_automated_interactions(username) do
     Logger.info("Looking for tweets to unfavorite for '#{username}' now.")
 
     user =
@@ -52,7 +51,7 @@ defmodule SentientSocial.Twitter.Engagement do
 
     unfavorited_tweets =
       user
-      |> set_access_tokens()
+      |> Twitter.set_access_tokens()
       |> Twitter.automated_interactions_to_be_undone()
       |> unfavorite_tweets()
 
@@ -96,22 +95,6 @@ defmodule SentientSocial.Twitter.Engagement do
       end
     end)
     |> Enum.reject(&is_nil/1)
-  end
-
-  # Configure ExTwitter for the current process with the user's access tokens.
-  # This allows the app to take actions on behalf of the user.
-  @spec set_access_tokens(%User{}) :: %User{}
-  defp set_access_tokens(user) do
-    ExTwitter.configure(
-      :process,
-      Enum.concat(
-        Config.get_tuples(),
-        access_token: user.access_token,
-        access_token_secret: user.access_token_secret
-      )
-    )
-
-    user
   end
 
   @spec save_automated_interaction(%Tweet{}, %User{}) :: {:ok, %AutomatedInteraction{}}

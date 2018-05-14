@@ -8,7 +8,6 @@ defmodule SentientSocial.Twitter.EngagementTest do
   alias SentientSocial.Twitter.Engagement
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
-
   setup :verify_on_exit!
 
   describe "favorite_new_keyword_tweets/1" do

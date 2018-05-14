@@ -8,6 +8,7 @@ defmodule SentientSocial.Accounts.UserServer do
   require Logger
 
   alias SentientSocial.Accounts.{UserRegistry}
+  alias SentientSocial.Twitter
   alias SentientSocial.Twitter.Engagement
 
   @min_interval 1
@@ -88,6 +89,12 @@ defmodule SentientSocial.Accounts.UserServer do
     Engagement.undo_automated_interactions(username)
     schedule_undoing_interactions(username)
 
+    {:noreply, state}
+  end
+
+  # credo:disable-for-next-line Credo.Check.Readability.Specs
+  def handle_info({:update_twitter_followers, username}, state) do
+    Twitter.update_twitter_followers(username)
     {:noreply, state}
   end
 

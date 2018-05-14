@@ -4,6 +4,7 @@ defmodule UserServerTest do
   import Mox
   import SentientSocial.Factory
 
+  alias SentientSocial.Accounts
   alias SentientSocial.Accounts.UserServer
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
@@ -76,6 +77,24 @@ defmodule UserServerTest do
       allow(@twitter_client, self(), pid)
 
       UserServer.handle_info({:undo_interactions, user.username}, %{})
+    end
+  end
+
+  describe "handle_info({:update_twitter_followers, username}, state)" do
+    test "updates the users follower count in the database" do
+      user = insert(:user, %{twitter_followers_count: 0})
+
+      {:ok, pid} = UserServer.start_link(user.username)
+
+      twitter_user = build(:ex_twitter_user, %{followers_count: 100})
+
+      expect(@twitter_client, :user, 1, fn _username -> {:ok, twitter_user} end)
+      allow(@twitter_client, self(), pid)
+
+      UserServer.handle_info({:update_twitter_followers, user.username}, %{})
+
+      user = Accounts.get_user_by_username(user.username)
+      assert user.twitter_followers_count == 100
     end
   end
 end

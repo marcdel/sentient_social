@@ -12,6 +12,7 @@ defmodule SentientSocial.UserTest do
       name: "John Doe",
       profile_image_url: "www.website.com/image.png",
       username: "johndoe",
+      twitter_followers_count: 0,
       access_token: "token",
       access_token_secret: "secret"
     }
@@ -19,6 +20,7 @@ defmodule SentientSocial.UserTest do
       name: "Jane Doe",
       profile_image_url: "www.website.com/image2.png",
       username: "janedoe",
+      twitter_followers_count: 100,
       access_token: "new_token",
       access_token_secret: "new_secret"
     }
@@ -54,6 +56,7 @@ defmodule SentientSocial.UserTest do
         name: "John Doe 3",
         profile_image_url: "www.website.com/image3.png",
         screen_name: "johndoe3",
+        followers_count: 100,
         access_token: "new_token",
         access_token_secret: "new_secret"
       }
@@ -63,33 +66,35 @@ defmodule SentientSocial.UserTest do
       assert user.name == "John Doe 3"
       assert user.profile_image_url == "www.website.com/image3.png"
       assert user.username == "johndoe3"
+      assert user.twitter_followers_count == 100
       assert user.access_token == "new_token"
       assert user.access_token_secret == "new_secret"
     end
 
     test "create_or_update_from_twitter/1 updates an existing user" do
+      insert(:user, %{
+        username: "johndoe",
+        profile_image_url: "www.website.com/image3.png",
+        name: "User Name",
+        access_token: "token",
+        access_token_secret: "secret"
+      })
+
       auth_user = %{
         name: "John Doe 3",
         profile_image_url: "www.website.com/image3.png",
         screen_name: "johndoe",
+        followers_count: 100,
         access_token: "new_token",
         access_token_secret: "new_secret"
       }
-
-      assert {:ok, user} =
-               Accounts.create_user(%{
-                 username: auth_user.screen_name,
-                 profile_image_url: auth_user.profile_image_url,
-                 name: auth_user.name,
-                 access_token: auth_user.access_token,
-                 access_token_secret: auth_user.access_token_secret
-               })
 
       result = Accounts.create_or_update_from_twitter(auth_user)
       assert {:ok, user} = result
       assert user.name == "John Doe 3"
       assert user.profile_image_url == "www.website.com/image3.png"
       assert user.username == "johndoe"
+      assert user.twitter_followers_count == 100
       assert user.access_token == "new_token"
       assert user.access_token_secret == "new_secret"
     end
@@ -117,6 +122,7 @@ defmodule SentientSocial.UserTest do
       assert user.name == "Jane Doe"
       assert user.profile_image_url == "www.website.com/image2.png"
       assert user.username == "janedoe"
+      assert user.twitter_followers_count == 100
       assert user.access_token == "new_token"
       assert user.access_token_secret == "new_secret"
     end

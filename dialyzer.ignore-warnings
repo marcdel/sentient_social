@@ -1,0 +1,2 @@
+twitter.ex:26: Function update_twitter_followers/1 has no local return
+twitter.ex:32: The call 'Elixir.SentientSocial.Twitter.ExTwitterClient':user(_username@1::'Elixir.String') will never return
