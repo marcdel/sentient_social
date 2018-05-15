@@ -34,6 +34,8 @@ defmodule SentientSocial.Twitter do
     {:ok, user} =
       Accounts.update_user(user, %{twitter_followers_count: twitter_user.followers_count})
 
+    {:ok, _} = create_historical_follower_count(%{count: 100}, user)
+
     {:ok, user}
   end
 

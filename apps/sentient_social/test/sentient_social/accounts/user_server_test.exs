@@ -6,6 +6,7 @@ defmodule UserServerTest do
 
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.UserServer
+  alias SentientSocial.Twitter
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
   setup :verify_on_exit!
@@ -95,6 +96,9 @@ defmodule UserServerTest do
 
       user = Accounts.get_user_by_username(user.username)
       assert user.twitter_followers_count == 100
+
+      historical_follower_counts = Twitter.list_historical_follower_counts(user)
+      assert Enum.count(historical_follower_counts) == 1
     end
   end
 end

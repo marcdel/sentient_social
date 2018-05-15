@@ -63,8 +63,12 @@ defmodule SentientSocial.Accounts.UserServer do
 
   defp schedule_undoing_interactions(username) do
     Logger.info("Scheduling undoing interactions for '#{username}' in 24 hours.")
-
     Process.send_after(self(), {:undo_interactions, username}, :timer.hours(24))
+  end
+
+  defp schedule_updating_twitter_follower_count(username) do
+    Logger.info("Scheduling updating twitter followers count for '#{username}' in 24 hours.")
+    Process.send_after(self(), {:update_twitter_followers, username}, :timer.hours(24))
   end
 
   @spec init(String.t()) :: {:ok, map}
@@ -72,6 +76,7 @@ defmodule SentientSocial.Accounts.UserServer do
     Logger.info("Spawned user server process for '#{username}'.")
     schedule_favoriting_tweets(username)
     schedule_undoing_interactions(username)
+    schedule_updating_twitter_follower_count(username)
 
     {:ok, %{}}
   end
@@ -95,6 +100,8 @@ defmodule SentientSocial.Accounts.UserServer do
   # credo:disable-for-next-line Credo.Check.Readability.Specs
   def handle_info({:update_twitter_followers, username}, state) do
     Twitter.update_twitter_followers(username)
+    schedule_updating_twitter_follower_count(username)
+
     {:noreply, state}
   end
 
