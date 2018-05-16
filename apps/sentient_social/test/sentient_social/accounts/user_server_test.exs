@@ -87,7 +87,7 @@ defmodule UserServerTest do
 
       {:ok, pid} = UserServer.start_link(user.username)
 
-      twitter_user = build(:ex_twitter_user, %{followers_count: 100})
+      twitter_user = build(:ex_twitter_user, %{followers_count: 200})
 
       expect(@twitter_client, :user, 1, fn _username -> {:ok, twitter_user} end)
       allow(@twitter_client, self(), pid)
@@ -95,10 +95,11 @@ defmodule UserServerTest do
       UserServer.handle_info({:update_twitter_followers, user.username}, %{})
 
       user = Accounts.get_user_by_username(user.username)
-      assert user.twitter_followers_count == 100
+      assert user.twitter_followers_count == 200
 
       historical_follower_counts = Twitter.list_historical_follower_counts(user)
-      assert Enum.count(historical_follower_counts) == 1
+      assert [count] = historical_follower_counts
+      assert count.count == 200
     end
   end
 end
