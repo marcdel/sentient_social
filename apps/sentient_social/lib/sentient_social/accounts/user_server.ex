@@ -67,13 +67,14 @@ defmodule SentientSocial.Accounts.UserServer do
   end
 
   defp schedule_updating_twitter_follower_count(username) do
-    Logger.info("Scheduling updating twitter followers count for '#{username}' in 24 hours.")
-    Process.send_after(self(), {:update_twitter_followers, username}, :timer.hours(24))
+    Logger.info("Scheduling updating twitter followers count for '#{username}' in 8 hours.")
+    Process.send_after(self(), {:update_twitter_followers, username}, :timer.hours(8))
   end
 
   @spec init(String.t()) :: {:ok, map}
   def init(username) do
     Logger.info("Spawned user server process for '#{username}'.")
+
     schedule_favoriting_tweets(username)
     schedule_undoing_interactions(username)
     schedule_updating_twitter_follower_count(username)
