@@ -22,15 +22,13 @@ defmodule SentientSocial.Twitter.EngagementTest do
       user = insert(:user, %{username: "testuser"})
 
       tweet1 = build(:ex_twitter_tweet, %{id: 1, text: "Tweet keyword1 text"})
-
       insert(:keyword, %{text: "keyword1", user: user})
-      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet1] end)
+      expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet1] end)
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet1} end)
 
       tweet2 = build(:ex_twitter_tweet, %{id: 2, text: "Tweet keyword2 text"})
-
       insert(:keyword, %{text: "keyword2", user: user})
-      expect(@twitter_client, :search, 1, fn "keyword2", [count: _count] -> [tweet2] end)
+      expect(@twitter_client, :search, 1, fn "keyword2", _ -> [tweet2] end)
       expect(@twitter_client, :create_favorite, 1, fn 2 -> {:ok, tweet2} end)
 
       {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
@@ -54,7 +52,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
         })
 
       insert(:keyword, %{text: "keyword1", user: user})
-      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
+      expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet] end)
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet} end)
 
       Engagement.favorite_new_keyword_tweets(user.username)
@@ -89,7 +87,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
         |> make_retweet()
 
       insert(:keyword, %{text: "keyword1", user: user})
-      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
+      expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet] end)
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet} end)
 
       {:ok, _} = Engagement.favorite_new_keyword_tweets(user.username)
@@ -117,7 +115,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
         })
 
       insert(:keyword, %{text: "keyword1", user: user})
-      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
+      expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet] end)
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet} end)
 
       Engagement.favorite_new_keyword_tweets(user.username)
@@ -133,8 +131,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
 
       tweet = build(:ex_twitter_tweet, %{id: 1, text: "Tweet keyword1 text"})
       insert(:keyword, %{text: "keyword1", user: user})
-      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
-
+      expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet] end)
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:error, ""} end)
 
       {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
@@ -156,7 +153,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
 
       tweet = build(:ex_twitter_tweet, %{id: 1, text: "Tweet keyword1 text"})
       insert(:keyword, %{text: "keyword1", user: user})
-      expect(@twitter_client, :search, 1, fn "keyword1", [count: _count] -> [tweet] end)
+      expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet] end)
 
       {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username, FakeTweetFilter)
 
@@ -168,9 +165,8 @@ defmodule SentientSocial.Twitter.EngagementTest do
     test "finds favorites scheduled to be undone today and unfavorites them" do
       user = insert(:user, %{username: "testuser"})
 
-      insert(:automated_interaction, %{undo_at: Date.utc_today(), user: user})
-
       tweet = build(:ex_twitter_tweet)
+      insert(:automated_interaction, %{undo_at: Date.utc_today(), user: user})
       expect(@twitter_client, :destroy_favorite, 1, fn _id -> {:ok, tweet} end)
 
       Engagement.undo_automated_interactions(user.username)

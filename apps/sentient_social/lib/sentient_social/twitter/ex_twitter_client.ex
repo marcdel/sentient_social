@@ -10,7 +10,7 @@ defmodule SentientSocial.Twitter.ExTwitterClient do
   @doc """
   Search for tweets matching the specified string
   """
-  @spec search(String.t(), count: integer) :: [%Tweet{}]
+  @spec search(String.t(), count: integer, tweet_mode: String.t()) :: [%Tweet{}]
   def search(query, options \\ []), do: ExTwitter.search(query, options)
 
   @doc """

@@ -65,7 +65,7 @@ defmodule SentientSocial.Twitter.Engagement do
     user
     |> Accounts.list_keywords()
     |> Enum.flat_map(fn keyword ->
-      @twitter_client.search(keyword.text, count: @max_engagements)
+      @twitter_client.search(keyword.text, count: @max_engagements, tweet_mode: "extended")
     end)
   end
 
