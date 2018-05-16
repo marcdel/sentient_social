@@ -33,8 +33,6 @@ config :ueberauth, Ueberauth.Strategy.Twitter.OAuth,
   consumer_key: "${TWITTER_CONSUMER_KEY}",
   consumer_secret: "${TWITTER_CONSUMER_SECRET}"
 
-config :wobserver, mode: :plug
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

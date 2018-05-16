@@ -50,8 +50,7 @@ defmodule SentientSocialWeb.Mixfile do
       {:excoveralls, "~> 0.8", only: :test},
       {:ueberauth_twitter, "~> 0.2"},
       {:oauth, github: "tim/erlang-oauth"},
-      {:phoenix_integration, "~> 0.5", only: :test},
-      {:wobserver, "~> 0.1"}
+      {:phoenix_integration, "~> 0.5", only: :test}
     ]
   end
 
