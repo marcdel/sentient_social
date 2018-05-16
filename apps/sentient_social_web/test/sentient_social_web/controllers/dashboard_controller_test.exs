@@ -72,5 +72,32 @@ defmodule SentientSocialWeb.DashboardControllerTest do
       assert html_response(conn, 200) =~ "www.twitter.com/i/web/status/1"
       assert html_response(conn, 200) =~ "www.twitter.com/i/web/status/2"
     end
+
+    test "lists current user's historical twitter follower count", %{conn: conn} do
+      user = insert(:user)
+
+      insert(:historical_follower_count, %{
+        count: 100,
+        inserted_at: DateTime.from_naive!(~N[2017-02-02 11:42:46], "Etc/UTC"),
+        user: user
+      })
+
+      insert(:historical_follower_count, %{
+        count: 200,
+        inserted_at: DateTime.from_naive!(~N[2017-03-03 10:16:23], "Etc/UTC"),
+        user: user
+      })
+
+      conn =
+        conn
+        |> sign_in(user)
+        |> get("/dashboard")
+
+      assert html_response(conn, 200) =~ "Historical Follower Counts"
+      assert html_response(conn, 200) =~ "2017-02-02 11:42:46.000000"
+      assert html_response(conn, 200) =~ "100"
+      assert html_response(conn, 200) =~ "2017-03-03 10:16:23.000000"
+      assert html_response(conn, 200) =~ "200"
+    end
   end
 end

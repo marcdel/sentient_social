@@ -44,10 +44,23 @@ defmodule SentientSocialWeb.DashboardController do
         }
       end)
 
+    historical_follower_counts =
+      conn
+      |> get_session(:current_user)
+      |> Accounts.get_user!()
+      |> Twitter.list_historical_follower_counts()
+      |> Enum.map(fn follower_count ->
+        %{
+          inserted_at: follower_count.inserted_at,
+          count: follower_count.count
+        }
+      end)
+
     conn
     |> assign(:keywords, keywords)
     |> assign(:muted_keywords, muted_keywords)
     |> assign(:automated_interactions, automated_interactions)
+    |> assign(:historical_follower_counts, historical_follower_counts)
     |> render("index.html")
   end
 end
