@@ -66,13 +66,13 @@ defmodule SentientSocial.Twitter.TweetFilter do
   defp words_in_tweet(%Tweet{retweeted_status: nil, text: text, full_text: nil}),
     do: String.split(text, " ")
 
-  defp words_in_tweet(%Tweet{retweeted_status: %{text: text, full_text: nil}}),
+  defp words_in_tweet(%Tweet{retweeted_status: %{text: text}}) when text != nil,
     do: String.split(text, " ")
 
   defp words_in_tweet(%Tweet{retweeted_status: nil, text: nil, full_text: full_text}),
     do: String.split(full_text, " ")
 
-  defp words_in_tweet(%Tweet{retweeted_status: %{text: nil, full_text: full_text}}),
+  defp words_in_tweet(%Tweet{retweeted_status: %{full_text: full_text}}) when full_text != nil,
     do: String.split(full_text, " ")
 
   @spec hashtags_in_tweet(Tweet.t()) :: list(String.t())
