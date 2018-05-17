@@ -180,6 +180,13 @@ defmodule TweetFilterTest do
              |> Enum.member?(invalid_tweet)
     end
 
+    test "removes the user's own tweets" do
+      user = insert(:user)
+
+      invalid_tweet = build(:ex_twitter_tweet, %{user: %{screen_name: user.username}})
+      assert TweetFilter.filter([invalid_tweet], user) == []
+    end
+
     test "handles regular and extended tweets" do
       user = insert(:user)
 

@@ -14,8 +14,14 @@ defmodule SentientSocial.Twitter.TweetFilter do
   @spec filter(list(Tweet.t()), %User{}) :: list(Tweet.t())
   def filter(tweets, user) do
     Enum.reject(tweets, fn tweet ->
-      too_many_hashtags?(tweet) || only_hashtags?(tweet) || contains_muted_keyword?(tweet, user)
+      is_own_tweet?(tweet, user) || too_many_hashtags?(tweet) || only_hashtags?(tweet) ||
+        contains_muted_keyword?(tweet, user)
     end)
+  end
+
+  @spec is_own_tweet?(Tweet.t(), %User{}) :: boolean
+  defp is_own_tweet?(tweet, user) do
+    tweet.user.screen_name == user.username
   end
 
   @spec too_many_hashtags?(Tweet.t()) :: boolean
