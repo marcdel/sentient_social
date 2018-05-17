@@ -84,6 +84,45 @@ defmodule SentientSocial.Factory do
     }
   end
 
+  @spec make_invalid(%Tweet{}) :: %Tweet{}
+  def make_invalid(%Tweet{retweeted_status: nil, full_text: nil, text: nil} = tweet), do: tweet
+
+  def make_invalid(%Tweet{retweeted_status: nil, full_text: nil} = tweet) do
+    {new_text, new_entities} = make_new_text_and_entities()
+    %{tweet | text: new_text, entities: new_entities}
+  end
+
+  def make_invalid(%Tweet{retweeted_status: nil, text: nil} = tweet) do
+    {new_text, new_entities} = make_new_text_and_entities()
+    %{tweet | full_text: new_text, entities: new_entities}
+  end
+
+  def make_invalid(%Tweet{retweeted_status: %{full_text: nil}} = tweet) do
+    {new_text, new_entities} = make_new_text_and_entities()
+    %{tweet | retweeted_status: %{text: new_text, entities: new_entities}}
+  end
+
+  def make_invalid(%Tweet{retweeted_status: %{text: nil}} = tweet) do
+    {new_text, new_entities} = make_new_text_and_entities()
+    %{tweet | retweeted_status: %{full_text: new_text, entities: new_entities}}
+  end
+
+  defp make_new_text_and_entities do
+    hashtags = [
+      sequence(:hashtag, &"hashtag-#{&1}"),
+      sequence(:hashtag, &"hashtag-#{&1}"),
+      sequence(:hashtag, &"hashtag-#{&1}"),
+      sequence(:hashtag, &"hashtag-#{&1}"),
+      sequence(:hashtag, &"hashtag-#{&1}"),
+      sequence(:hashtag, &"hashtag-#{&1}")
+    ]
+
+    new_text = hashtags |> Enum.join(" ") |> IO.iodata_to_binary()
+    new_entities = %{hashtags: hashtags |> Enum.map(fn hashtag -> %{text: hashtag} end)}
+
+    {new_text, new_entities}
+  end
+
   @spec make_retweet(%Tweet{}) :: %Tweet{}
   def make_retweet(tweet) do
     %{

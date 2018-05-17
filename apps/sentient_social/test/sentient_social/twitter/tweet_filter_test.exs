@@ -183,109 +183,17 @@ defmodule TweetFilterTest do
     test "handles regular and extended tweets" do
       user = insert(:user)
 
-      regular_tweet =
-        build(:ex_twitter_tweet, %{
-          id: 1,
-          text: "regular tweet",
-          entities: %{
-            hashtags: []
-          }
-        })
+      regular_tweet = build(:ex_twitter_tweet)
+      regular_retweet = build(:ex_twitter_tweet) |> make_retweet()
+      extended_tweet = build(:ex_twitter_extended_tweet)
+      extended_retweet = build(:ex_twitter_extended_tweet) |> make_retweet()
 
-      regular_retweet =
-        build(:ex_twitter_tweet, %{
-          id: 1,
-          text: "regular retweet",
-          entities: %{
-            hashtags: []
-          }
-        })
-        |> make_retweet()
-
-      extended_tweet =
-        build(:ex_twitter_extended_tweet, %{
-          id: 1,
-          full_text: "extended tweet",
-          entities: %{
-            hashtags: []
-          }
-        })
-
-      extended_retweet =
-        build(:ex_twitter_extended_tweet, %{
-          id: 1,
-          full_text: "extended retweet",
-          entities: %{
-            hashtags: []
-          }
-        })
-        |> make_retweet()
-
-      invalid_regular_tweet =
-        build(:ex_twitter_tweet, %{
-          id: 1,
-          text: "regular tweet",
-          entities: %{
-            hashtags: [
-              %{indices: [0, 14], text: "100DaysOfCode"},
-              %{indices: [144, 156], text: "ReactNative"},
-              %{indices: [170, 178], text: "graphql"},
-              %{indices: [201, 209], text: "reactjs"},
-              %{indices: [210, 218], text: "GraphQL"},
-              %{indices: [219, 226], text: "Apollo"}
-            ]
-          }
-        })
-
-      invalid_regular_retweet =
-        build(:ex_twitter_tweet, %{
-          id: 1,
-          text: "regular retweet",
-          entities: %{
-            hashtags: [
-              %{indices: [0, 14], text: "100DaysOfCode"},
-              %{indices: [144, 156], text: "ReactNative"},
-              %{indices: [170, 178], text: "graphql"},
-              %{indices: [201, 209], text: "reactjs"},
-              %{indices: [210, 218], text: "GraphQL"},
-              %{indices: [219, 226], text: "Apollo"}
-            ]
-          }
-        })
-        |> make_retweet()
-
-      invalid_extended_tweet =
-        build(:ex_twitter_extended_tweet, %{
-          id: 1,
-          full_text: "extended tweet",
-          entities: %{
-            hashtags: [
-              %{indices: [0, 14], text: "100DaysOfCode"},
-              %{indices: [144, 156], text: "ReactNative"},
-              %{indices: [170, 178], text: "graphql"},
-              %{indices: [201, 209], text: "reactjs"},
-              %{indices: [210, 218], text: "GraphQL"},
-              %{indices: [219, 226], text: "Apollo"}
-            ]
-          }
-        })
+      invalid_regular_tweet = build(:ex_twitter_tweet) |> make_invalid()
+      invalid_regular_retweet = build(:ex_twitter_tweet) |> make_retweet() |> make_invalid()
+      invalid_extended_tweet = build(:ex_twitter_extended_tweet) |> make_invalid()
 
       invalid_extended_retweet =
-        build(:ex_twitter_extended_tweet, %{
-          id: 1,
-          full_text: "extended retweet",
-          entities: %{
-            hashtags: [
-              %{indices: [0, 14], text: "100DaysOfCode"},
-              %{indices: [144, 156], text: "ReactNative"},
-              %{indices: [170, 178], text: "graphql"},
-              %{indices: [201, 209], text: "reactjs"},
-              %{indices: [210, 218], text: "GraphQL"},
-              %{indices: [219, 226], text: "Apollo"}
-            ]
-          }
-        })
-        |> make_retweet()
+        build(:ex_twitter_extended_tweet) |> make_retweet() |> make_invalid()
 
       tweets = [
         regular_tweet,
