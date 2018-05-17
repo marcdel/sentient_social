@@ -25,13 +25,15 @@
       <div class="sidebar" data-color="purple" data-image="<%= static_path(@conn, "/images/sidebar-1.jpg") %>">
         <div class="logo">
           <span class="simple-text">
-            <%= current_user(@conn).username %>
+            <a href="http://twitter.com/<%= current_user(@conn).username %>" style="color: inherit">
+              <%= current_user(@conn).username %>
+            </a>
           </span>
         </div>
         <div class="sidebar-wrapper">
           <ul class="nav">
             <li class="active">
-              <a href="/">
+              <a href="/dashboard">
                 <i class="material-icons">dashboard</i>
                 <p>Dashboard</p>
               </a>
