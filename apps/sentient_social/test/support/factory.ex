@@ -64,6 +64,19 @@ defmodule SentientSocial.Factory do
     }
   end
 
+  def ex_twitter_extended_tweet_factory do
+    %Tweet{
+      id: 1,
+      full_text: "Tweet #keyword1 text",
+      entities: %{
+        hashtags: [
+          %{text: "keyword1"}
+        ]
+      },
+      user: build(:ex_twitter_user)
+    }
+  end
+
   def ex_twitter_user_factory do
     %ExTwitter.Model.User{
       screen_name: "user",
@@ -77,6 +90,7 @@ defmodule SentientSocial.Factory do
       tweet
       | retweeted_status: %{
           text: tweet.text,
+          full_text: tweet.full_text,
           entities: tweet.entities,
           user: tweet.user
         }

@@ -60,8 +60,20 @@ defmodule SentientSocial.Twitter.TweetFilter do
   end
 
   @spec words_in_tweet(Tweet.t()) :: list(String.t())
-  defp words_in_tweet(%Tweet{retweeted_status: nil} = tweet), do: String.split(tweet.text, " ")
-  defp words_in_tweet(%Tweet{retweeted_status: tweet}), do: String.split(tweet.text, " ")
+  defp words_in_tweet(%Tweet{retweeted_status: nil, text: nil, full_text: nil}), do: []
+  defp words_in_tweet(%Tweet{retweeted_status: %{text: nil, full_text: nil}}), do: []
+
+  defp words_in_tweet(%Tweet{retweeted_status: nil, text: text, full_text: nil}),
+    do: String.split(text, " ")
+
+  defp words_in_tweet(%Tweet{retweeted_status: %{text: text, full_text: nil}}),
+    do: String.split(text, " ")
+
+  defp words_in_tweet(%Tweet{retweeted_status: nil, text: nil, full_text: full_text}),
+    do: String.split(full_text, " ")
+
+  defp words_in_tweet(%Tweet{retweeted_status: %{text: nil, full_text: full_text}}),
+    do: String.split(full_text, " ")
 
   @spec hashtags_in_tweet(Tweet.t()) :: list(String.t())
   defp hashtags_in_tweet(%Tweet{retweeted_status: nil} = tweet) do
