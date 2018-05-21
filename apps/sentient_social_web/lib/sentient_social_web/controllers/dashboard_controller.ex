@@ -1,5 +1,6 @@
 defmodule SentientSocialWeb.DashboardController do
   use SentientSocialWeb, :controller
+
   alias SentientSocial.Accounts
   alias SentientSocial.Twitter
 
@@ -40,7 +41,8 @@ defmodule SentientSocialWeb.DashboardController do
           tweet_user_screen_name: interaction.tweet_user_screen_name,
           tweet_text: interaction.tweet_text,
           tweet_url: interaction.tweet_url,
-          inserted_at: interaction.inserted_at
+          inserted_at: interaction.inserted_at,
+          undo_at: interaction.undo_at
         }
       end)
 

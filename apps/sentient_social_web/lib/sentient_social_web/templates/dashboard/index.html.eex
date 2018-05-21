@@ -77,6 +77,7 @@
               <th>Username</th>
               <th>Tweet</th>
               <th>When</th>
+              <th>Undo At</th>
             </tr>
           </thead>
           <tbody>
@@ -85,6 +86,7 @@
                 <td><%= automated_interaction.tweet_user_screen_name %></td>
                 <td><a href="<%= automated_interaction.tweet_url %>"><%= automated_interaction.tweet_text %></a></td>
                 <td><%= automated_interaction.inserted_at %></td>
+                <td><%= automated_interaction.undo_at %></td>
               </tr>
             <% end %>
           </tbody>

@@ -50,6 +50,8 @@ defmodule SentientSocialWeb.DashboardControllerTest do
         tweet_text: "keyword1",
         tweet_url: "www.twitter.com/i/web/status/1",
         tweet_user_screen_name: "user",
+        inserted_at: DateTime.from_naive!(~N[2017-02-02 11:42:46], "Etc/UTC"),
+        undo_at: DateTime.from_naive!(~N[2017-02-02 11:42:46], "Etc/UTC"),
         user: user
       })
 
@@ -57,6 +59,8 @@ defmodule SentientSocialWeb.DashboardControllerTest do
         tweet_text: "keyword2",
         tweet_url: "www.twitter.com/i/web/status/2",
         tweet_user_screen_name: "user",
+        inserted_at: DateTime.from_naive!(~N[2017-03-03 10:16:23], "Etc/UTC"),
+        undo_at: DateTime.from_naive!(~N[2017-03-03 10:16:23], "Etc/UTC"),
         user: user
       })
 
@@ -71,6 +75,10 @@ defmodule SentientSocialWeb.DashboardControllerTest do
       assert html_response(conn, 200) =~ "user"
       assert html_response(conn, 200) =~ "www.twitter.com/i/web/status/1"
       assert html_response(conn, 200) =~ "www.twitter.com/i/web/status/2"
+      assert html_response(conn, 200) =~ "2017-02-02 11:42:46.000000"
+      assert html_response(conn, 200) =~ "2017-03-03 10:16:23.000000"
+      assert html_response(conn, 200) =~ "2017-02-02"
+      assert html_response(conn, 200) =~ "2017-03-03"
     end
 
     test "lists current user's historical twitter follower count", %{conn: conn} do
