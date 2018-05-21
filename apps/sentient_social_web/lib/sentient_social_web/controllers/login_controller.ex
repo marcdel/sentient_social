@@ -5,17 +5,17 @@ defmodule SentientSocialWeb.LoginController do
 
   @spec index(map, map) :: map
   def index(conn, _params) do
-    current_user = get_session(conn, :current_user)
+    case get_session(conn, :current_user) do
+      nil ->
+        conn
+        |> redirect(to: "/auth/twitter")
+        |> halt
 
-    if current_user do
-      conn
-      |> assign(:current_user, current_user)
-      |> redirect(to: "/dashboard")
-      |> halt
-    else
-      conn
-      |> redirect(to: "/auth/twitter")
-      |> halt
+      current_user_id ->
+        conn
+        |> assign(:current_user, current_user_id)
+        |> redirect(to: "/dashboard")
+        |> halt
     end
   end
 end

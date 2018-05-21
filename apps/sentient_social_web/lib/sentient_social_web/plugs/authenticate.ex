@@ -12,14 +12,14 @@ defmodule SentientSocialWeb.Plug.Authenticate do
 
   @spec call(%Plug.Conn{}, opts) :: %Plug.Conn{}
   def call(conn, _default) do
-    current_user = get_session(conn, :current_user)
+    case get_session(conn, :current_user) do
+      nil ->
+        conn
+        |> redirect(to: "/")
+        |> halt
 
-    if current_user do
-      assign(conn, :current_user, current_user)
-    else
-      conn
-      |> redirect(to: "/")
-      |> halt
+      current_user_id ->
+        assign(conn, :current_user, current_user_id)
     end
   end
 end
