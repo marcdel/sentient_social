@@ -12,6 +12,7 @@ defmodule SentientSocial.Accounts.User do
     field(:name, :string)
     field(:profile_image_url, :string)
     field(:username, :string)
+    field(:email, :string)
     field(:twitter_followers_count, :integer)
     field(:access_token, Cloak.EncryptedBinaryField)
     field(:access_token_secret, Cloak.EncryptedBinaryField)
@@ -28,16 +29,10 @@ defmodule SentientSocial.Accounts.User do
     user
     |> cast(attrs, [
       :username,
+      :email,
       :name,
       :profile_image_url,
       :twitter_followers_count,
-      :access_token,
-      :access_token_secret
-    ])
-    |> validate_required([
-      :username,
-      :name,
-      :profile_image_url,
       :access_token,
       :access_token_secret
     ])

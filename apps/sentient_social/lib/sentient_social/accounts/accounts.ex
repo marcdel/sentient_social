@@ -57,6 +57,23 @@ defmodule SentientSocial.Accounts do
   def get_user_by_username(username), do: Repo.get_by(User, %{username: username})
 
   @doc """
+  Gets a single user.
+
+  Returns nil if the User does not exist.
+
+  ## Examples
+
+      iex> get_user_by_email("user@email.com")
+      %User{}
+
+      iex> get_user_by_email("fake@notreal.com")
+      nil
+
+  """
+  @spec get_user_by_email(String) :: %User{} | nil
+  def get_user_by_email(email), do: Repo.get_by(User, %{email: email})
+
+  @doc """
   Creates a user.
 
   ## Examples

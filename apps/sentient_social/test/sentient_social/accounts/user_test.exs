@@ -11,6 +11,7 @@ defmodule SentientSocial.UserTest do
     @valid_attrs %{
       name: "John Doe",
       profile_image_url: "www.website.com/image.png",
+      email: "johndoe@email.com",
       username: "johndoe",
       twitter_followers_count: 0,
       access_token: "token",
@@ -20,11 +21,12 @@ defmodule SentientSocial.UserTest do
       name: "Jane Doe",
       profile_image_url: "www.website.com/image2.png",
       username: "janedoe",
+      email: "janedoe@email.com",
       twitter_followers_count: 100,
       access_token: "new_token",
       access_token_secret: "new_secret"
     }
-    @invalid_attrs %{name: nil, profile_image_url: nil, username: nil}
+    @invalid_attrs %{email: 1}
 
     @spec user_fixture(map) :: %User{}
     def user_fixture(attrs \\ %{}) do
@@ -49,6 +51,19 @@ defmodule SentientSocial.UserTest do
     test "get_user_by_username/1 returns an existing user" do
       user = insert(:user)
       assert user == Accounts.get_user_by_username(user.username)
+    end
+
+    test "get_user_by_username/1 returns nil for a non-existent user" do
+      assert nil == Accounts.get_user_by_username("notreal")
+    end
+
+    test "get_user_by_email/1 returns an existing user" do
+      user = insert(:user)
+      assert user == Accounts.get_user_by_email(user.email)
+    end
+
+    test "get_user_by_email/1 returns nil for a non-existent user" do
+      assert nil == Accounts.get_user_by_email("notreal@fake.com")
     end
 
     test "create_or_update_from_twitter/1 creates a new user" do

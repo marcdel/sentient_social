@@ -12,6 +12,7 @@ defmodule SentientSocial.Factory do
       name: "John Doe",
       profile_image_url: "www.website.com/image.png",
       username: sequence(:username, &"johndoe#{&1}"),
+      email: sequence(:email, &"johndoe#{&1}@email.com"),
       access_token: "token",
       access_token_secret: "secret"
     }
