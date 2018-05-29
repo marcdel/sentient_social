@@ -5,13 +5,18 @@ defmodule SentientSocial.Twitter.ExTwitterClient do
 
   @behaviour SentientSocial.Twitter.TwitterClient
 
-  alias ExTwitter.Model.{Tweet, User}
+  alias ExTwitter.Model.User
+  alias SentientSocial.Twitter.Tweet
 
   @doc """
   Search for tweets matching the specified string
   """
   @spec search(String.t(), count: integer, tweet_mode: String.t()) :: [%Tweet{}]
-  def search(query, options \\ []), do: ExTwitter.search(query, options)
+  def search(query, options \\ []) do
+    query
+    |> ExTwitter.search(options)
+    |> Enum.map(&Tweet.new/1)
+  end
 
   @doc """
   Get user information by id
@@ -24,7 +29,10 @@ defmodule SentientSocial.Twitter.ExTwitterClient do
   """
   @spec create_favorite(Integer) :: {:ok, %Tweet{}} | {:error, String.t()}
   def create_favorite(tweet_id) do
-    {:ok, ExTwitter.create_favorite(tweet_id, [])}
+    {:ok,
+     tweet_id
+     |> ExTwitter.create_favorite([])
+     |> Tweet.new()}
   rescue
     message in ExTwitter.Error ->
       {:error, message}
@@ -35,7 +43,10 @@ defmodule SentientSocial.Twitter.ExTwitterClient do
   """
   @spec destroy_favorite(Integer) :: {:ok, %Tweet{}} | {:error, String.t()}
   def destroy_favorite(tweet_id) do
-    {:ok, ExTwitter.destroy_favorite(tweet_id, [])}
+    {:ok,
+     tweet_id
+     |> ExTwitter.destroy_favorite([])
+     |> Tweet.new()}
   rescue
     message in ExTwitter.Error ->
       {:error, message}

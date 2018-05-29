@@ -5,13 +5,13 @@ defmodule SentientSocial.Twitter.TweetFilter do
 
   require Logger
 
-  alias ExTwitter.Model.Tweet
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
+  alias SentientSocial.Twitter.Tweet
 
   @max_hashtags 5
 
-  @spec filter(list(Tweet.t()), %User{}) :: list(Tweet.t())
+  @spec filter(list(%Tweet{}), %User{}) :: list(%Tweet{})
   def filter(tweets, user) do
     Enum.reject(tweets, fn tweet ->
       is_own_tweet?(tweet, user) || too_many_hashtags?(tweet) || only_hashtags?(tweet) ||
@@ -19,32 +19,29 @@ defmodule SentientSocial.Twitter.TweetFilter do
     end)
   end
 
-  @spec is_own_tweet?(Tweet.t(), %User{}) :: boolean
+  @spec is_own_tweet?(%Tweet{}, %User{}) :: boolean
   defp is_own_tweet?(tweet, user) do
-    tweet.user.screen_name == user.username
+    tweet.screen_name == user.username
   end
 
-  @spec too_many_hashtags?(Tweet.t()) :: boolean
+  @spec too_many_hashtags?(%Tweet{}) :: boolean
   defp too_many_hashtags?(tweet) do
-    count_hashtags(tweet) > @max_hashtags
+    Enum.count(tweet.hashtags) > @max_hashtags
   end
 
-  @spec only_hashtags?(Tweet.t()) :: boolean
+  @spec only_hashtags?(%Tweet{}) :: boolean
   defp only_hashtags?(tweet) do
     word_count =
       tweet
       |> words_in_tweet()
       |> Enum.count()
 
-    hashtag_count =
-      tweet
-      |> hashtags_in_tweet()
-      |> Enum.count()
+    hashtag_count = Enum.count(tweet.hashtags)
 
     word_count == hashtag_count
   end
 
-  @spec contains_muted_keyword?(Tweet.t(), %User{}) :: boolean
+  @spec contains_muted_keyword?(%Tweet{}, %User{}) :: boolean
   defp contains_muted_keyword?(tweet, user) do
     muted_keywords =
       user
@@ -58,37 +55,7 @@ defmodule SentientSocial.Twitter.TweetFilter do
     end)
   end
 
-  @spec count_hashtags(Tweet.t()) :: integer
-  defp count_hashtags(tweet) do
-    tweet
-    |> hashtags_in_tweet()
-    |> Enum.count()
-  end
-
-  @spec words_in_tweet(Tweet.t()) :: list(String.t())
-  defp words_in_tweet(%Tweet{retweeted_status: nil, text: nil, full_text: nil}), do: []
-  defp words_in_tweet(%Tweet{retweeted_status: %{text: nil, full_text: nil}}), do: []
-
-  defp words_in_tweet(%Tweet{retweeted_status: nil, text: text, full_text: nil}),
-    do: String.split(text, " ")
-
-  defp words_in_tweet(%Tweet{retweeted_status: %{text: text}}) when text != nil,
-    do: String.split(text, " ")
-
-  defp words_in_tweet(%Tweet{retweeted_status: nil, text: nil, full_text: full_text}),
-    do: String.split(full_text, " ")
-
-  defp words_in_tweet(%Tweet{retweeted_status: %{full_text: full_text}}) when full_text != nil,
-    do: String.split(full_text, " ")
-
-  @spec hashtags_in_tweet(Tweet.t()) :: list(String.t())
-  defp hashtags_in_tweet(%Tweet{retweeted_status: nil} = tweet) do
-    tweet.entities.hashtags
-    |> Enum.map(fn hashtag -> hashtag.text end)
-  end
-
-  defp hashtags_in_tweet(%Tweet{retweeted_status: tweet}) do
-    tweet.entities.hashtags
-    |> Enum.map(fn hashtag -> hashtag.text end)
-  end
+  @spec words_in_tweet(%Tweet{}) :: list(String.t())
+  defp words_in_tweet(%Tweet{text: nil}), do: []
+  defp words_in_tweet(%Tweet{text: text}), do: String.split(text, " ")
 end

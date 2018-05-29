@@ -1,7 +1,8 @@
 defmodule SentientSocial.Twitter.TwitterClient do
   @moduledoc false
 
-  alias ExTwitter.Model.{Tweet, User}
+  alias ExTwitter.Model.User
+  alias SentientSocial.Twitter.Tweet
 
   @callback search(String.t(), count: integer, tweet_mode: String.t()) :: [%Tweet{}]
   @callback user(String.t() | integer) :: {:ok, %User{}}

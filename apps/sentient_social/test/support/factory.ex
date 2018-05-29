@@ -3,9 +3,8 @@ defmodule SentientSocial.Factory do
 
   use ExMachina.Ecto, repo: SentientSocial.Repo
 
-  alias ExTwitter.Model.Tweet
   alias SentientSocial.Accounts.{User, Keyword}
-  alias SentientSocial.Twitter.{AutomatedInteraction, HistoricalFollowerCount}
+  alias SentientSocial.Twitter.{Tweet, AutomatedInteraction, HistoricalFollowerCount}
 
   def user_factory do
     %User{
@@ -15,6 +14,15 @@ defmodule SentientSocial.Factory do
       email: sequence(:email, &"johndoe#{&1}@email.com"),
       access_token: "token",
       access_token_secret: "secret"
+    }
+  end
+
+  def tweet_factory do
+    %Tweet{
+      id: 1,
+      text: sequence(:screen_name, &"Tweet #keyword#{&1} text"),
+      hashtags: [sequence(:hashtag, &"keyword#{&1}")],
+      screen_name: sequence(:screen_name, &"johndoe#{&1}")
     }
   end
 
@@ -49,91 +57,6 @@ defmodule SentientSocial.Factory do
       interaction_type: "favorite",
       undo_at: Date.utc_today() |> Date.add(7),
       user: build(:user)
-    }
-  end
-
-  def ex_twitter_tweet_factory do
-    %Tweet{
-      id: 1,
-      text: "Tweet #keyword1 text",
-      entities: %{
-        hashtags: [
-          %{text: "keyword1"}
-        ]
-      },
-      user: build(:ex_twitter_user)
-    }
-  end
-
-  def ex_twitter_extended_tweet_factory do
-    %Tweet{
-      id: 1,
-      full_text: "Tweet #keyword1 text",
-      entities: %{
-        hashtags: [
-          %{text: "keyword1"}
-        ]
-      },
-      user: build(:ex_twitter_user)
-    }
-  end
-
-  def ex_twitter_user_factory do
-    %ExTwitter.Model.User{
-      screen_name: "user",
-      description: "description"
-    }
-  end
-
-  @spec make_invalid(%Tweet{}) :: %Tweet{}
-  def make_invalid(%Tweet{retweeted_status: nil, full_text: nil, text: nil} = tweet), do: tweet
-
-  def make_invalid(%Tweet{retweeted_status: nil, full_text: nil} = tweet) do
-    {new_text, new_entities} = make_new_text_and_entities()
-    %{tweet | text: new_text, entities: new_entities}
-  end
-
-  def make_invalid(%Tweet{retweeted_status: nil, text: nil} = tweet) do
-    {new_text, new_entities} = make_new_text_and_entities()
-    %{tweet | full_text: new_text, entities: new_entities}
-  end
-
-  def make_invalid(%Tweet{retweeted_status: %{full_text: nil}} = tweet) do
-    {new_text, new_entities} = make_new_text_and_entities()
-    %{tweet | retweeted_status: %{text: new_text, entities: new_entities}}
-  end
-
-  def make_invalid(%Tweet{retweeted_status: %{text: nil}} = tweet) do
-    {new_text, new_entities} = make_new_text_and_entities()
-    %{tweet | retweeted_status: %{full_text: new_text, entities: new_entities}}
-  end
-
-  defp make_new_text_and_entities do
-    hashtags = [
-      sequence(:hashtag, &"hashtag-#{&1}"),
-      sequence(:hashtag, &"hashtag-#{&1}"),
-      sequence(:hashtag, &"hashtag-#{&1}"),
-      sequence(:hashtag, &"hashtag-#{&1}"),
-      sequence(:hashtag, &"hashtag-#{&1}"),
-      sequence(:hashtag, &"hashtag-#{&1}")
-    ]
-
-    new_text = hashtags |> Enum.join(" ") |> IO.iodata_to_binary()
-    new_entities = %{hashtags: hashtags |> Enum.map(fn hashtag -> %{text: hashtag} end)}
-
-    {new_text, new_entities}
-  end
-
-  @spec make_retweet(%Tweet{}) :: %Tweet{}
-  def make_retweet(tweet) do
-    %{
-      tweet
-      | retweeted_status: %{
-          text: tweet.text,
-          full_text: tweet.full_text,
-          entities: tweet.entities,
-          user: tweet.user
-        }
     }
   end
 end

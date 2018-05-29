@@ -7,6 +7,7 @@ defmodule UserServerTest do
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.UserServer
   alias SentientSocial.Twitter
+  alias ExTwitter.Model.User
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
   setup :verify_on_exit!
@@ -52,7 +53,7 @@ defmodule UserServerTest do
 
       {:ok, pid} = UserServer.start_link(user.username)
 
-      tweet = build(:ex_twitter_tweet, %{text: "Tweet #keyword1 text"})
+      tweet = build(:tweet, %{text: "Tweet #keyword1 text"})
 
       expect(@twitter_client, :search, 1, fn _, _ ->
         [tweet]
@@ -72,7 +73,7 @@ defmodule UserServerTest do
 
       {:ok, pid} = UserServer.start_link(user.username)
 
-      tweet = build(:ex_twitter_tweet, %{text: "Tweet #keyword1 text"})
+      tweet = build(:tweet, %{text: "Tweet #keyword1 text"})
 
       expect(@twitter_client, :destroy_favorite, 1, fn _id -> {:ok, tweet} end)
       allow(@twitter_client, self(), pid)
@@ -87,7 +88,7 @@ defmodule UserServerTest do
 
       {:ok, pid} = UserServer.start_link(user.username)
 
-      twitter_user = build(:ex_twitter_user, %{followers_count: 200})
+      twitter_user = %User{followers_count: 200}
 
       expect(@twitter_client, :user, 1, fn _username -> {:ok, twitter_user} end)
       allow(@twitter_client, self(), pid)
