@@ -88,6 +88,8 @@ defmodule SentientSocial.Twitter.Engagement do
   defp unfavorite_tweets(interactions, user) do
     interactions
     |> Enum.map(fn interaction ->
+      Logger.info("Unfavoriting tweet #{interaction.tweet_id}")
+
       case @twitter_client.destroy_favorite(interaction.tweet_id) do
         {:ok, tweet} ->
           Twitter.mark_interaction_undone(interaction, user)
