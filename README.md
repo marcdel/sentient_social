@@ -29,3 +29,7 @@
 
 ## Find latest interactions to be undone
 * `SentientSocial.Twitter.AutomatedInteraction |> Ecto.Query.where([ai], not is_nil(ai.undo_at)) |> Ecto.Query.order_by(asc: :undo_at) |> SentientSocial.Repo.all() |> Enum.map(fn ai -> ai.undo_at end)`
+
+## Find a random sample of automated interactions
+* `marcdel = SentientSocial.Accounts.get_user_by_username("marcdel")`
+* `SentientSocial.Twitter.list_automated_interactions(marcdel) |> Enum.filter(fn ai -> ai.undo_at !=  nil end) |> Enum.sort_by(&(&1.undo_at)) |> Enum.map(fn ai -> {ai.undo_at, ai.tweet_id} end) |> Enum.take_random(20)`

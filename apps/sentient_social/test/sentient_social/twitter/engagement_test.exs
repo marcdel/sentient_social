@@ -135,5 +135,43 @@ defmodule SentientSocial.Twitter.EngagementTest do
 
       Engagement.undo_automated_interactions(user.username)
     end
+
+    test "marks interactions as undone" do
+      user = insert(:user, %{username: "testuser"})
+
+      tweet = build(:tweet)
+      insert(:automated_interaction, %{id: 1, undo_at: Date.utc_today(), user: user})
+      expect(@twitter_client, :destroy_favorite, 1, fn _id -> {:ok, tweet} end)
+
+      Engagement.undo_automated_interactions(user.username)
+
+      assert Twitter.get_automated_interaction!(1, user).undone == true
+    end
+
+    test "marks interactions as undone if already undone manually" do
+      user = insert(:user, %{username: "testuser"})
+      insert(:automated_interaction, %{id: 1, undo_at: Date.utc_today(), user: user})
+
+      expect(@twitter_client, :destroy_favorite, 1, fn _id ->
+        {:error, %ExTwitter.Error{code: 144, message: "No status found with that ID."}}
+      end)
+
+      Engagement.undo_automated_interactions(user.username)
+
+      assert Twitter.get_automated_interaction!(1, user).undone == true
+    end
+
+    test "does not mark interactions as undone if the client returns other errors" do
+      user = insert(:user, %{username: "testuser"})
+      insert(:automated_interaction, %{id: 1, undo_at: Date.utc_today(), user: user})
+
+      expect(@twitter_client, :destroy_favorite, 1, fn _id ->
+        {:error, %ExTwitter.Error{code: 123, message: "Real bad stuff happened I guess"}}
+      end)
+
+      Engagement.undo_automated_interactions(user.username)
+
+      assert Twitter.get_automated_interaction!(1, user).undone == false
+    end
   end
 end

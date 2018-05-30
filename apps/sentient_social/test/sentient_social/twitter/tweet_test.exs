@@ -1,6 +1,5 @@
 defmodule SentientSocial.Twitter.TweetTest do
   use ExUnit.Case
-  import SentientSocial.Factory
   alias SentientSocial.Twitter.Tweet
 
   describe "new/1" do

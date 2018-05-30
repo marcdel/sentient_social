@@ -52,7 +52,7 @@ defmodule SentientSocial.Twitter.Engagement do
       user
       |> Twitter.set_access_tokens()
       |> Twitter.automated_interactions_to_be_undone()
-      |> unfavorite_tweets()
+      |> unfavorite_tweets(user)
 
     Logger.info("Unfavorited #{Enum.count(unfavorited_tweets)} tweets for '#{username}'.")
 
@@ -84,13 +84,23 @@ defmodule SentientSocial.Twitter.Engagement do
     |> Enum.reject(&is_nil/1)
   end
 
-  @spec unfavorite_tweets([%AutomatedInteraction{}]) :: [%AutomatedInteraction{}]
-  defp unfavorite_tweets(interactions) do
+  @spec unfavorite_tweets([%AutomatedInteraction{}], %User{}) :: [%AutomatedInteraction{}]
+  defp unfavorite_tweets(interactions, user) do
     interactions
     |> Enum.map(fn interaction ->
-      case @twitter_client.destroy_favorite(interaction.id) do
-        {:ok, tweet} -> tweet
-        {:error, _message} -> nil
+      case @twitter_client.destroy_favorite(interaction.tweet_id) do
+        {:ok, tweet} ->
+          Twitter.mark_interaction_undone(interaction, user)
+          tweet
+
+        {:error, %{code: 144}} ->
+          Logger.info("Tweet #{interaction.tweet_id} already unfavorited")
+          Twitter.mark_interaction_undone(interaction, user)
+          nil
+
+        {:error, error} ->
+          Logger.info("Unable to unfavorite tweet #{interaction.tweet_id}: #{error.message}")
+          nil
       end
     end)
     |> Enum.reject(&is_nil/1)

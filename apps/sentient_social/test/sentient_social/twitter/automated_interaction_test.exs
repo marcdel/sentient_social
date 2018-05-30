@@ -40,6 +40,43 @@ defmodule SentientSocial.AutomatedInteractionTest do
              |> Enum.map(fn x -> x.id end) == [1, 3, 2]
     end
 
+    test "automated_interactions_to_be_undone/1 returns interactions with undo_at less than equal to today" do
+      user = insert(:user)
+
+      yesterday = Date.utc_today() |> Date.add(-1)
+      tomorrow = Date.utc_today() |> Date.add(1)
+
+      yesterdays_interaction = insert(:automated_interaction, undo_at: yesterday, user: user)
+      todays_interaction = insert(:automated_interaction, undo_at: Date.utc_today(), user: user)
+      tomorrows_interaction = insert(:automated_interaction, undo_at: tomorrow, user: user)
+
+      interaction_ids =
+        user
+        |> Twitter.automated_interactions_to_be_undone()
+        |> Enum.map(fn x -> x.id end)
+
+      assert Enum.member?(interaction_ids, yesterdays_interaction.id)
+      assert Enum.member?(interaction_ids, todays_interaction.id)
+      refute Enum.member?(interaction_ids, tomorrows_interaction.id)
+    end
+
+    test "automated_interactions_to_be_undone/1 does not return interactions that are undone" do
+      user = insert(:user)
+
+      interaction = insert(:automated_interaction, undo_at: Date.utc_today(), user: user)
+
+      undone_interaction =
+        insert(:automated_interaction, undo_at: Date.utc_today(), undone: true, user: user)
+
+      interaction_ids =
+        user
+        |> Twitter.automated_interactions_to_be_undone()
+        |> Enum.map(& &1.id)
+
+      assert Enum.member?(interaction_ids, interaction.id)
+      refute Enum.member?(interaction_ids, undone_interaction.id)
+    end
+
     test "get_automated_interactions!/2 returns the automated_interaction with given id" do
       user = insert(:user)
       automated_interaction = insert(:automated_interaction, user: user)
@@ -94,6 +131,19 @@ defmodule SentientSocial.AutomatedInteractionTest do
 
       assert {:error, %Ecto.Changeset{}} =
                Twitter.create_automated_interaction(new_automated_interaction, user)
+    end
+
+    test "mark_interaction_undone/1 marks the interaction as undone" do
+      user = insert(:user)
+
+      new_automated_interaction = insert(:automated_interaction)
+
+      assert new_automated_interaction.undone == false
+
+      {:ok, %AutomatedInteraction{} = automated_interaction} =
+        Twitter.mark_interaction_undone(new_automated_interaction, user)
+
+      assert automated_interaction.undone == true
     end
   end
 end

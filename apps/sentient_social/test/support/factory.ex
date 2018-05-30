@@ -56,6 +56,7 @@ defmodule SentientSocial.Factory do
       tweet_user_screen_name: sequence(:text, &"user_#{&1}"),
       interaction_type: "favorite",
       undo_at: Date.utc_today() |> Date.add(7),
+      undone: false,
       user: build(:user)
     }
   end

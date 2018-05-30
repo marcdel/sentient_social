@@ -106,7 +106,7 @@ defmodule SentientSocial.Twitter do
 
     user
     |> Ecto.assoc(:automated_interactions)
-    |> where([interaction], interaction.undo_at == ^today)
+    |> where([interaction], interaction.undo_at <= ^today and interaction.undone == false)
     |> Repo.all()
   end
 
@@ -150,6 +150,27 @@ defmodule SentientSocial.Twitter do
     |> Ecto.build_assoc(:automated_interactions)
     |> AutomatedInteraction.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Marks an automated interaction as undone
+
+  ## Examples
+
+      iex> mark_interaction_undone(automated_interaction, user)
+      {:ok, %AutomatedInteraction{}}
+
+      iex> mark_interaction_undone(automated_interaction, user)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  @spec mark_interaction_undone(%AutomatedInteraction{}, %User{}) ::
+          {:ok, %AutomatedInteraction{}} | {:error, %Ecto.Changeset{}}
+  def mark_interaction_undone(automated_interaction, user) do
+    user
+    |> Ecto.build_assoc(:automated_interactions, automated_interaction)
+    |> AutomatedInteraction.changeset(%{undone: true})
+    |> Repo.update()
   end
 
   alias SentientSocial.Twitter.HistoricalFollowerCount

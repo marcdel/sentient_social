@@ -62,8 +62,8 @@ defmodule SentientSocial.Accounts.UserServer do
   end
 
   defp schedule_undoing_interactions(username) do
-    Logger.info("Scheduling undoing interactions for '#{username}' in 24 hours.")
-    Process.send_after(self(), {:undo_interactions, username}, :timer.hours(24))
+    Logger.info("Scheduling undoing interactions for '#{username}' in 1 hour.")
+    Process.send_after(self(), {:undo_interactions, username}, :timer.hours(1))
   end
 
   defp schedule_updating_twitter_follower_count(username) do
