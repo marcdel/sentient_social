@@ -192,6 +192,24 @@ defmodule SentientSocial.Twitter do
   end
 
   @doc """
+  Returns the latest historical_follower_counts for the user.
+
+  ## Examples
+
+      iex> latest_historical_follower_counts(%User{})
+      [%HistoricalFollowerCount{}, ...]
+
+  """
+  @spec latest_historical_follower_counts(%User{}) :: list(%HistoricalFollowerCount{})
+  def latest_historical_follower_counts(user) do
+    user
+    |> Ecto.assoc(:historical_follower_counts)
+    |> order_by(desc: :inserted_at)
+    |> limit(20)
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single historical_follower_count.
 
   Raises `Ecto.NoResultsError` if the Historical follower count does not exist.

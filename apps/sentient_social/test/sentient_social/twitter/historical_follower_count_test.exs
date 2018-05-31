@@ -25,6 +25,47 @@ defmodule SentientSocial.HistoricalFollowerCountTest do
              |> Repo.preload(:user) == historical_follower_count
     end
 
+    test "latest_historical_follower_counts/1 limits results to 20" do
+      user = insert(:user)
+
+      Enum.each(1..21, fn _ ->
+        insert(:historical_follower_count, user: user)
+      end)
+
+      assert user
+             |> Twitter.latest_historical_follower_counts()
+             |> Enum.count() == 20
+    end
+
+    test "latest_historical_follower_counts/1 orders by inserted_at time" do
+      user = insert(:user)
+
+      insert(
+        :historical_follower_count,
+        id: 1,
+        inserted_at: ~N[2000-01-03 00:00:00.00],
+        user: user
+      )
+
+      insert(
+        :historical_follower_count,
+        id: 2,
+        inserted_at: ~N[2000-01-01 00:00:00.00],
+        user: user
+      )
+
+      insert(
+        :historical_follower_count,
+        id: 3,
+        inserted_at: ~N[2000-01-02 00:00:00.00],
+        user: user
+      )
+
+      assert user
+             |> Twitter.latest_historical_follower_counts()
+             |> Enum.map(fn x -> x.id end) == [1, 3, 2]
+    end
+
     test "create_historical_follower_count/1 with valid data creates a historical_follower_count" do
       user = insert(:user)
 

@@ -50,7 +50,7 @@ defmodule SentientSocialWeb.DashboardController do
       conn
       |> get_session(:current_user)
       |> Accounts.get_user!()
-      |> Twitter.list_historical_follower_counts()
+      |> Twitter.latest_historical_follower_counts()
       |> Enum.map(fn follower_count ->
         %{
           inserted_at: follower_count.inserted_at,
