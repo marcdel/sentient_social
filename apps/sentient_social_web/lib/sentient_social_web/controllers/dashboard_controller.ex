@@ -1,8 +1,8 @@
 defmodule SentientSocialWeb.DashboardController do
   use SentientSocialWeb, :controller
 
-  alias SentientSocial.Accounts
-  alias SentientSocial.Twitter
+  alias SentientSocial.{Accounts, Twitter}
+  alias SentientSocialWeb.TimeHelpers
 
   @spec index(map, map) :: map
   def index(conn, _params) do
@@ -41,8 +41,8 @@ defmodule SentientSocialWeb.DashboardController do
           tweet_user_screen_name: interaction.tweet_user_screen_name,
           tweet_text: interaction.tweet_text,
           tweet_url: interaction.tweet_url,
-          inserted_at: interaction.inserted_at,
-          undo_at: interaction.undo_at
+          inserted_at: TimeHelpers.format(interaction.inserted_at),
+          undo_at: TimeHelpers.format(interaction.undo_at)
         }
       end)
 
@@ -53,7 +53,7 @@ defmodule SentientSocialWeb.DashboardController do
       |> Twitter.latest_historical_follower_counts()
       |> Enum.map(fn follower_count ->
         %{
-          inserted_at: follower_count.inserted_at,
+          inserted_at: TimeHelpers.format(follower_count.inserted_at),
           count: follower_count.count
         }
       end)

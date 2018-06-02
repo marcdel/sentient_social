@@ -46,12 +46,17 @@ defmodule SentientSocialWeb.DashboardControllerTest do
     test "lists current user's automated interactions", %{conn: conn} do
       user = insert(:user)
 
+      date_time1 = NaiveDateTime.from_iso8601!("2015-01-02 13:05:07")
+      date1 = Date.from_iso8601!("2015-01-23")
+      date_time2 = NaiveDateTime.from_iso8601!("2016-01-02 13:05:07")
+      date2 = Date.from_iso8601!("2016-01-23")
+
       insert(:automated_interaction, %{
         tweet_text: "keyword1",
         tweet_url: "www.twitter.com/i/web/status/1",
         tweet_user_screen_name: "user",
-        inserted_at: DateTime.from_naive!(~N[2017-02-02 11:42:46], "Etc/UTC"),
-        undo_at: DateTime.from_naive!(~N[2017-02-02 11:42:46], "Etc/UTC"),
+        inserted_at: date_time1,
+        undo_at: date1,
         user: user
       })
 
@@ -59,8 +64,8 @@ defmodule SentientSocialWeb.DashboardControllerTest do
         tweet_text: "keyword2",
         tweet_url: "www.twitter.com/i/web/status/2",
         tweet_user_screen_name: "user",
-        inserted_at: DateTime.from_naive!(~N[2017-03-03 10:16:23], "Etc/UTC"),
-        undo_at: DateTime.from_naive!(~N[2017-03-03 10:16:23], "Etc/UTC"),
+        inserted_at: date_time2,
+        undo_at: date2,
         user: user
       })
 
@@ -75,24 +80,28 @@ defmodule SentientSocialWeb.DashboardControllerTest do
       assert html_response(conn, 200) =~ "user"
       assert html_response(conn, 200) =~ "www.twitter.com/i/web/status/1"
       assert html_response(conn, 200) =~ "www.twitter.com/i/web/status/2"
-      assert html_response(conn, 200) =~ "2017-02-02 11:42:46.000000"
-      assert html_response(conn, 200) =~ "2017-03-03 10:16:23.000000"
-      assert html_response(conn, 200) =~ "2017-02-02"
-      assert html_response(conn, 200) =~ "2017-03-03"
+      assert html_response(conn, 200) =~ "01/23/2015"
+      assert html_response(conn, 200) =~ "01/02/2015 13:05"
+      assert html_response(conn, 200) =~ "01/23/2016"
+      assert html_response(conn, 200) =~ "01/02/2016 13:05"
     end
 
     test "lists current user's historical twitter follower count", %{conn: conn} do
       user = insert(:user)
 
+      date_time1 = NaiveDateTime.from_iso8601!("2015-01-02 13:05:07")
+
       insert(:historical_follower_count, %{
         count: 100,
-        inserted_at: DateTime.from_naive!(~N[2017-02-02 11:42:46], "Etc/UTC"),
+        inserted_at: date_time1,
         user: user
       })
 
+      date_time2 = NaiveDateTime.from_iso8601!("2016-01-02 13:05:07")
+
       insert(:historical_follower_count, %{
         count: 200,
-        inserted_at: DateTime.from_naive!(~N[2017-03-03 10:16:23], "Etc/UTC"),
+        inserted_at: date_time2,
         user: user
       })
 
@@ -102,9 +111,9 @@ defmodule SentientSocialWeb.DashboardControllerTest do
         |> get("/dashboard")
 
       assert html_response(conn, 200) =~ "Historical Follower Counts"
-      assert html_response(conn, 200) =~ "2017-02-02 11:42:46.000000"
+      assert html_response(conn, 200) =~ "01/02/2015 13:05"
       assert html_response(conn, 200) =~ "100"
-      assert html_response(conn, 200) =~ "2017-03-03 10:16:23.000000"
+      assert html_response(conn, 200) =~ "01/02/2016 13:05"
       assert html_response(conn, 200) =~ "200"
     end
   end
