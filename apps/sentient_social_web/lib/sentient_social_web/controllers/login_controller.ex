@@ -20,12 +20,20 @@ defmodule SentientSocialWeb.LoginController do
       nil ->
         Accounts.create_user(%{email: email})
 
-      user ->
-        user
-    end
+        conn
+        |> redirect(to: "/auth/twitter")
+        |> halt
 
-    conn
-    |> redirect(to: "/auth/twitter")
-    |> halt
+      %{access_token: nil, access_token_secret: nil} ->
+        conn
+        |> redirect(to: "/auth/twitter")
+        |> halt
+
+      user ->
+        conn
+        |> put_session(:current_user, user.id)
+        |> redirect(to: "/dashboard")
+        |> halt
+    end
   end
 end

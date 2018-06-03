@@ -16,9 +16,23 @@ defmodule SentientSocialWeb.LoginControllerTest do
       assert get_flash(conn, :error) == "Please enter your email address."
     end
 
-    test "redirects to the twitter authentication route", %{conn: conn} do
+    test "redirects to /auth/twitter when user has no access tokens", %{conn: conn} do
+      insert(:user, %{email: "user@email.com", access_token: nil, access_token_secret: nil})
       conn = post(conn, login_path(conn, :index, %{email: "user@email.com"}))
       assert redirected_to(conn) == "/auth/twitter"
+    end
+
+    test "redirects to /dashboard when user already has access tokens", %{conn: conn} do
+      insert(:user, %{
+        id: 1234,
+        email: "user@email.com",
+        access_token: "abcd",
+        access_token_secret: "dcba"
+      })
+
+      conn = post(conn, login_path(conn, :index, %{email: "user@email.com"}))
+      assert get_session(conn, :current_user) == 1234
+      assert redirected_to(conn) == "/dashboard"
     end
 
     test "creates a user with the provided email when one doesn't exist", %{conn: conn} do
