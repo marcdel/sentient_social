@@ -13,6 +13,7 @@ defmodule SentientSocial.Twitter.TweetTest do
           ]
         },
         user: %ExTwitter.Model.User{
+          id: 2,
           screen_name: "user",
           description: "description"
         }
@@ -22,6 +23,7 @@ defmodule SentientSocial.Twitter.TweetTest do
 
       assert tweet.id == 1
       assert tweet.text == "Tweet #keyword1 text"
+      assert tweet.user_id == 2
       assert tweet.screen_name == "user"
       assert tweet.description == "description"
       assert tweet.hashtags == ["keyword1"]

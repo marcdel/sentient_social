@@ -130,7 +130,19 @@ defmodule SentientSocial.Twitter.EngagementTest do
       user = insert(:user, %{username: "testuser"})
 
       tweet = build(:tweet)
-      insert(:automated_interaction, %{undo_at: Date.utc_today(), user: user})
+
+      insert(:automated_interaction, %{
+        interaction_type: "favorite",
+        undo_at: Date.utc_today(),
+        user: user
+      })
+
+      insert(:automated_interaction, %{
+        interaction_type: "follow",
+        undo_at: Date.utc_today(),
+        user: user
+      })
+
       expect(@twitter_client, :destroy_favorite, 1, fn _id -> {:ok, tweet} end)
 
       Engagement.undo_automated_interactions(user.username)

@@ -22,6 +22,7 @@ defmodule SentientSocial.Factory do
       id: 1,
       text: sequence(:screen_name, &"Tweet #keyword#{&1} text"),
       hashtags: [sequence(:hashtag, &"keyword#{&1}")],
+      user_id: sequence(:user_id, &"#{&1}"),
       screen_name: sequence(:screen_name, &"johndoe#{&1}")
     }
   end
@@ -51,9 +52,10 @@ defmodule SentientSocial.Factory do
 
   def automated_interaction_factory do
     %AutomatedInteraction{
-      tweet_text: sequence(:text, &"tweet with hashtag-#{&1}"),
+      tweet_text: sequence(:tweet_text, &"tweet with hashtag-#{&1}"),
       tweet_url: sequence(:tweet_url, &"www.twitter.com/i/web/status/#{&1}"),
-      tweet_user_screen_name: sequence(:text, &"user_#{&1}"),
+      tweet_user_id: sequence(:tweet_user_id, &"#{&1}"),
+      tweet_user_screen_name: sequence(:tweet_user_screen_name, &"user_#{&1}"),
       interaction_type: "favorite",
       undo_at: Date.utc_today() |> Date.add(7),
       undone: false,

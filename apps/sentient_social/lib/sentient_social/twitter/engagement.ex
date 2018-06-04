@@ -86,26 +86,30 @@ defmodule SentientSocial.Twitter.Engagement do
 
   @spec unfavorite_tweets([%AutomatedInteraction{}], %User{}) :: [%AutomatedInteraction{}]
   defp unfavorite_tweets(interactions, user) do
-    interactions
-    |> Enum.map(fn interaction ->
-      Logger.info("Unfavoriting tweet #{interaction.tweet_id}")
-
-      case @twitter_client.destroy_favorite(interaction.tweet_id) do
-        {:ok, tweet} ->
-          Twitter.mark_interaction_undone(interaction, user)
-          tweet
-
-        {:error, %{code: 144}} ->
-          Logger.info("Tweet #{interaction.tweet_id} already unfavorited")
-          Twitter.mark_interaction_undone(interaction, user)
-          nil
-
-        {:error, error} ->
-          Logger.info("Unable to unfavorite tweet #{interaction.tweet_id}: #{error.message}")
-          nil
-      end
-    end)
+    for %{interaction_type: "favorite"} = interaction <- interactions do
+      unfavorite_tweet(interaction, user)
+    end
     |> Enum.reject(&is_nil/1)
+  end
+
+  @spec unfavorite_tweet(%AutomatedInteraction{}, %User{}) :: %AutomatedInteraction{}
+  defp unfavorite_tweet(interaction, user) do
+    Logger.info("Unfavoriting tweet #{interaction.tweet_id}")
+
+    case @twitter_client.destroy_favorite(interaction.tweet_id) do
+      {:ok, tweet} ->
+        Twitter.mark_interaction_undone(interaction, user)
+        tweet
+
+      {:error, %{code: 144}} ->
+        Logger.info("Tweet #{interaction.tweet_id} already unfavorited")
+        Twitter.mark_interaction_undone(interaction, user)
+        nil
+
+      {:error, error} ->
+        Logger.info("Unable to unfavorite tweet #{interaction.tweet_id}: #{error.message}")
+        nil
+    end
   end
 
   @spec save_automated_interaction(%Tweet{}, %User{}) :: {:ok, %AutomatedInteraction{}}
@@ -113,10 +117,11 @@ defmodule SentientSocial.Twitter.Engagement do
     Twitter.create_automated_interaction(
       %{
         tweet_id: tweet.id,
+        tweet_user_id: tweet.user_id,
         tweet_user_screen_name: tweet.screen_name,
+        tweet_user_description: tweet.description,
         tweet_text: tweet.text,
         tweet_url: "https://twitter.com/statuses/#{tweet.id}",
-        tweet_user_description: tweet.description,
         interaction_type: "favorite",
         undo_at: generate_undo_at_date()
       },

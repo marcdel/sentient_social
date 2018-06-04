@@ -46,14 +46,14 @@ defmodule TweetFilterTest do
 
       valid_tweet_two =
         build(:tweet, %{
-          id: 1,
+          id: 2,
           text: "hello",
           hashtags: []
         })
 
       invalid_tweet =
         build(:tweet, %{
-          id: 1,
+          id: 3,
           text: "#one #two #three #four",
           hashtags: ["one", "two", "three", "four"]
         })

@@ -13,6 +13,7 @@ defmodule SentientSocial.Twitter.AutomatedInteraction do
     field(:tweet_id, :integer)
     field(:tweet_text, :string)
     field(:tweet_url, :string)
+    field(:tweet_user_id, :integer)
     field(:tweet_user_description, :string)
     field(:tweet_user_screen_name, :string)
     field(:undo_at, :date)
@@ -30,6 +31,7 @@ defmodule SentientSocial.Twitter.AutomatedInteraction do
       :tweet_id,
       :tweet_text,
       :tweet_url,
+      :tweet_user_id,
       :tweet_user_screen_name,
       :tweet_user_description,
       :interaction_type,
@@ -37,6 +39,7 @@ defmodule SentientSocial.Twitter.AutomatedInteraction do
       :undone
     ])
     |> validate_required([
+      :tweet_user_id,
       :tweet_user_screen_name,
       :interaction_type
     ])
