@@ -72,16 +72,21 @@ defmodule SentientSocial.Twitter.Engagement do
   defp favorite_tweets(tweets, user) do
     tweets
     |> Enum.map(fn tweet ->
-      case @twitter_client.create_favorite(tweet.id) do
-        {:ok, tweet} ->
-          {:ok, _} = save_automated_interaction(tweet, user)
-          tweet
-
-        {:error, _message} ->
-          nil
-      end
+      favorite_tweet(tweet, user)
     end)
     |> Enum.reject(&is_nil/1)
+  end
+
+  @spec favorite_tweet(%Tweet{}, %User{}) :: %Tweet{}
+  defp favorite_tweet(tweet, user) do
+    case @twitter_client.create_favorite(tweet.id) do
+      {:ok, tweet} ->
+        {:ok, _} = save_automated_interaction(tweet, user)
+        tweet
+
+      {:error, _message} ->
+        nil
+    end
   end
 
   @spec unfavorite_tweets([%AutomatedInteraction{}], %User{}) :: [%AutomatedInteraction{}]
