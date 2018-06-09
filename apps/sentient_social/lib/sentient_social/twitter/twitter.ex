@@ -9,9 +9,7 @@ defmodule SentientSocial.Twitter do
   alias ExTwitter.Config
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
-  alias SentientSocial.Twitter.AutomatedInteraction
-
-  @twitter_client Application.get_env(:sentient_social, :twitter_client)
+  alias SentientSocial.Twitter.{AutomatedInteraction, RateLimitedTwitterClient}
 
   @doc """
   Retrieves the specified user's follower count and updates the users table
@@ -29,7 +27,7 @@ defmodule SentientSocial.Twitter do
       |> Accounts.get_user_by_username()
       |> set_access_tokens()
 
-    {:ok, twitter_user} = @twitter_client.user(username)
+    {:ok, twitter_user} = RateLimitedTwitterClient.user(user)
 
     {:ok, user} =
       Accounts.update_user(user, %{twitter_followers_count: twitter_user.followers_count})

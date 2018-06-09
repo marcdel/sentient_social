@@ -8,11 +8,15 @@ defmodule SentientSocial.Twitter.Engagement do
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
   alias SentientSocial.Twitter
-  alias SentientSocial.Twitter.{Tweet, TweetFilter, AutomatedInteraction}
+
+  alias SentientSocial.Twitter.{
+    AutomatedInteraction,
+    Tweet,
+    TweetFilter,
+    RateLimitedTwitterClient
+  }
 
   @max_engagements 1
-
-  @twitter_client Application.get_env(:sentient_social, :twitter_client)
 
   @doc """
   Find and favorite tweets for the given user
@@ -64,7 +68,7 @@ defmodule SentientSocial.Twitter.Engagement do
     user
     |> Accounts.list_keywords()
     |> Enum.flat_map(fn keyword ->
-      @twitter_client.search(keyword.text, count: @max_engagements, tweet_mode: "extended")
+      RateLimitedTwitterClient.search(keyword.text, user, count: @max_engagements)
     end)
   end
 
@@ -79,13 +83,12 @@ defmodule SentientSocial.Twitter.Engagement do
 
   @spec favorite_tweet(%Tweet{}, %User{}) :: %Tweet{}
   defp favorite_tweet(tweet, user) do
-    case @twitter_client.create_favorite(tweet.id) do
-      {:ok, tweet} ->
-        {:ok, _} = save_automated_interaction(tweet, user)
-        tweet
-
-      {:error, _message} ->
-        nil
+    with {:ok, tweet} <- RateLimitedTwitterClient.create_favorite(tweet.id, user),
+         {:ok, _} <- save_automated_interaction(tweet, user) do
+      tweet
+    else
+      {:deny, _limit} -> nil
+      {:error, _message} -> nil
     end
   end
 
@@ -101,10 +104,12 @@ defmodule SentientSocial.Twitter.Engagement do
   defp unfavorite_tweet(interaction, user) do
     Logger.info("Unfavoriting tweet #{interaction.tweet_id}")
 
-    case @twitter_client.destroy_favorite(interaction.tweet_id) do
-      {:ok, tweet} ->
-        Twitter.mark_interaction_undone(interaction, user)
-        tweet
+    with {:ok, tweet} <- RateLimitedTwitterClient.destroy_favorite(interaction.tweet_id, user),
+         {:ok, _} = Twitter.mark_interaction_undone(interaction, user) do
+      tweet
+    else
+      {:deny, _limit} ->
+        nil
 
       {:error, %{code: 144}} ->
         Logger.info("Tweet #{interaction.tweet_id} already unfavorited")

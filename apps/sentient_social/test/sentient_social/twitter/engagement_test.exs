@@ -6,6 +6,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
   alias SentientSocial.Accounts.User
   alias SentientSocial.Twitter
   alias SentientSocial.Twitter.Engagement
+  alias SentientSocial.Twitter.Tweet
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
   setup :verify_on_exit!

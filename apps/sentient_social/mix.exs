@@ -44,7 +44,8 @@ defmodule SentientSocial.Mixfile do
       {:mox, "~> 0.3", only: :test},
       {:ex_machina, "~> 2.2", only: :test},
       {:extwitter, "~> 0.8"},
-      {:cloak, "~> 0.6"}
+      {:cloak, "~> 0.6"},
+      {:hammer, "~> 5.0"}
     ]
   end
 

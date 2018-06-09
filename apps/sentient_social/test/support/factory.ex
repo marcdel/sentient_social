@@ -19,7 +19,7 @@ defmodule SentientSocial.Factory do
 
   def tweet_factory do
     %Tweet{
-      id: 1,
+      id: sequence(:id, &"#{&1}"),
       text: sequence(:screen_name, &"Tweet #keyword#{&1} text"),
       hashtags: [sequence(:hashtag, &"keyword#{&1}")],
       user_id: sequence(:user_id, &"#{&1}"),
