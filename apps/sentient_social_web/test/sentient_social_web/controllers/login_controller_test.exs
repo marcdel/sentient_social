@@ -22,7 +22,7 @@ defmodule SentientSocialWeb.LoginControllerTest do
       assert redirected_to(conn) == "/auth/twitter"
     end
 
-    test "redirects to /dashboard when user already has access tokens", %{conn: conn} do
+    test "still redirects to /auth/twitter when user already has access tokens", %{conn: conn} do
       insert(:user, %{
         id: 1234,
         email: "user@email.com",
@@ -32,7 +32,7 @@ defmodule SentientSocialWeb.LoginControllerTest do
 
       conn = post(conn, login_path(conn, :index, %{email: "user@email.com"}))
       assert get_session(conn, :current_user) == 1234
-      assert redirected_to(conn) == "/dashboard"
+      assert redirected_to(conn) == "/auth/twitter"
     end
 
     test "creates a user with the provided email when one doesn't exist", %{conn: conn} do
