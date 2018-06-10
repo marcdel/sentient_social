@@ -45,7 +45,8 @@ defmodule SentientSocial.Mixfile do
       {:ex_machina, "~> 2.2", only: :test},
       {:extwitter, "~> 0.8"},
       {:cloak, "~> 0.6"},
-      {:hammer, "~> 5.0"}
+      {:hammer, "~> 5.0"},
+      {:sentry, "~> 6.2.1"}
     ]
   end
 

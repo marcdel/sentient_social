@@ -22,6 +22,11 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+config :sentry,
+  dsn: "https://def3a792f10b4db7a72a36a9e45857d4@sentry.io/1223027",
+  included_environments: [:prod],
+  environment_name: Mix.env()
+
 config :sentient_social_web, :generators, context_app: :sentient_social
 
 config :ueberauth, Ueberauth,

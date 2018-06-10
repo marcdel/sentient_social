@@ -1,5 +1,8 @@
 defmodule SentientSocialWeb.Router do
   use SentientSocialWeb, :router
+  use Plug.ErrorHandler
+  use Sentry.Plug
+
   alias SentientSocialWeb.Plug.Authenticate
 
   pipeline :browser do
