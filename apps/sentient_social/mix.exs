@@ -24,7 +24,7 @@ defmodule SentientSocial.Mixfile do
   def application do
     [
       mod: {SentientSocial.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :sentry]
     ]
   end
 
