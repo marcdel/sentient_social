@@ -7,12 +7,14 @@ defmodule SentientSocial.TwitterTest do
   alias ExTwitter.Model.User
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
+  @rate_limiter Application.get_env(:sentient_social, :rate_limiter)
   setup :verify_on_exit!
 
   describe "update_twitter_followers/1" do
     test "retreives the specified user's follower count and updates the users table" do
       user = insert(:user, %{username: "testuser", twitter_followers_count: 0})
       twitter_user = %User{screen_name: "testuser", followers_count: 150}
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 10} end)
       expect(@twitter_client, :user, 1, fn _id -> {:ok, twitter_user} end)
 
       {:ok, user} = Twitter.update_twitter_followers(user.username)
@@ -23,6 +25,7 @@ defmodule SentientSocial.TwitterTest do
     test "inserts a historical record of the specified user's follower count" do
       user = insert(:user, %{username: "testuser", twitter_followers_count: 0})
       twitter_user = %User{screen_name: "testuser", followers_count: 110}
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 10} end)
       expect(@twitter_client, :user, 1, fn _id -> {:ok, twitter_user} end)
 
       {:ok, user} = Twitter.update_twitter_followers(user.username)

@@ -68,9 +68,25 @@ defmodule SentientSocial.Twitter.Engagement do
     user
     |> Accounts.list_keywords()
     |> Enum.flat_map(fn keyword ->
-      RateLimitedTwitterClient.search(keyword.text, user, count: @max_engagements)
+      keyword.text
+      |> RateLimitedTwitterClient.search(user, count: @max_engagements)
+      |> handle_search_result()
     end)
   end
+
+  @spec handle_search_result(list(%Tweet{}) | {:deny, integer} | {:error, String.t()}) ::
+          list(%Tweet{})
+  defp handle_search_result({:deny, _}) do
+    Logger.info("Search rate limited")
+    []
+  end
+
+  defp handle_search_result({:error, message}) do
+    Logger.info("Search error: #{message}")
+    []
+  end
+
+  defp handle_search_result(tweets), do: tweets
 
   @spec favorite_tweets([%Tweet{}], %User{}) :: [%Tweet{}]
   defp favorite_tweets(tweets, user) do
@@ -87,8 +103,13 @@ defmodule SentientSocial.Twitter.Engagement do
          {:ok, _} <- save_automated_interaction(tweet, user) do
       tweet
     else
-      {:deny, _limit} -> nil
-      {:error, _message} -> nil
+      {:deny, _limit} ->
+        Logger.info("Fav'ing tweet was rate limited")
+        nil
+
+      {:error, message} ->
+        Logger.info("Error fav'ing tweet: #{message}")
+        nil
     end
   end
 
@@ -109,6 +130,7 @@ defmodule SentientSocial.Twitter.Engagement do
       tweet
     else
       {:deny, _limit} ->
+        Logger.info("Unfav'ing tweet was rate limited")
         nil
 
       {:error, %{code: 144}} ->

@@ -10,6 +10,7 @@ defmodule UserServerTest do
   alias ExTwitter.Model.User
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
+  @rate_limiter Application.get_env(:sentient_social, :rate_limiter)
   setup :verify_on_exit!
 
   test "spawning a user server process" do
@@ -55,6 +56,8 @@ defmodule UserServerTest do
 
       tweet = build(:tweet, %{text: "Tweet #keyword1 text"})
 
+      expect(@rate_limiter, :check, 2, fn _key, _time, _rate -> {:allow, 10} end)
+
       expect(@twitter_client, :search, 1, fn _, _ ->
         [tweet]
       end)
@@ -75,6 +78,7 @@ defmodule UserServerTest do
 
       tweet = build(:tweet, %{text: "Tweet #keyword1 text"})
 
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 10} end)
       expect(@twitter_client, :destroy_favorite, 1, fn _id -> {:ok, tweet} end)
       allow(@twitter_client, self(), pid)
 
@@ -90,6 +94,7 @@ defmodule UserServerTest do
 
       twitter_user = %User{followers_count: 200}
 
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 10} end)
       expect(@twitter_client, :user, 1, fn _username -> {:ok, twitter_user} end)
       allow(@twitter_client, self(), pid)
 

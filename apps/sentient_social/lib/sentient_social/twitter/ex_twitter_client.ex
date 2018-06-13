@@ -11,11 +11,16 @@ defmodule SentientSocial.Twitter.ExTwitterClient do
   @doc """
   Search for tweets matching the specified string
   """
-  @spec search(String.t(), count: integer, tweet_mode: String.t()) :: [%Tweet{}]
+  @spec search(String.t(), count: integer, tweet_mode: String.t()) ::
+          [%Tweet{}] | {:error, String.t()}
+
   def search(query, options \\ []) do
     query
     |> ExTwitter.search(options)
     |> Enum.map(&Tweet.new/1)
+  rescue
+    message in ExTwitter.Error ->
+      {:error, message}
   end
 
   @doc """

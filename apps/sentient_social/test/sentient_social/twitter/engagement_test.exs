@@ -9,6 +9,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
   alias SentientSocial.Twitter.Tweet
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
+  @rate_limiter Application.get_env(:sentient_social, :rate_limiter)
   setup :verify_on_exit!
 
   describe "favorite_new_keyword_tweets/1" do
@@ -24,11 +25,13 @@ defmodule SentientSocial.Twitter.EngagementTest do
 
       tweet1 = build(:tweet, %{id: 1, text: "Tweet keyword1 text"})
       insert(:keyword, %{text: "keyword1", user: user})
+      expect(@rate_limiter, :check, 2, fn _key, _time, _rate -> {:allow, 1} end)
       expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet1] end)
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet1} end)
 
       tweet2 = build(:tweet, %{id: 2, text: "Tweet keyword2 text"})
       insert(:keyword, %{text: "keyword2", user: user})
+      expect(@rate_limiter, :check, 2, fn _key, _time, _rate -> {:allow, 1} end)
       expect(@twitter_client, :search, 1, fn "keyword2", _ -> [tweet2] end)
       expect(@twitter_client, :create_favorite, 1, fn 2 -> {:ok, tweet2} end)
 
@@ -51,6 +54,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
         })
 
       insert(:keyword, %{text: "keyword1", user: user})
+      expect(@rate_limiter, :check, 2, fn _key, _time, _rate -> {:allow, 1} end)
       expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet] end)
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet} end)
 
@@ -80,6 +84,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
         })
 
       insert(:keyword, %{text: "keyword1", user: user})
+      expect(@rate_limiter, :check, 2, fn _key, _time, _rate -> {:allow, 1} end)
       expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet] end)
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:ok, tweet} end)
 
@@ -96,8 +101,30 @@ defmodule SentientSocial.Twitter.EngagementTest do
 
       tweet = build(:tweet, %{id: 1, text: "Tweet keyword1 text"})
       insert(:keyword, %{text: "keyword1", user: user})
+      expect(@rate_limiter, :check, 2, fn _key, _time, _rate -> {:allow, 1} end)
       expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet] end)
       expect(@twitter_client, :create_favorite, 1, fn 1 -> {:error, ""} end)
+
+      {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
+
+      assert tweets == []
+    end
+
+    test "returns no tweets when search is rate limited" do
+      user = insert(:user)
+      insert(:keyword, %{text: "keyword1", user: user})
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:deny, 1} end)
+
+      {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
+
+      assert tweets == []
+    end
+
+    test "returns no tweets when search returns an error" do
+      user = insert(:user)
+      insert(:keyword, %{text: "keyword1", user: user})
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 1} end)
+      expect(@twitter_client, :search, 1, fn "keyword1", _ -> {:error, "whoops"} end)
 
       {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
 
@@ -118,6 +145,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
 
       tweet = build(:tweet, %{id: 1, text: "Tweet keyword1 text"})
       insert(:keyword, %{text: "keyword1", user: user})
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 1} end)
       expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet] end)
 
       {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username, FakeTweetFilter)
@@ -144,6 +172,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
         user: user
       })
 
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 1} end)
       expect(@twitter_client, :destroy_favorite, 1, fn _id -> {:ok, tweet} end)
 
       Engagement.undo_automated_interactions(user.username)
@@ -154,6 +183,7 @@ defmodule SentientSocial.Twitter.EngagementTest do
 
       tweet = build(:tweet)
       insert(:automated_interaction, %{id: 1, undo_at: Date.utc_today(), user: user})
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 1} end)
       expect(@twitter_client, :destroy_favorite, 1, fn _id -> {:ok, tweet} end)
 
       Engagement.undo_automated_interactions(user.username)
@@ -164,6 +194,8 @@ defmodule SentientSocial.Twitter.EngagementTest do
     test "marks interactions as undone if already undone manually" do
       user = insert(:user, %{username: "testuser"})
       insert(:automated_interaction, %{id: 1, undo_at: Date.utc_today(), user: user})
+
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 1} end)
 
       expect(@twitter_client, :destroy_favorite, 1, fn _id ->
         {:error, %ExTwitter.Error{code: 144, message: "No status found with that ID."}}
@@ -177,6 +209,8 @@ defmodule SentientSocial.Twitter.EngagementTest do
     test "does not mark interactions as undone if the client returns other errors" do
       user = insert(:user, %{username: "testuser"})
       insert(:automated_interaction, %{id: 1, undo_at: Date.utc_today(), user: user})
+
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 1} end)
 
       expect(@twitter_client, :destroy_favorite, 1, fn _id ->
         {:error, %ExTwitter.Error{code: 123, message: "Real bad stuff happened I guess"}}

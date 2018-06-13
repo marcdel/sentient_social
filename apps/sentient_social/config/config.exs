@@ -29,5 +29,6 @@ config :sentry,
   environment_name: Mix.env()
 
 config :sentient_social, twitter_client: SentientSocial.Twitter.ExTwitterClient
+config :sentient_social, rate_limiter: SentientSocial.Twitter.HammerRateLimiter
 
 import_config "#{Mix.env()}.exs"

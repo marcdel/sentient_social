@@ -7,14 +7,16 @@ defmodule SentientSocial.Twitter.RateLimitedTwitterClient do
   alias SentientSocial.Twitter.Tweet
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
+  @rate_limiter Application.get_env(:sentient_social, :rate_limiter)
+
   @time_scale 60_000 * 15
-  @defaults [count: 10, rate_limit: 10, tweet_mode: "extended"]
+  @defaults [count: 10, rate_limit: 15, tweet_mode: "extended"]
 
   @doc """
   Search for tweets matching the specified string
   """
   @spec search(String.t(), %User{}, count: integer, rate_limit: integer) ::
-          [%Tweet{}] | {:deny, integer}
+          [%Tweet{}] | {:deny, integer} | {:error, String.t()}
   def search(query, user, options \\ []) do
     options = Keyword.merge(@defaults, options)
 
@@ -53,7 +55,7 @@ defmodule SentientSocial.Twitter.RateLimitedTwitterClient do
   Unfavorite the specified tweet by id and return an :ok or an :error tuple
   """
   @spec destroy_favorite(integer, %User{}, rate_limit: integer) ::
-          {:ok, %Tweet{}} | {:error, ExTwitter.Error}
+          {:ok, %Tweet{}} | {:deny, integer} | {:error, ExTwitter.Error}
   def destroy_favorite(tweet_id, user, options \\ []) do
     options = Keyword.merge(@defaults, options)
 
@@ -64,6 +66,6 @@ defmodule SentientSocial.Twitter.RateLimitedTwitterClient do
 
   @spec check_rate_limit(%User{}, integer) :: {:allow, integer} | {:deny, integer}
   defp check_rate_limit(user, rate_limit) do
-    Hammer.check_rate("twitter:#{user.id}", @time_scale, rate_limit)
+    @rate_limiter.check("twitter:#{user.id}", @time_scale, rate_limit)
   end
 end

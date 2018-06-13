@@ -1,4 +1,4 @@
 twitter.ex:26: Function update_twitter_followers/1 has no local return
 twitter.ex:23: Invalid type specification for function 'Elixir.SentientSocial.Twitter':update_twitter_followers/1
 twitter.ex:32: The call 'Elixir.SentientSocial.Twitter.ExTwitterClient':user(_username@1::'Elixir.String') will never return
-engagement.ex:103: Invalid type specification for function 'Elixir.SentientSocial.Twitter.Engagement':unfavorite_tweet/2
+engagement.ex:111: Invalid type specification for function 'Elixir.SentientSocial.Twitter.Engagement':unfavorite_tweet/2

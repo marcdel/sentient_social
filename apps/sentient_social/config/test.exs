@@ -21,3 +21,4 @@ config :cloak, Cloak.AES.GCM,
   ]
 
 config :sentient_social, twitter_client: SentientSocial.Twitter.MockTwitterClient
+config :sentient_social, rate_limiter: SentientSocial.Twitter.MockRateLimiter
