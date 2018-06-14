@@ -21,7 +21,7 @@ defmodule SentientSocial.Accounts.UserSupervisor do
   Starts a `UserServer` process and supervises it.
   """
   @spec start_user(String.t()) :: Supervisor.on_start()
-  def(start_user(username)) do
+  def start_user(username) do
     child_spec = %{
       id: UserServer,
       start: {UserServer, :start_link, [username]},

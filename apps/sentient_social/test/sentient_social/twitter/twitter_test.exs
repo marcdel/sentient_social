@@ -4,6 +4,7 @@ defmodule SentientSocial.TwitterTest do
   import SentientSocial.Factory
 
   alias SentientSocial.Twitter
+  alias SentientSocial.Accounts
   alias ExTwitter.Model.User
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
@@ -20,6 +21,35 @@ defmodule SentientSocial.TwitterTest do
       {:ok, user} = Twitter.update_twitter_followers(user.username)
 
       assert user.twitter_followers_count == 150
+    end
+
+    test "does not modify the specified user when rate limited" do
+      user = insert(:user, %{username: "testuser", twitter_followers_count: 0})
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:deny, 1} end)
+
+      {:ok, user} = Twitter.update_twitter_followers(user.username)
+
+      assert user.twitter_followers_count == 0
+    end
+
+    test "does not modify the specified user when client returns an ExTwitter error" do
+      user = insert(:user, %{username: "testuser", twitter_followers_count: 0})
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 10} end)
+      expect(@twitter_client, :user, 1, fn _id -> {:error, %ExTwitter.Error{}} end)
+
+      {:ok, user} = Twitter.update_twitter_followers(user.username)
+
+      assert user.twitter_followers_count == 0
+    end
+
+    test "does not modify the specified user when client returns another kind of error" do
+      user = insert(:user, %{username: "testuser", twitter_followers_count: 0})
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 10} end)
+      expect(@twitter_client, :user, 1, fn _id -> {:error, %{}} end)
+
+      {:error, _} = Twitter.update_twitter_followers(user.username)
+
+      assert Accounts.get_user!(user.id).twitter_followers_count == 0
     end
 
     test "inserts a historical record of the specified user's follower count" do

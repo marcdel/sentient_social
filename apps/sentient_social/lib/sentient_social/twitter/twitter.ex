@@ -4,11 +4,12 @@ defmodule SentientSocial.Twitter do
   """
 
   import Ecto.Query, warn: false
-  alias SentientSocial.Repo
+  require Logger
 
   alias ExTwitter.Config
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
+  alias SentientSocial.Repo
   alias SentientSocial.Twitter.{AutomatedInteraction, RateLimitedTwitterClient}
 
   @doc """
@@ -20,21 +21,31 @@ defmodule SentientSocial.Twitter do
       100
 
   """
-  @spec update_twitter_followers(String.t()) :: {:ok, %User{}}
+  @spec update_twitter_followers(Elixir.String) :: {:ok, %User{}} | {:error, %Ecto.Changeset{}}
   def update_twitter_followers(username) do
     user =
       username
       |> Accounts.get_user_by_username()
       |> set_access_tokens()
 
-    {:ok, twitter_user} = RateLimitedTwitterClient.user(user)
+    with {:ok, twitter_user} <- RateLimitedTwitterClient.user(user),
+         {:ok, user} <-
+           Accounts.update_user(user, %{twitter_followers_count: twitter_user.followers_count}),
+         {:ok, _} <-
+           create_historical_follower_count(%{count: twitter_user.followers_count}, user) do
+      {:ok, user}
+    else
+      {:deny, _} ->
+        Logger.info("User lookup rate limited")
+        {:ok, user}
 
-    {:ok, user} =
-      Accounts.update_user(user, %{twitter_followers_count: twitter_user.followers_count})
+      {:error, %{message: message}} ->
+        Logger.info("User lookup error: #{message}")
+        {:ok, user}
 
-    {:ok, _} = create_historical_follower_count(%{count: twitter_user.followers_count}, user)
-
-    {:ok, user}
+      {:error, _} = wut ->
+        wut
+    end
   end
 
   # Configure ExTwitter for the current process with the user's access tokens.
