@@ -12,8 +12,7 @@ defmodule SentientSocial.Accounts.UserServer do
   alias SentientSocial.Twitter.Engagement
 
   @min_interval 1
-  @max_interval 1
-  # @max_interval 30
+  @max_interval 30
 
   @doc """
   Spawns a new user server process registered under the given `username`.

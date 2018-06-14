@@ -81,8 +81,8 @@ defmodule SentientSocial.Twitter.Engagement do
     []
   end
 
-  defp handle_search_result({:error, message}) do
-    Logger.info("Search error: #{message}")
+  defp handle_search_result({:error, error}) do
+    Logger.info("Search error: #{error.message}")
     []
   end
 
@@ -107,8 +107,8 @@ defmodule SentientSocial.Twitter.Engagement do
         Logger.info("Fav'ing tweet was rate limited")
         nil
 
-      {:error, message} ->
-        Logger.info("Error fav'ing tweet: #{message}")
+      {:error, error} ->
+        Logger.info("Error fav'ing tweet: #{error.message}")
         nil
     end
   end

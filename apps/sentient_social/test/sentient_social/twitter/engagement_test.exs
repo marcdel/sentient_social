@@ -103,7 +103,10 @@ defmodule SentientSocial.Twitter.EngagementTest do
       insert(:keyword, %{text: "keyword1", user: user})
       expect(@rate_limiter, :check, 2, fn _key, _time, _rate -> {:allow, 1} end)
       expect(@twitter_client, :search, 1, fn "keyword1", _ -> [tweet] end)
-      expect(@twitter_client, :create_favorite, 1, fn 1 -> {:error, ""} end)
+
+      expect(@twitter_client, :create_favorite, 1, fn 1 ->
+        {:error, %{code: 139, message: "You have already favorited this status."}}
+      end)
 
       {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
 
@@ -124,7 +127,25 @@ defmodule SentientSocial.Twitter.EngagementTest do
       user = insert(:user)
       insert(:keyword, %{text: "keyword1", user: user})
       expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:allow, 1} end)
-      expect(@twitter_client, :search, 1, fn "keyword1", _ -> {:error, "whoops"} end)
+
+      expect(@twitter_client, :search, 1, fn "keyword1", _ ->
+        {:error, %{code: 123, message: "Whoops"}}
+      end)
+
+      {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
+
+      assert tweets == []
+    end
+
+    test "returns no tweets when create_favorite is rate limited" do
+      user = insert(:user)
+      insert(:keyword, %{text: "keyword1", user: user})
+      expect(@rate_limiter, :check, 2, fn _key, _time, _rate -> {:allow, 2} end)
+      expect(@twitter_client, :search, 1, fn "keyword1", _ -> [build(:tweet)] end)
+
+      expect(@twitter_client, :create_favorite, 1, fn _ ->
+        {:deny, 2}
+      end)
 
       {:ok, tweets} = Engagement.favorite_new_keyword_tweets(user.username)
 
@@ -215,6 +236,17 @@ defmodule SentientSocial.Twitter.EngagementTest do
       expect(@twitter_client, :destroy_favorite, 1, fn _id ->
         {:error, %ExTwitter.Error{code: 123, message: "Real bad stuff happened I guess"}}
       end)
+
+      Engagement.undo_automated_interactions(user.username)
+
+      assert Twitter.get_automated_interaction!(1, user).undone == false
+    end
+
+    test "does not mark interactions as undone when rate limited" do
+      user = insert(:user, %{username: "testuser"})
+      insert(:automated_interaction, %{id: 1, undo_at: Date.utc_today(), user: user})
+
+      expect(@rate_limiter, :check, 1, fn _key, _time, _rate -> {:deny, 1} end)
 
       Engagement.undo_automated_interactions(user.username)
 

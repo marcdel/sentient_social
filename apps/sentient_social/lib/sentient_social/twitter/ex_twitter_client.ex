@@ -12,15 +12,15 @@ defmodule SentientSocial.Twitter.ExTwitterClient do
   Search for tweets matching the specified string
   """
   @spec search(String.t(), count: integer, tweet_mode: String.t()) ::
-          [%Tweet{}] | {:error, String.t()}
+          [%Tweet{}] | {:error, %{code: integer, message: String.t()}}
 
   def search(query, options \\ []) do
     query
     |> ExTwitter.search(options)
     |> Enum.map(&Tweet.new/1)
   rescue
-    message in ExTwitter.Error ->
-      {:error, message}
+    error in ExTwitter.Error ->
+      {:error, error}
   end
 
   @doc """
@@ -32,28 +32,30 @@ defmodule SentientSocial.Twitter.ExTwitterClient do
   @doc """
   Favorite the specified tweet by id and return an :ok or an :error tuple
   """
-  @spec create_favorite(Integer) :: {:ok, %Tweet{}} | {:error, String.t()}
+  @spec create_favorite(Integer) ::
+          {:ok, %Tweet{}} | {:error, %{code: integer, message: String.t()}}
   def create_favorite(tweet_id) do
     {:ok,
      tweet_id
      |> ExTwitter.create_favorite([])
      |> Tweet.new()}
   rescue
-    message in ExTwitter.Error ->
-      {:error, message}
+    error in ExTwitter.Error ->
+      {:error, error}
   end
 
   @doc """
   Unfavorite the specified tweet by id and return an :ok or an :error tuple
   """
-  @spec destroy_favorite(Integer) :: {:ok, %Tweet{}} | {:error, String.t()}
+  @spec destroy_favorite(Integer) ::
+          {:ok, %Tweet{}} | {:error, %{code: integer, message: String.t()}}
   def destroy_favorite(tweet_id) do
     {:ok,
      tweet_id
      |> ExTwitter.destroy_favorite([])
      |> Tweet.new()}
   rescue
-    message in ExTwitter.Error ->
-      {:error, message}
+    error in ExTwitter.Error ->
+      {:error, error}
   end
 end

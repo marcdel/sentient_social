@@ -10,7 +10,7 @@ defmodule SentientSocial.Twitter.RateLimitedTwitterClient do
   @rate_limiter Application.get_env(:sentient_social, :rate_limiter)
 
   @time_scale 60_000 * 15
-  @defaults [count: 10, rate_limit: 15, tweet_mode: "extended"]
+  @defaults [count: 180, rate_limit: 15, tweet_mode: "extended"]
 
   @doc """
   Search for tweets matching the specified string
