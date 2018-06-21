@@ -22,6 +22,17 @@ defmodule SentientSocial.Accounts.UserServer do
     GenServer.start_link(__MODULE__, username, name: via_tuple(username))
   end
 
+  @spec init(String.t()) :: {:ok, map}
+  def init(username) do
+    Logger.info("Spawned user server process for '#{username}'.")
+
+    schedule_favoriting_tweets(username)
+    schedule_undoing_interactions(username)
+    schedule_updating_twitter_follower_count(username)
+
+    {:ok, %{username: username}}
+  end
+
   @doc """
   Returns a tuple used to register and lookup a user server process by name.
   """
@@ -69,17 +80,6 @@ defmodule SentientSocial.Accounts.UserServer do
   defp schedule_updating_twitter_follower_count(username) do
     Logger.info("Scheduling updating twitter followers count for '#{username}' in 1 hour.")
     Process.send_after(self(), {:update_twitter_followers, username}, :timer.hours(1))
-  end
-
-  @spec init(String.t()) :: {:ok, map}
-  def init(username) do
-    Logger.info("Spawned user server process for '#{username}'.")
-
-    schedule_favoriting_tweets(username)
-    schedule_undoing_interactions(username)
-    schedule_updating_twitter_follower_count(username)
-
-    {:ok, %{}}
   end
 
   # credo:disable-for-next-line Credo.Check.Readability.Specs
