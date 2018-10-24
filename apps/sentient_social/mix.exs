@@ -24,7 +24,7 @@ defmodule SentientSocial.Mixfile do
   def application do
     [
       mod: {SentientSocial.Application, []},
-      extra_applications: [:logger, :runtime_tools, :sentry]
+      extra_applications: [:logger, :runtime_tools, :sentry, :timber]
     ]
   end
 
@@ -46,7 +46,8 @@ defmodule SentientSocial.Mixfile do
       {:extwitter, "~> 0.8"},
       {:cloak, "~> 0.6"},
       {:hammer, "~> 5.0"},
-      {:sentry, "~> 6.2.1"}
+      {:sentry, "~> 6.2.1"},
+      {:timber, "~> 2.5"}
     ]
   end
 

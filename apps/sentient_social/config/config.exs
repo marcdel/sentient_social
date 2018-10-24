@@ -28,6 +28,17 @@ config :sentry,
   included_environments: [:prod],
   environment_name: Mix.env()
 
+config :logger,
+  backends: [Timber.LoggerBackends.HTTP],
+  utc_log: true
+
+config :timber,
+  api_key:
+    "3158_2617b10eb4c54ff2:c37cfbcca5217cf7fe1184b3ac2f28cf847fd162177b0a634bdc244cf5ea045e"
+
+config :sentient_social, SentientSocial.Repo,
+  loggers: [{Timber.Integrations.EctoLogger, :log, []}]
+
 config :sentient_social, twitter_client: SentientSocial.Twitter.ExTwitterClient
 config :sentient_social, rate_limiter: SentientSocial.Twitter.HammerRateLimiter
 

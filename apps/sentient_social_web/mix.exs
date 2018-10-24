@@ -25,7 +25,7 @@ defmodule SentientSocialWeb.Mixfile do
   def application do
     [
       mod: {SentientSocialWeb.Application, []},
-      extra_applications: [:logger, :runtime_tools, :sentry]
+      extra_applications: [:logger, :runtime_tools, :sentry, :timber]
     ]
   end
 
@@ -51,7 +51,8 @@ defmodule SentientSocialWeb.Mixfile do
       {:ueberauth_twitter, github: "ueberauth/ueberauth_twitter"},
       {:oauth, github: "tim/erlang-oauth"},
       {:phoenix_integration, "~> 0.5", only: :test},
-      {:sentry, "~> 6.2.1"}
+      {:sentry, "~> 6.2.1"},
+      {:timber, "~> 2.5"}
     ]
   end
 

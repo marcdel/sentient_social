@@ -24,7 +24,11 @@ defmodule SentientSocialWeb.Endpoint do
   end
 
   plug(Plug.RequestId)
-  plug(Plug.Logger)
+
+  # plug(Plug.Logger)
+  plug(Timber.Integrations.SessionContextPlug)
+  plug(Timber.Integrations.HTTPContextPlug)
+  plug(Timber.Integrations.EventPlug)
 
   plug(
     Plug.Parsers,

@@ -18,14 +18,25 @@ config :sentient_social_web, SentientSocialWeb.Endpoint,
   pubsub: [name: SentientSocialWeb.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
-config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
+# config :logger, :console,
+#   format: "$time $metadata[$level] $message\n",
+#   metadata: [:request_id]
 
 config :sentry,
   dsn: "https://def3a792f10b4db7a72a36a9e45857d4@sentry.io/1223027",
   included_environments: [:prod],
   environment_name: Mix.env()
+
+config :logger,
+  backends: [Timber.LoggerBackends.HTTP],
+  utc_log: true
+
+config :timber,
+  api_key:
+    "3158_2617b10eb4c54ff2:c37cfbcca5217cf7fe1184b3ac2f28cf847fd162177b0a634bdc244cf5ea045e"
+
+config :sentient_social_web, SentientSocialWeb.Endpoint,
+  instrumenters: [Timber.Integrations.PhoenixInstrumenter]
 
 config :sentient_social_web, :generators, context_app: :sentient_social
 

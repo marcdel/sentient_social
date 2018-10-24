@@ -19,7 +19,7 @@ defmodule SentientSocialWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: SentientSocialWeb
+      use Phoenix.Controller, namespace: SentientSocialWeb, log: false
       import Plug.Conn
       import SentientSocialWeb.Router.Helpers
       import SentientSocialWeb.Gettext
@@ -54,7 +54,7 @@ defmodule SentientSocialWeb do
 
   def channel do
     quote do
-      use Phoenix.Channel
+      use Phoenix.Channel, log_join: false, log_handle_in: false
       import SentientSocialWeb.Gettext
     end
   end
