@@ -1,7 +1,9 @@
 defmodule SentientSocialWeb.AuthController do
   use SentientSocialWeb, :controller
+
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.UserSupervisor
+
   plug(Ueberauth)
 
   @doc """

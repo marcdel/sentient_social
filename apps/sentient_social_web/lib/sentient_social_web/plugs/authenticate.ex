@@ -5,6 +5,8 @@ defmodule SentientSocialWeb.Plug.Authenticate do
   import Plug.Conn
   import Phoenix.Controller
 
+  require Logger
+
   @type opts :: binary | tuple | atom | integer | float | [opts] | %{opts => opts}
 
   @spec init(opts) :: opts

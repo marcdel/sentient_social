@@ -6,16 +6,12 @@ config :extwitter, :oauth,
   consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
   consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET")
 
-config :cloak, Cloak.AES.GCM,
-  default: true,
-  tag: "GCM",
-  keys: [
-    %{
-      tag: <<1>>,
-      key: {:system, "CLOAK_KEY"},
-      default: true
-    }
-  ]
+# key = Base.decode64(System.get_env("CLOAK_KEY"))
+# config :sentient_social, SentientSocial.Vault,
+#       ciphers: [
+#         default: {Cloak.Ciphers.AES.CTR, tag: "AES.V2", key: key},
+#         retired: {Cloak.Ciphers.Deprecated.AES.CTR, module_tag: "AES", tag: <<1>>, key: key}
+#       ]
 
 config :hammer,
   backend: {

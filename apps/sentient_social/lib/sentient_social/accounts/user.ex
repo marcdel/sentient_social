@@ -5,6 +5,7 @@ defmodule SentientSocial.Accounts.User do
 
   use Ecto.Schema
   import Ecto.Changeset
+  require Logger
   alias SentientSocial.Accounts.Keyword
   alias SentientSocial.Twitter.{AutomatedInteraction, HistoricalFollowerCount}
 
@@ -14,8 +15,8 @@ defmodule SentientSocial.Accounts.User do
     field(:username, :string)
     field(:email, :string)
     field(:twitter_followers_count, :integer)
-    field(:access_token, Cloak.EncryptedBinaryField)
-    field(:access_token_secret, Cloak.EncryptedBinaryField)
+    field(:access_token, SentientSocial.Encrypted.Binary)
+    field(:access_token_secret, SentientSocial.Encrypted.Binary)
     has_many(:automated_interactions, AutomatedInteraction)
     has_many(:keywords, Keyword)
     has_many(:historical_follower_counts, HistoricalFollowerCount)
@@ -26,6 +27,8 @@ defmodule SentientSocial.Accounts.User do
   @doc false
   @spec changeset(%__MODULE__{}, map()) :: %Ecto.Changeset{}
   def changeset(user, attrs) do
+    Logger.info("attrs: #{inspect(attrs)}")
+
     user
     |> cast(attrs, [
       :username,

@@ -28,11 +28,11 @@ defmodule SentientSocial.Twitter do
       |> Accounts.get_user_by_username()
       |> set_access_tokens()
 
-    with {:ok, twitter_user} <- RateLimitedTwitterClient.user(user),
+    with {:ok, twitter_user} <-
+           RateLimitedTwitterClient.user(user),
          {:ok, user} <-
-           Accounts.update_user(user, %{twitter_followers_count: twitter_user.followers_count}),
-         {:ok, _} <-
-           create_historical_follower_count(%{count: twitter_user.followers_count}, user) do
+           Accounts.update_user(user, %{twitter_followers_count: twitter_user.followers_count}) do
+      Logger.info("Current follower count for #{user.username}: #{twitter_user.followers_count}")
       {:ok, user}
     else
       {:deny, _} ->

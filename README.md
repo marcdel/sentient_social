@@ -21,7 +21,9 @@
 
 ## Twitter Integration Env Vars
 `TWITTER_CONSUMER_KEY=`
+
 `TWITTER_CONSUMER_SECRET=`
+
 `CLOAK_KEY=`
 
 ## Key generation
@@ -29,6 +31,14 @@
 
 ## Find latest interactions to be undone
 * `SentientSocial.Twitter.AutomatedInteraction |> Ecto.Query.where([ai], not is_nil(ai.undo_at)) |> Ecto.Query.order_by(asc: :undo_at) |> SentientSocial.Repo.all() |> Enum.map(fn ai -> ai.undo_at end)`
+
+## PCF
+* `cf login`
+* `cf ssh sentient-social`
+* `/tmp/lifecycle/shell`
+* `mix run -e 'SentientSocial.Repo.query("select * from users", []) |> IO.inspect()'`
+* `mix run -e 'SentientSocial.Repo.query("TRUNCATE users cascade", [])'`
+* `mix run -e 'SentientSocial.Repo.query("TRUNCATE automated_interactions", [])'`
 
 ## Find a random sample of automated interactions
 * `marcdel = SentientSocial.Accounts.get_user_by_username("marcdel")`

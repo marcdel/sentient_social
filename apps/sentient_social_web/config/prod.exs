@@ -23,12 +23,23 @@ use Mix.Config
 #   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE")
 
 # Gigalixir config
+# config :sentient_social_web, SentientSocialWeb.Endpoint,
+#  load_from_system_env: true,
+#  server: true,
+#  secret_key_base: "${SECRET_KEY_BASE}",
+#  url: [host: "sentientsocial.io", port: 443],
+#  cache_static_manifest: "priv/static/cache_manifest.json"
+
+# PCF config
 config :sentient_social_web, SentientSocialWeb.Endpoint,
-  load_from_system_env: true,
-  server: true,
-  secret_key_base: "${SECRET_KEY_BASE}",
-  url: [host: "sentientsocial.io", port: 443],
-  cache_static_manifest: "priv/static/cache_manifest.json"
+  http: [:inet4, port: System.get_env("PORT") || 4000],
+  url: [host: "example.com", port: 80],
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  debug_errors: true,
+  force_ssl: [rewrite_on: [:x_forwarded_proto]]
+
+secret_key_base = System.get_env("SECRET_KEY_BASE") || raise "SECRET_KEY_BASE must be set"
+config :sentient_social_web, SentientSocialWeb.Endpoint, secret_key_base: secret_key_base
 
 # ## SSL Support
 #

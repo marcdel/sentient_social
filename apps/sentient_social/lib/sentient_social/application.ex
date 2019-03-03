@@ -18,7 +18,8 @@ defmodule SentientSocial.Application do
       [
         supervisor(SentientSocial.Repo, []),
         {Registry, keys: :unique, name: SentientSocial.Accounts.UserRegistry},
-        SentientSocial.Accounts.UserLoaderSupervisor
+        SentientSocial.Accounts.UserLoaderSupervisor,
+        SentientSocial.Vault
       ],
       strategy: :one_for_one,
       name: SentientSocial.Supervisor

@@ -1,0 +1,12 @@
+---
+applications:
+  - name: sentient-social
+    memory: 1024M
+    instances: 1
+    routes:
+      - route: sentient-social.cfapps.io
+    buildpacks:
+      -   https://github.com/HashNuke/heroku-buildpack-elixir.git
+    env:
+      MIX_ENV: prod
+    command: MIX_ENV=prod mix ecto.migrate && mix phx.server

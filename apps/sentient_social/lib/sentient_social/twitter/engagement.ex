@@ -101,6 +101,7 @@ defmodule SentientSocial.Twitter.Engagement do
   defp favorite_tweet(tweet, user) do
     with {:ok, tweet} <- RateLimitedTwitterClient.create_favorite(tweet.id, user),
          {:ok, _} <- save_automated_interaction(tweet, user) do
+      Logger.info("Fav'ed tweet #{inspect tweet}")
       tweet
     else
       {:deny, _limit} ->
