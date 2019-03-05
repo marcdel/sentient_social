@@ -1,10 +1,10 @@
 ---
 applications:
-  - name: sentient-social
+  - name: sentient-social-v2
     memory: 1024M
     instances: 1
     routes:
-      - route: sentient-social.cfapps.io
+      - route: sentient-social-v2.cfapps.io
     buildpacks:
       -   https://github.com/HashNuke/heroku-buildpack-elixir.git
     env:
