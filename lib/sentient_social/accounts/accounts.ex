@@ -1,20 +1,20 @@
 defmodule SentientSocial.Accounts do
   alias SentientSocial.Accounts.User
+  alias SentientSocial.Repo
 
   def list_users do
-    [
-      %User{id: "1", name: "Marc", username: "marcdel"},
-      %User{id: "2", name: "Jackie", username: "jackie"}
-    ]
+    Repo.all(User)
   end
 
   def get_user(id) do
-    Enum.find(list_users(), fn user -> user.id == id end)
+    Repo.get(User, id)
+  end
+
+  def get_user!(id) do
+    Repo.get!(User, id)
   end
 
   def get_user_by(params) do
-    Enum.find(list_users(), fn user ->
-      Enum.all?(params, fn {key, val} -> Map.get(user, key) == val end)
-    end)
+    Repo.get_by(User, params)
   end
 end

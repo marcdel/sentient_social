@@ -16,9 +16,6 @@ defmodule SentientSocial.DataCase do
 
   using do
     quote do
-      alias Ecto.Adapters.SQL.Sandbox
-      alias SentientSocial.Repo
-
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
@@ -27,6 +24,8 @@ defmodule SentientSocial.DataCase do
   end
 
   setup tags do
+    alias Ecto.Adapters.SQL.Sandbox
+
     :ok = Sandbox.checkout(SentientSocial.Repo)
 
     unless tags[:async] do
