@@ -1,5 +1,5 @@
 defmodule SentientSocialWeb.PageControllerTest do
-  use SentientSocialWeb.ConnCase
+  use SentientSocialWeb.ConnCase, async: true
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")

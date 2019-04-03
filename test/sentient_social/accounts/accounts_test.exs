@@ -41,4 +41,32 @@ defmodule SentientSocial.AccountsTest do
       assert %User{id: 2, name: "Jackie", username: "jackie"} = user
     end
   end
+
+  describe "change_user/1" do
+    test "returns a changeset for the user" do
+      user = %User{name: "Jackie", username: "jackie"}
+      %Ecto.Changeset{data: data} = Accounts.change_user(user)
+      assert data == user
+    end
+  end
+
+  describe "create_user/1" do
+    test "name and username are required" do
+      {:error, changeset} = Accounts.create_user(%{name: "Marc"})
+      IO.inspect(changeset)
+      assert [username: {"can't be blank", [validation: :required]}] == changeset.errors
+
+      {:error, changeset} = Accounts.create_user(%{username: "marcdel"})
+      assert [name: {"can't be blank", [validation: :required]}] == changeset.errors
+    end
+
+    test "username must be between 1 and 20 characters" do
+      {:error, changeset} = Accounts.create_user(%{name: "Jackie", username: ""})
+      assert [username: {"can't be blank", [validation: :required]}] == changeset.errors
+
+      {:error, changeset} = Accounts.create_user(%{name: "Marc", username: String.duplicate("a", 21)})
+      assert [username: {"should be at most %{count} character(s)",
+                [count: 20, validation: :length, kind: :max]}] == changeset.errors
+    end
+  end
 end
