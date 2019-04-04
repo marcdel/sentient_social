@@ -12,17 +12,17 @@ defmodule SentientSocialWeb.UserControllerTest do
   end
 
   test "GET /users", %{conn: conn} do
-    conn = get(conn, "/users")
+    conn = get(conn, Routes.user_path(conn, :index))
     assert html_response(conn, 200) =~ "Marc"
     assert html_response(conn, 200) =~ "Jackie"
   end
 
   test "GET /users/:id", %{conn: conn} do
-    conn1 = get(conn, "/users/1")
+    conn1 = get(conn, Routes.user_path(conn, :show, "1"))
     assert html_response(conn1, 200) =~ "Marc"
     refute html_response(conn1, 200) =~ "Jackie"
 
-    conn2 = get(conn, "/users/2")
+    conn2 = get(conn, Routes.user_path(conn, :show, "2"))
     refute html_response(conn2, 200) =~ "Marc"
     assert html_response(conn2, 200) =~ "Jackie"
   end
@@ -48,9 +48,8 @@ defmodule SentientSocialWeb.UserControllerTest do
   end
 
   test "POST /users with invalid data", %{conn: conn} do
-    create_conn =
-      post(conn, Routes.user_path(conn, :create), user: %{"name" => "Jane", "username" => ""})
-
+    invalid_user = %{"name" => "Jane", "username" => ""}
+    create_conn = post(conn, Routes.user_path(conn, :create), user: invalid_user)
     assert html_response(create_conn, 200) =~ "Oops, something went wrong!"
   end
 end
