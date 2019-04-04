@@ -4,8 +4,11 @@
 [![Codecov](https://img.shields.io/codecov/c/github/marcdel/sentient_social.svg)](https://codecov.io/gh/marcdel/sentient_social)
 [![Inch](http://inch-ci.org/github/marcdel/sentient_social.svg)](http://inch-ci.org/github/marcdel/sentient_social)
 
+## Setup
+* `./setup.sh`
+
 ## Pre-commit steps
-* `mix credo && mix dialyzer && MIX_ENV=test mix coveralls.html`
+* `./pre-commit.sh`
 
 ## Heroku Setup
 

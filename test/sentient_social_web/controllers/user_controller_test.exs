@@ -34,12 +34,23 @@ defmodule SentientSocialWeb.UserControllerTest do
   end
 
   test "POST /users", %{conn: conn} do
-    create_conn = post(conn, Routes.user_path(conn, :create), user: %{"name" => "Jane", "username" => "janedoe"})
+    create_conn =
+      post(conn, Routes.user_path(conn, :create),
+        user: %{"name" => "Jane", "username" => "janedoe"}
+      )
+
     assert get_flash(create_conn, :info) =~ "Jane created!"
     assert %{id: id} = redirected_params(create_conn)
     assert redirected_to(create_conn) == Routes.user_path(create_conn, :show, id)
 
     conn = get(conn, Routes.user_path(conn, :show, id))
     assert html_response(conn, 200) =~ "Jane"
+  end
+
+  test "POST /users with invalid data", %{conn: conn} do
+    create_conn =
+      post(conn, Routes.user_path(conn, :create), user: %{"name" => "Jane", "username" => ""})
+
+    assert html_response(create_conn, 200) =~ "Oops, something went wrong!"
   end
 end

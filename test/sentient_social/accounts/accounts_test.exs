@@ -53,7 +53,6 @@ defmodule SentientSocial.AccountsTest do
   describe "create_user/1" do
     test "name and username are required" do
       {:error, changeset} = Accounts.create_user(%{name: "Marc"})
-      IO.inspect(changeset)
       assert [username: {"can't be blank", [validation: :required]}] == changeset.errors
 
       {:error, changeset} = Accounts.create_user(%{username: "marcdel"})
@@ -64,9 +63,14 @@ defmodule SentientSocial.AccountsTest do
       {:error, changeset} = Accounts.create_user(%{name: "Jackie", username: ""})
       assert [username: {"can't be blank", [validation: :required]}] == changeset.errors
 
-      {:error, changeset} = Accounts.create_user(%{name: "Marc", username: String.duplicate("a", 21)})
-      assert [username: {"should be at most %{count} character(s)",
-                [count: 20, validation: :length, kind: :max]}] == changeset.errors
+      {:error, changeset} =
+        Accounts.create_user(%{name: "Marc", username: String.duplicate("a", 21)})
+
+      assert [
+               username:
+                 {"should be at most %{count} character(s)",
+                  [count: 20, validation: :length, kind: :max]}
+             ] == changeset.errors
     end
   end
 end
