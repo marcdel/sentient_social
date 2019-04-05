@@ -94,9 +94,9 @@ defmodule SentientSocial.AccountsTest do
   end
 
   describe "credentials" do
-    @valid_attrs %{email: "some email", password_hash: "some password_hash"}
-    @update_attrs %{email: "some updated email", password_hash: "some updated password_hash"}
-    @invalid_attrs %{email: nil, password_hash: nil}
+    @valid_attrs %{email: "some email", password: "some password"}
+    @update_attrs %{email: "some updated email", password: "some updated password"}
+    @invalid_attrs %{email: nil, password: nil}
 
     def credential_fixture(attrs \\ %{}) do
       {:ok, credential} =
@@ -108,19 +108,18 @@ defmodule SentientSocial.AccountsTest do
     end
 
     test "list_credentials/0 returns all credentials" do
-      credential = credential_fixture()
-      assert Accounts.list_credentials() == [credential]
+      credential_fixture(%{email: "user@email.com"})
+      assert [%{email: "user@email.com"} | _] = Accounts.list_credentials()
     end
 
     test "get_credential!/1 returns the credential with given id" do
-      credential = credential_fixture()
-      assert Accounts.get_credential!(credential.id) == credential
+      credential = credential_fixture(%{email: "user@email.com"})
+      assert %{email: "user@email.com"} = Accounts.get_credential!(credential.id)
     end
 
     test "create_credential/1 with valid data creates a credential" do
       assert {:ok, %Credential{} = credential} = Accounts.create_credential(@valid_attrs)
       assert credential.email == "some email"
-      assert credential.password_hash == "some password_hash"
     end
 
     test "create_credential/1 with invalid data returns error changeset" do
@@ -134,13 +133,12 @@ defmodule SentientSocial.AccountsTest do
                Accounts.update_credential(credential, @update_attrs)
 
       assert credential.email == "some updated email"
-      assert credential.password_hash == "some updated password_hash"
     end
 
     test "update_credential/2 with invalid data returns error changeset" do
-      credential = credential_fixture()
+      credential = credential_fixture(%{email: "user@email.com"})
       assert {:error, %Ecto.Changeset{}} = Accounts.update_credential(credential, @invalid_attrs)
-      assert credential == Accounts.get_credential!(credential.id)
+      assert %{email: "user@email.com"} = Accounts.get_credential!(credential.id)
     end
 
     test "delete_credential/1 deletes the credential" do

@@ -1,10 +1,12 @@
 defmodule SentientSocial.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
+  alias SentientSocial.Accounts.Credential
 
   schema "users" do
     field :name, :string
     field :username, :string
+    has_one :credential, Credential
 
     timestamps()
   end
@@ -15,5 +17,11 @@ defmodule SentientSocial.Accounts.User do
     |> validate_required([:name, :username])
     |> validate_length(:username, min: 1, max: 20)
     |> unique_constraint(:username)
+  end
+
+  def registration_changeset(user, attrs) do
+    user
+    |> changeset(attrs)
+    |> cast_assoc(:credential, with: &Credential.changeset/2, required: true)
   end
 end
