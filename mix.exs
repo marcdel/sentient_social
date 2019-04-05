@@ -46,7 +46,8 @@ defmodule SentientSocial.MixProject do
       {:credo, "~> 1.0"},
       {:comeonin, "~> 4.1"},
       {:bcrypt_elixir, "~> 1.0"},
-      {:pbkdf2_elixir, "~> 0.12"}
+      {:pbkdf2_elixir, "~> 0.12"},
+      {:phoenix_integration, "~> 0.6", only: :test}
     ]
   end
 

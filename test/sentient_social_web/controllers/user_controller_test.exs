@@ -28,7 +28,7 @@ defmodule SentientSocialWeb.UserControllerTest do
   end
 
   test "GET /users/new", %{conn: conn} do
-    conn = get(conn, "/users/new")
+    conn = get(conn, Routes.user_path(conn, :new))
     assert html_response(conn, 200) =~ "Name"
     assert html_response(conn, 200) =~ "Username"
   end
@@ -36,7 +36,11 @@ defmodule SentientSocialWeb.UserControllerTest do
   test "POST /users", %{conn: conn} do
     create_conn =
       post(conn, Routes.user_path(conn, :create),
-        user: %{"name" => "Jane", "username" => "janedoe"}
+        user: %{
+          "name" => "Jane",
+          "username" => "janedoe",
+          credential: %{email: "jane@email.com", password: "password"}
+        }
       )
 
     assert get_flash(create_conn, :info) =~ "Jane created!"

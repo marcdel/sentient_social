@@ -30,6 +30,12 @@ defmodule SentientSocial.Accounts do
     |> Repo.insert()
   end
 
+  def register_user(attrs \\ %{}) do
+    %User{}
+    |> User.registration_changeset(attrs)
+    |> Repo.insert()
+  end
+
   def list_credentials do
     Repo.all(Credential)
   end

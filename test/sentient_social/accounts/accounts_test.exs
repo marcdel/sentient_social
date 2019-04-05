@@ -93,6 +93,23 @@ defmodule SentientSocial.AccountsTest do
     end
   end
 
+  describe "register_user/1" do
+    test "creates a user and corresponding credential" do
+      {:ok, user} =
+        Accounts.register_user(%{
+          name: "Marc",
+          username: "marcdel",
+          credential: %{email: "marcdel@email.com", password: "password"}
+        })
+
+      assert %{
+               name: "Marc",
+               username: "marcdel",
+               credential: %{email: "marcdel@email.com"}
+             } = user
+    end
+  end
+
   describe "credentials" do
     @valid_attrs %{email: "some email", password: "some password"}
     @update_attrs %{email: "some updated email", password: "some updated password"}
