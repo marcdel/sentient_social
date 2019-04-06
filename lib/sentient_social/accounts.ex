@@ -20,6 +20,30 @@ defmodule SentientSocial.Accounts do
     Repo.get_by(User, params)
   end
 
+  def get_user_by_email(email) do
+    query = from(u in User, join: c in assoc(u, :credential), where: c.email == ^email)
+
+    query
+    |> Repo.one()
+    |> Repo.preload(:credential)
+  end
+
+  def authenticate_by_email_and_password(email, password) do
+    user = get_user_by_email(email)
+
+    cond do
+      user && Comeonin.Pbkdf2.checkpw(password, user.credential.password_hash) ->
+        {:ok, user}
+
+      user ->
+        {:error, :unauthorized}
+
+      true ->
+        Comeonin.Bcrypt.dummy_checkpw()
+        {:error, :not_found}
+    end
+  end
+
   def change_user(%User{} = user) do
     User.changeset(user, %{})
   end

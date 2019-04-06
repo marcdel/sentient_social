@@ -93,20 +93,56 @@ defmodule SentientSocial.AccountsTest do
     end
   end
 
-  describe "register_user/1" do
-    test "creates a user and corresponding credential" do
+  test "register_user/1" do
+    {:ok, user} =
+      Accounts.register_user(%{
+        name: "Marc",
+        username: "marcdel",
+        credential: %{
+          email: "marcdel@email.com",
+          password: "password"
+        }
+      })
+
+    assert %{
+             name: "Marc",
+             username: "marcdel",
+             credential: %{
+               email: "marcdel@email.com"
+             }
+           } = user
+  end
+
+  describe "authenticate_by_email_and_password/2" do
+    @email "marcdel@localhost"
+    @pass "123456"
+
+    setup do
       {:ok, user} =
         Accounts.register_user(%{
           name: "Marc",
           username: "marcdel",
-          credential: %{email: "marcdel@email.com", password: "password"}
+          credential: %{
+            email: @email,
+            password: @pass
+          }
         })
 
-      assert %{
-               name: "Marc",
-               username: "marcdel",
-               credential: %{email: "marcdel@email.com"}
-             } = user
+      {:ok, user: user}
+    end
+
+    test "returns user with correct password", %{user: %User{id: id}} do
+      assert {:ok, %User{id: ^id}} = Accounts.authenticate_by_email_and_password(@email, @pass)
+    end
+
+    test "returns unauthorized error with invalid password" do
+      assert {:error, :unauthorized} =
+               Accounts.authenticate_by_email_and_password(@email, "badpass")
+    end
+
+    test "returns not found error with no matching user for email" do
+      assert {:error, :not_found} =
+               Accounts.authenticate_by_email_and_password("bademail@localhost", @pass)
     end
   end
 

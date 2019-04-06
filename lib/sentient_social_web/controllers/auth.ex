@@ -30,6 +30,14 @@ defmodule SentientSocialWeb.Auth do
     |> configure_session(renew: true)
   end
 
+  def login_by_email_and_password(conn, email, password) do
+    case Accounts.authenticate_by_email_and_password(email, password) do
+      {:ok, user} -> {:ok, login(conn, user)}
+      {:error, :unauthorized} -> {:error, :unauthorized, conn}
+      {:error, :not_found} -> {:error, :not_found, conn}
+    end
+  end
+
   defp put_current_user(conn, user) do
     token = Phoenix.Token.sign(conn, "user socket", user.id)
 

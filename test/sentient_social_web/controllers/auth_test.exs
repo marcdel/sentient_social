@@ -52,4 +52,37 @@ defmodule SentientSocialWeb.AuthTest do
     next_conn = get(login_conn, "/")
     assert get_session(next_conn, :user_id) == 123
   end
+
+  describe("registered user") do
+    setup do
+      {:ok, user} =
+        Accounts.register_user(%{
+          id: 1,
+          name: "Marc",
+          username: "marcdel",
+          credential: %{
+            email: "marcdel@email.com",
+            password: "password"
+          }
+        })
+
+      {:ok, user: user}
+    end
+
+    test "login with a valid username and pass", %{conn: conn, user: user} do
+      {:ok, conn} = Auth.login_by_email_and_password(conn, "marcdel@email.com", "password")
+
+      assert conn.assigns.current_user.id == user.id
+    end
+
+    test "login with a not found user", %{conn: conn} do
+      assert {:error, :not_found, _conn} =
+               Auth.login_by_email_and_password(conn, "me@test", "secret")
+    end
+
+    test "login with password mismatch", %{conn: conn} do
+      assert {:error, :unauthorized, _conn} =
+               Auth.login_by_email_and_password(conn, "marcdel@email.com", "wrong password")
+    end
+  end
 end
