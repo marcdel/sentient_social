@@ -1,6 +1,7 @@
 defmodule SentientSocialWeb.UserControllerTest do
   use SentientSocialWeb.ConnCase, async: true
 
+  alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
   alias SentientSocial.Repo
 
@@ -11,20 +12,43 @@ defmodule SentientSocialWeb.UserControllerTest do
     :ok
   end
 
-  test "GET /users", %{conn: conn} do
-    conn = get(conn, Routes.user_path(conn, :index))
-    assert html_response(conn, 200) =~ "Marc"
-    assert html_response(conn, 200) =~ "Jackie"
+  describe "when user is logged in" do
+    setup %{conn: conn} do
+      user = Accounts.get_user(2)
+      conn = sign_in(conn, user)
+      {:ok, %{signed_in_conn: conn, user: user}}
+    end
+
+    test "GET /users", %{signed_in_conn: conn} do
+      conn = get(conn, Routes.user_path(conn, :index))
+      assert html_response(conn, 200) =~ "Marc"
+      assert html_response(conn, 200) =~ "Jackie"
+    end
+
+    test "GET /users/:id", %{signed_in_conn: conn} do
+      conn1 = get(conn, Routes.user_path(conn, :show, "1"))
+      assert html_response(conn1, 200) =~ "Marc"
+      refute html_response(conn1, 200) =~ "Jackie"
+
+      conn2 = get(conn, Routes.user_path(conn, :show, "2"))
+      refute html_response(conn2, 200) =~ "Marc"
+      assert html_response(conn2, 200) =~ "Jackie"
+    end
   end
 
-  test "GET /users/:id", %{conn: conn} do
-    conn1 = get(conn, Routes.user_path(conn, :show, "1"))
-    assert html_response(conn1, 200) =~ "Marc"
-    refute html_response(conn1, 200) =~ "Jackie"
+  describe "when user is not logged in" do
+    test "GET /users redirects", %{conn: conn} do
+      conn = get(conn, Routes.user_path(conn, :index))
+      assert html_response(conn, 302) =~ "redirected"
+    end
 
-    conn2 = get(conn, Routes.user_path(conn, :show, "2"))
-    refute html_response(conn2, 200) =~ "Marc"
-    assert html_response(conn2, 200) =~ "Jackie"
+    test "GET /users/:id redirects", %{conn: conn} do
+      conn1 = get(conn, Routes.user_path(conn, :show, "1"))
+      assert html_response(conn1, 302) =~ "redirected"
+
+      conn2 = get(conn, Routes.user_path(conn, :show, "2"))
+      assert html_response(conn2, 302) =~ "redirected"
+    end
   end
 
   test "GET /users/new", %{conn: conn} do
@@ -33,13 +57,19 @@ defmodule SentientSocialWeb.UserControllerTest do
     assert html_response(conn, 200) =~ "Username"
   end
 
+  @tag :skip
   test "POST /users", %{conn: conn} do
     create_conn =
-      post(conn, Routes.user_path(conn, :create),
+      post(
+        conn,
+        Routes.user_path(conn, :create),
         user: %{
           "name" => "Jane",
           "username" => "janedoe",
-          credential: %{email: "jane@email.com", password: "password"}
+          credential: %{
+            email: "jane@email.com",
+            password: "password"
+          }
         }
       )
 

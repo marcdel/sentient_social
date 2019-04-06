@@ -23,6 +23,7 @@ defmodule SentientSocialWeb do
 
       import Plug.Conn
       import SentientSocialWeb.Gettext
+      import SentientSocialWeb.Auth, only: [authenticate_user: 2]
       alias SentientSocialWeb.Router.Helpers, as: Routes
     end
   end
