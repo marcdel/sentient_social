@@ -57,9 +57,8 @@ defmodule SentientSocialWeb.UserControllerTest do
     assert html_response(conn, 200) =~ "Username"
   end
 
-  @tag :skip
   test "POST /users", %{conn: conn} do
-    create_conn =
+    conn =
       post(
         conn,
         Routes.user_path(conn, :create),
@@ -73,9 +72,9 @@ defmodule SentientSocialWeb.UserControllerTest do
         }
       )
 
-    assert get_flash(create_conn, :info) =~ "Jane created!"
-    assert %{id: id} = redirected_params(create_conn)
-    assert redirected_to(create_conn) == Routes.user_path(create_conn, :show, id)
+    assert get_flash(conn, :info) =~ "Jane created!"
+    assert %{id: id} = redirected_params(conn)
+    assert redirected_to(conn) == Routes.user_path(conn, :show, id)
 
     conn = get(conn, Routes.user_path(conn, :show, id))
     assert html_response(conn, 200) =~ "Jane"

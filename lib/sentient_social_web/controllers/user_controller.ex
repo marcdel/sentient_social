@@ -24,6 +24,7 @@ defmodule SentientSocialWeb.UserController do
     case Accounts.register_user(user_params) do
       {:ok, user} ->
         conn
+        |> SentientSocialWeb.Auth.login(user)
         |> put_flash(:info, "#{user.name} created!")
         |> redirect(to: Routes.user_path(conn, :show, user))
 
