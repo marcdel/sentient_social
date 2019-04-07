@@ -84,5 +84,16 @@ defmodule SentientSocialWeb.AuthTest do
       assert {:error, :unauthorized, _conn} =
                Auth.login_by_email_and_password(conn, "marcdel@email.com", "wrong password")
     end
+
+    test "logout drops the session", %{conn: conn} do
+      conn =
+        conn
+        |> put_session(:user_id, 123)
+        |> Auth.logout()
+        |> send_resp(:ok, "")
+
+      next_conn = get(conn, "/")
+      refute get_session(next_conn, :user_id)
+    end
   end
 end

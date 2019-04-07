@@ -38,6 +38,10 @@ defmodule SentientSocialWeb.Auth do
     end
   end
 
+  def logout(conn) do
+    configure_session(conn, drop: true)
+  end
+
   defp put_current_user(conn, user) do
     token = Phoenix.Token.sign(conn, "user socket", user.id)
 

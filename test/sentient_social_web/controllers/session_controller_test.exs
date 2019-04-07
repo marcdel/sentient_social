@@ -38,4 +38,26 @@ defmodule SentientSocialWeb.SessionControllerTest do
     create_conn = post(conn, Routes.session_path(conn, :create), session: invalid_session)
     assert html_response(create_conn, 200) =~ "Oops, username or password were incorrect!"
   end
+
+  test "DELETE /sessions", %{conn: conn} do
+    {:ok, user} =
+      Accounts.register_user(%{
+        id: 1,
+        name: "Marc",
+        username: "marcdel",
+        credential: %{
+          email: "marcdel@email.com",
+          password: "password"
+        }
+      })
+
+    # user = %{id: 1}
+    conn = sign_in(conn, user)
+
+    conn = delete(conn, Routes.session_path(conn, :delete, user.id))
+
+    assert get_flash(conn, :info) =~ "Logged out."
+    assert %{id: id} = redirected_params(conn)
+    assert redirected_to(conn) == Routes.page_path(conn, :index)
+  end
 end
