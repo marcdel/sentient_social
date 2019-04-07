@@ -40,18 +40,7 @@ defmodule SentientSocialWeb.SessionControllerTest do
   end
 
   test "DELETE /sessions", %{conn: conn} do
-    {:ok, user} =
-      Accounts.register_user(%{
-        id: 1,
-        name: "Marc",
-        username: "marcdel",
-        credential: %{
-          email: "marcdel@email.com",
-          password: "password"
-        }
-      })
-
-    # user = %{id: 1}
+    user = %{id: 1}
     conn = sign_in(conn, user)
 
     conn = delete(conn, Routes.session_path(conn, :delete, user.id))

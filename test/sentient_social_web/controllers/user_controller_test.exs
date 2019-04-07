@@ -13,22 +13,26 @@ defmodule SentientSocialWeb.UserControllerTest do
   end
 
   describe "when user is logged in" do
-    setup %{conn: conn} do
+    test "GET /users", %{conn: conn} do
       user = Accounts.get_user(2)
       conn = sign_in(conn, user)
-      {:ok, %{signed_in_conn: conn, user: user}}
-    end
 
-    test "GET /users", %{signed_in_conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
+
       assert html_response(conn, 200) =~ "Marc"
       assert html_response(conn, 200) =~ "Jackie"
     end
 
-    test "GET /users/:id", %{signed_in_conn: conn} do
+    test "GET /users/:id", %{conn: conn} do
+      user = Accounts.get_user(1)
+      conn = sign_in(conn, user)
+
       conn1 = get(conn, Routes.user_path(conn, :show, "1"))
       assert html_response(conn1, 200) =~ "Marc"
       refute html_response(conn1, 200) =~ "Jackie"
+
+      user = Accounts.get_user(2)
+      conn = sign_in(conn, user)
 
       conn2 = get(conn, Routes.user_path(conn, :show, "2"))
       refute html_response(conn2, 200) =~ "Marc"
