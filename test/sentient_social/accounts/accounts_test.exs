@@ -88,7 +88,7 @@ defmodule SentientSocial.AccountsTest do
       assert [
                username:
                  {"should be at most %{count} character(s)",
-                  [count: 20, validation: :length, kind: :max]}
+                  [count: 20, validation: :length, kind: :max, type: :string]}
              ] == changeset.errors
     end
   end
