@@ -47,7 +47,9 @@ defmodule SentientSocial.MixProject do
       {:argon2_elixir, "~> 2.0"},
       {:bcrypt_elixir, "~> 2.0"},
       {:pbkdf2_elixir, "~> 1.0"},
-      {:phoenix_integration, "~> 0.6", only: :test}
+      {:phoenix_integration, "~> 0.6", only: :test},
+      {:ueberauth_twitter, "~> 0.3"},
+      {:oauth, github: "tim/erlang-oauth"}
     ]
   end
 
