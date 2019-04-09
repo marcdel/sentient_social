@@ -44,9 +44,9 @@ defmodule SentientSocial.MixProject do
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
       {:credo, "~> 1.0"},
-      {:comeonin, "~> 4.1"},
-      {:bcrypt_elixir, "~> 1.1"},
-      {:pbkdf2_elixir, "~> 0.12"},
+      {:argon2_elixir, "~> 2.0"},
+      {:bcrypt_elixir, "~> 2.0"},
+      {:pbkdf2_elixir, "~> 1.0"},
       {:phoenix_integration, "~> 0.6", only: :test}
     ]
   end

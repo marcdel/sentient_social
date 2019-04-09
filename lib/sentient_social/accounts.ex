@@ -32,14 +32,14 @@ defmodule SentientSocial.Accounts do
     user = get_user_by_email(email)
 
     cond do
-      user && Comeonin.Pbkdf2.checkpw(password, user.credential.password_hash) ->
+      user && Pbkdf2.verify_pass(password, user.credential.password_hash) ->
         {:ok, user}
 
       user ->
         {:error, :unauthorized}
 
       true ->
-        Comeonin.Bcrypt.dummy_checkpw()
+        Bcrypt.no_user_verify()
         {:error, :not_found}
     end
   end
