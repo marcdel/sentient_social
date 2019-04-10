@@ -93,24 +93,36 @@ defmodule SentientSocial.AccountsTest do
     end
   end
 
-  test "register_user/1" do
-    {:ok, user} =
-      Accounts.register_user(%{
-        name: "Marc",
-        username: "marcdel",
-        credential: %{
-          email: "marcdel@email.com",
-          password: "password"
-        }
-      })
+  describe "register_user/1" do
+    test "can create a user with a credential" do
+      {:ok, user} =
+        Accounts.register_user(%{
+          name: "Marc",
+          username: "marcdel",
+          credential: %{
+            email: "marcdel@email.com",
+            password: "password"
+          }
+        })
 
-    assert %{
-             name: "Marc",
-             username: "marcdel",
-             credential: %{
-               email: "marcdel@email.com"
-             }
-           } = user
+      assert %{
+               name: "Marc",
+               username: "marcdel",
+               credential: %{
+                 email: "marcdel@email.com"
+               }
+             } = user
+    end
+
+    test "cannot create a user without a credential" do
+      assert {:error, changeset} =
+               Accounts.register_user(%{
+                 name: "Marc",
+                 username: "marcdel"
+               })
+
+      assert %{errors: [credential: {"can't be blank", [validation: :required]}]} = changeset
+    end
   end
 
   describe "authenticate_by_email_and_password/2" do
@@ -143,66 +155,6 @@ defmodule SentientSocial.AccountsTest do
     test "returns not found error with no matching user for email" do
       assert {:error, :not_found} =
                Accounts.authenticate_by_email_and_password("bademail@localhost", @pass)
-    end
-  end
-
-  describe "credentials" do
-    @valid_attrs %{email: "some email", password: "some password"}
-    @update_attrs %{email: "some updated email", password: "some updated password"}
-    @invalid_attrs %{email: nil, password: nil}
-
-    def credential_fixture(attrs \\ %{}) do
-      {:ok, credential} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Accounts.create_credential()
-
-      credential
-    end
-
-    test "list_credentials/0 returns all credentials" do
-      credential_fixture(%{email: "user@email.com"})
-      assert [%{email: "user@email.com"} | _] = Accounts.list_credentials()
-    end
-
-    test "get_credential!/1 returns the credential with given id" do
-      credential = credential_fixture(%{email: "user@email.com"})
-      assert %{email: "user@email.com"} = Accounts.get_credential!(credential.id)
-    end
-
-    test "create_credential/1 with valid data creates a credential" do
-      assert {:ok, %Credential{} = credential} = Accounts.create_credential(@valid_attrs)
-      assert credential.email == "some email"
-    end
-
-    test "create_credential/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Accounts.create_credential(@invalid_attrs)
-    end
-
-    test "update_credential/2 with valid data updates the credential" do
-      credential = credential_fixture()
-
-      assert {:ok, %Credential{} = credential} =
-               Accounts.update_credential(credential, @update_attrs)
-
-      assert credential.email == "some updated email"
-    end
-
-    test "update_credential/2 with invalid data returns error changeset" do
-      credential = credential_fixture(%{email: "user@email.com"})
-      assert {:error, %Ecto.Changeset{}} = Accounts.update_credential(credential, @invalid_attrs)
-      assert %{email: "user@email.com"} = Accounts.get_credential!(credential.id)
-    end
-
-    test "delete_credential/1 deletes the credential" do
-      credential = credential_fixture()
-      assert {:ok, %Credential{}} = Accounts.delete_credential(credential)
-      assert_raise Ecto.NoResultsError, fn -> Accounts.get_credential!(credential.id) end
-    end
-
-    test "change_credential/1 returns a credential changeset" do
-      credential = credential_fixture()
-      assert %Ecto.Changeset{} = Accounts.change_credential(credential)
     end
   end
 end

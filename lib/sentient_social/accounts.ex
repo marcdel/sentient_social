@@ -1,7 +1,7 @@
 defmodule SentientSocial.Accounts do
   import Ecto.Query, warn: false
 
-  alias SentientSocial.Accounts.{Credential, User}
+  alias SentientSocial.Accounts.User
   alias SentientSocial.Repo
 
   def list_users do
@@ -58,31 +58,5 @@ defmodule SentientSocial.Accounts do
     %User{}
     |> User.registration_changeset(attrs)
     |> Repo.insert()
-  end
-
-  def list_credentials do
-    Repo.all(Credential)
-  end
-
-  def get_credential!(id), do: Repo.get!(Credential, id)
-
-  def create_credential(attrs \\ %{}) do
-    %Credential{}
-    |> Credential.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_credential(%Credential{} = credential, attrs) do
-    credential
-    |> Credential.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_credential(%Credential{} = credential) do
-    Repo.delete(credential)
-  end
-
-  def change_credential(%Credential{} = credential) do
-    Credential.changeset(credential, %{})
   end
 end
