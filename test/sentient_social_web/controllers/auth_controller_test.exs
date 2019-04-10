@@ -17,26 +17,54 @@ defmodule SentientSocialWeb.AuthControllerTest do
       }
     },
     info: %Ueberauth.Auth.Info{
-      email: "user@email.com",
+      email: "user@email.com"
     },
     provider: :twitter
   }
 
-  test "handles authentication failure", %{conn: conn} do
-    conn =
-      conn
-      |> assign(:ueberauth_failure, %{})
-      |> get("/auth/twitter/callback")
-
-    assert get_flash(conn, :error) == "Failed to authenticate."
+  describe "when user is not logged in" do
+    test "GET callback redirects", %{conn: conn} do
+      conn = get(conn, Routes.auth_path(conn, :callback, "twitter"))
+      assert redirected_to(conn) == Routes.page_path(conn, :index)
+      assert get_flash(conn, :error) == "You must be logged in to access that page"
+    end
   end
 
-  test "handles successful Twitter authentication", %{conn: conn} do
-    conn =
-      conn
-      |> assign(:ueberauth_auth, @ueberauth_auth)
-      |> get("/auth/twitter/callback")
+  describe "when user is logged in" do
+    setup %{conn: conn} do
+      {:ok, user} =
+        SentientSocial.Accounts.register_user(%{
+          id: 1,
+          name: "Marc",
+          username: "marcdel",
+          credential: %{
+            email: "marcdel@email.com",
+            password: "password"
+          }
+        })
 
-    assert get_flash(conn, :info) == "Successfully authenticated."
+      conn = sign_in(conn, user)
+
+      {:ok, user: user, conn: conn}
+    end
+
+    test "handles authentication failure", %{conn: conn} do
+      conn =
+        conn
+        |> assign(:ueberauth_failure, %{})
+        |> get(Routes.auth_path(conn, :callback, "twitter"))
+
+      assert get_flash(conn, :error) == "Failed to authenticate."
+    end
+
+    test "handles successful Twitter authentication", %{conn: conn, user: user} do
+      conn =
+        conn
+        |> assign(:ueberauth_auth, @ueberauth_auth)
+        |> get(Routes.auth_path(conn, :callback, "twitter"))
+
+      assert get_flash(conn, :info) == "Successfully authenticated."
+      assert redirected_to(conn) == Routes.user_path(conn, :show, user.id)
+    end
   end
 end

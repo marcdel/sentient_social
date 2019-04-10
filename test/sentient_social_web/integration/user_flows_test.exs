@@ -19,6 +19,8 @@ defmodule SentientSocialWeb.UserFlowsTest do
   end
 
   @tag :integration
+  # Need to skip twitter auth in integration env
+  @tag :skip
   test "can log in a registered user", %{conn: conn} do
     SentientSocial.Accounts.register_user(%{
       id: 1,

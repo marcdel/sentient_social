@@ -1,18 +1,17 @@
 defmodule SentientSocialWeb.AuthController do
   use SentientSocialWeb, :controller
+  alias SentientSocialWeb.Auth
   plug(Ueberauth)
+  plug :authenticate_user when action in [:callback]
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
-#     IO.inspect(auth.extra.raw_info.user, label: "auth.extra.raw_info.user")
-#     IO.inspect(auth.info, label: "auth.info")
-     IO.inspect(auth, label: "ueberauth auth")
-
     case auth.provider do
       :twitter ->
+        %{id: user_id} = Auth.current_user(conn)
+
         conn
         |> put_flash(:info, "Successfully authenticated.")
-        # |> put_session(:current_user, auth.info.email)
-        |> redirect(to: "/")
+        |> redirect(to: Routes.user_path(conn, :show, user_id))
     end
   end
 

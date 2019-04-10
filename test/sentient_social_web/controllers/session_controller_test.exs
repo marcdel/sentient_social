@@ -25,8 +25,7 @@ defmodule SentientSocialWeb.SessionControllerTest do
       )
 
     assert get_flash(conn, :info) =~ "Welcome back, Marc!"
-    assert %{id: id} = redirected_params(conn)
-    assert redirected_to(conn) == Routes.user_path(conn, :show, id)
+    assert redirected_to(conn) == Routes.auth_path(conn, :request, "twitter")
   end
 
   test "POST /sessions with invalid password", %{conn: conn} do

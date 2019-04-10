@@ -9,11 +9,11 @@ defmodule SentientSocialWeb.SessionController do
   def create(conn, %{"session" => %{"email" => email, "password" => password}}) do
     case Auth.login_by_email_and_password(conn, email, password) do
       {:ok, conn} ->
-        user = current_user(conn)
+        user = Auth.current_user(conn)
 
         conn
         |> put_flash(:info, "Welcome back, #{user.name}!")
-        |> redirect(to: Routes.user_path(conn, :show, user.id))
+        |> redirect(to: Routes.auth_path(conn, :request, "twitter"))
 
       {:error, _reason, conn} ->
         conn
@@ -27,9 +27,5 @@ defmodule SentientSocialWeb.SessionController do
     |> Auth.logout()
     |> put_flash(:info, "Logged out.")
     |> redirect(to: Routes.page_path(conn, :index))
-  end
-
-  defp current_user(conn) do
-    conn.assigns.current_user
   end
 end

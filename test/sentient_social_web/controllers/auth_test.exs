@@ -53,6 +53,13 @@ defmodule SentientSocialWeb.AuthTest do
     assert get_session(next_conn, :user_id) == 123
   end
 
+  test "current_user/1 returns the current user", %{conn: conn} do
+    user = %User{id: 123}
+    assert Auth.current_user(conn) == nil
+    conn = Auth.login(conn, %User{id: 123})
+    assert Auth.current_user(conn) == user
+  end
+
   describe("registered user") do
     setup do
       {:ok, user} =
