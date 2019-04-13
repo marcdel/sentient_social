@@ -2,7 +2,7 @@ defmodule SentientSocial.AccountsTest do
   use SentientSocial.DataCase, async: true
 
   alias SentientSocial.Accounts
-  alias SentientSocial.Accounts.{Credential, User}
+  alias SentientSocial.Accounts.User
   alias SentientSocial.Repo
 
   describe "list_users/0" do
@@ -61,6 +61,52 @@ defmodule SentientSocial.AccountsTest do
     end
   end
 
+  describe "get_user_by_email/1" do
+    setup do
+      {:ok, user} =
+        Accounts.register_user(%{
+          name: "Marc",
+          username: "marcdel",
+          credential: %{
+            email: "marcdel@email.com",
+            password: "password"
+          }
+        })
+
+      Accounts.add_token(user, %{
+        provider: "twitter",
+        token: "twitter token",
+        token_secret: "twitter token_secret"
+      })
+
+      :ok
+    end
+
+    test "returns the user with the specified email or nil" do
+      user = Accounts.get_user_by_email("marcdel@email.com")
+
+      assert user.name == "Marc"
+      assert user.username == "marcdel"
+      assert user.credential.email == "marcdel@email.com"
+    end
+
+    test "returns the user's email and hashed password" do
+      user = Accounts.get_user_by_email("marcdel@email.com")
+
+      assert user.credential.email == "marcdel@email.com"
+      assert user.credential.password == nil
+      assert user.credential.password_hash != nil
+    end
+
+    test "returns the user's token" do
+      user = Accounts.get_user_by_email("marcdel@email.com")
+
+      assert user.token.provider == "twitter"
+      assert user.token.token == "twitter token"
+      assert user.token.token_secret == "twitter token_secret"
+    end
+  end
+
   describe "change_user/1" do
     test "returns a changeset for the user" do
       user = %User{name: "Jackie", username: "jackie"}
@@ -72,24 +118,20 @@ defmodule SentientSocial.AccountsTest do
   describe "create_user/1" do
     test "name and username are required" do
       {:error, changeset} = Accounts.create_user(%{name: "Marc"})
-      assert [username: {"can't be blank", [validation: :required]}] == changeset.errors
+      assert "can't be blank" in errors_on(changeset).username
 
       {:error, changeset} = Accounts.create_user(%{username: "marcdel"})
-      assert [name: {"can't be blank", [validation: :required]}] == changeset.errors
+      assert "can't be blank" in errors_on(changeset).name
     end
 
     test "username must be between 1 and 20 characters" do
       {:error, changeset} = Accounts.create_user(%{name: "Jackie", username: ""})
-      assert [username: {"can't be blank", [validation: :required]}] == changeset.errors
+      assert "can't be blank" in errors_on(changeset).username
 
       {:error, changeset} =
         Accounts.create_user(%{name: "Marc", username: String.duplicate("a", 21)})
 
-      assert [
-               username:
-                 {"should be at most %{count} character(s)",
-                  [count: 20, validation: :length, kind: :max, type: :string]}
-             ] == changeset.errors
+      assert %{username: ["should be at most 20 character(s)"]} = errors_on(changeset)
     end
   end
 
@@ -121,7 +163,7 @@ defmodule SentientSocial.AccountsTest do
                  username: "marcdel"
                })
 
-      assert %{errors: [credential: {"can't be blank", [validation: :required]}]} = changeset
+      assert "can't be blank" in errors_on(changeset).credential
     end
   end
 
@@ -155,6 +197,47 @@ defmodule SentientSocial.AccountsTest do
     test "returns not found error with no matching user for email" do
       assert {:error, :not_found} =
                Accounts.authenticate_by_email_and_password("bademail@localhost", @pass)
+    end
+  end
+
+  describe "add_token/2" do
+    test "can add a token to a user" do
+      {:ok, user} =
+        Accounts.register_user(%{
+          name: "Marc",
+          username: "marcdel",
+          credential: %{
+            email: "marcdel@email.com",
+            password: "password"
+          }
+        })
+
+      user = SentientSocial.Repo.preload(user, :token)
+
+      {:ok, user} =
+        Accounts.add_token(user, %{
+          provider: "twitter",
+          token: "some token",
+          token_secret: "some token_secret"
+        })
+
+      assert %{
+               provider: "twitter",
+               token: "some token",
+               token_secret: "some token_secret"
+             } = user.token
+    end
+
+    test "cannot add a token if user is missing" do
+      {:error, changeset} =
+        Accounts.add_token(%User{}, %{
+          provider: "twitter",
+          token: "some token",
+          token_secret: "some token_secret"
+        })
+
+      assert "can't be blank" in errors_on(changeset).name
+      assert "can't be blank" in errors_on(changeset).username
     end
   end
 end

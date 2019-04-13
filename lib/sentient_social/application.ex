@@ -11,9 +11,10 @@ defmodule SentientSocial.Application do
       # Start the Ecto repository
       SentientSocial.Repo,
       # Start the endpoint when the application starts
-      SentientSocialWeb.Endpoint
+      SentientSocialWeb.Endpoint,
       # Starts a worker by calling: SentientSocial.Worker.start_link(arg)
       # {SentientSocial.Worker, arg},
+      SentientSocial.Vault
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

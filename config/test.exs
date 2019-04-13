@@ -19,3 +19,5 @@ config :sentient_social, SentientSocial.Repo,
 
 config :phoenix_integration,
   endpoint: SentientSocialWeb.Endpoint
+
+config :sentient_social, cloak_key: "8Inw1rcblUWiTqMWsJHHKrb5iv9taEmZAxKoQckBHGc="

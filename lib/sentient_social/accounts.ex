@@ -21,11 +21,17 @@ defmodule SentientSocial.Accounts do
   end
 
   def get_user_by_email(email) do
-    query = from(u in User, join: c in assoc(u, :credential), where: c.email == ^email)
+    query =
+      from(
+        u in User,
+        join: c in assoc(u, :credential),
+        where: c.email == ^email
+      )
 
     query
     |> Repo.one()
     |> Repo.preload(:credential)
+    |> Repo.preload(:token)
   end
 
   def authenticate_by_email_and_password(email, password) do
@@ -55,8 +61,28 @@ defmodule SentientSocial.Accounts do
   end
 
   def register_user(attrs \\ %{}) do
-    %User{}
-    |> User.registration_changeset(attrs)
-    |> Repo.insert()
+    result =
+      %User{}
+      |> User.registration_changeset(attrs)
+      |> Repo.insert()
+
+    case result do
+      {:ok, user} ->
+        user =
+          user
+          |> Repo.preload(:credential)
+          |> Repo.preload(:token)
+
+        {:ok, user}
+
+      error_result ->
+        error_result
+    end
+  end
+
+  def add_token(%User{} = user, attrs \\ %{}) do
+    user
+    |> User.token_changeset(attrs)
+    |> Repo.update()
   end
 end
