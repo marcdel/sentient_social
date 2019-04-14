@@ -3,6 +3,8 @@ defmodule SentientSocialWeb.UserController do
 
   alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
+  alias SentientSocialWeb.Auth
+
   plug :authenticate_user when action in [:index, :show]
 
   def index(conn, _params) do
@@ -10,9 +12,16 @@ defmodule SentientSocialWeb.UserController do
     render(conn, "index.html", users: users)
   end
 
-  def show(conn, %{"id" => id}) do
-    user = Accounts.get_user(id)
-    render(conn, "show.html", user: user)
+  def show(conn, params) do
+    if Auth.it_me?(conn, params) do
+      user = Auth.current_user(conn)
+      render(conn, "show.html", user: user)
+    else
+      conn
+      |> put_flash(:error, "That ain't you, friend")
+      |> redirect(to: Routes.page_path(conn, :index))
+      |> halt()
+    end
   end
 
   def new(conn, _params) do

@@ -29,17 +29,22 @@ defmodule SentientSocialWeb.SessionControllerTest do
     end
 
     test "redirects to user's profile page when user has a token", %{conn: conn} do
-      {:ok, user} = Accounts.register_user(%{
-        id: 1,
-        name: "Marc",
-        username: "marcdel",
-        credential: %{
-          email: "marcdel@email.com",
-          password: "password"
-        }
-      })
+      {:ok, user} =
+        Accounts.register_user(%{
+          id: 1,
+          name: "Marc",
+          username: "marcdel",
+          credential: %{
+            email: "marcdel@email.com",
+            password: "password"
+          }
+        })
 
-      Accounts.add_token(user, %{provider: "twitter", token: "token4321", token_secret: "secret4321"})
+      Accounts.add_token(user, %{
+        provider: "twitter",
+        token: "token4321",
+        token_secret: "secret4321"
+      })
 
       conn =
         post(conn, Routes.session_path(conn, :create),
@@ -49,7 +54,6 @@ defmodule SentientSocialWeb.SessionControllerTest do
       assert get_flash(conn, :info) =~ "Welcome back, Marc!"
       assert redirected_to(conn) == Routes.user_path(conn, :show, user.id)
     end
-
   end
 
   test "POST /sessions with invalid password", %{conn: conn} do

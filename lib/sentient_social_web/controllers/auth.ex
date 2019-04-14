@@ -23,6 +23,16 @@ defmodule SentientSocialWeb.Auth do
     end
   end
 
+  def it_me?(conn, %{"id" => id}) when is_binary(id) do
+    {id, _} = Integer.parse(id)
+    it_me?(conn, %{"id" => id})
+  end
+
+  def it_me?(conn, %{"id" => id}) when is_integer(id) do
+    %{id: user_id} = current_user(conn)
+    user_id == id
+  end
+
   def login(conn, user) do
     conn
     |> put_current_user(user)

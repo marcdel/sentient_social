@@ -24,19 +24,27 @@ defmodule SentientSocialWeb.UserControllerTest do
     end
 
     test "GET /users/:id", %{conn: conn} do
-      user = Accounts.get_user(1)
-      conn = sign_in(conn, user)
-
+      user1 = Accounts.get_user(1)
+      conn = sign_in(conn, user1)
       conn1 = get(conn, Routes.user_path(conn, :show, "1"))
-      assert html_response(conn1, 200) =~ "Marc"
-      refute html_response(conn1, 200) =~ "Jackie"
+      assert html_response(conn1, 200) =~ user1.name
 
-      user = Accounts.get_user(2)
-      conn = sign_in(conn, user)
-
+      user2 = Accounts.get_user(2)
+      conn = sign_in(conn, user2)
       conn2 = get(conn, Routes.user_path(conn, :show, "2"))
-      refute html_response(conn2, 200) =~ "Marc"
-      assert html_response(conn2, 200) =~ "Jackie"
+      assert html_response(conn2, 200) =~ user2.name
+    end
+
+    test "GET /users/:id cannot see another user's profile", %{conn: conn} do
+      user1 = Accounts.get_user(1)
+      conn = sign_in(conn, user1)
+
+      conn = get(conn, Routes.user_path(conn, :show, "1"))
+      assert html_response(conn, 200)
+
+      conn = get(conn, Routes.user_path(conn, :show, "2"))
+      assert conn.status == 302
+      assert conn.halted == true
     end
   end
 
