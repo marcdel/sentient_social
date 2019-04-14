@@ -8,24 +8,48 @@ defmodule SentientSocialWeb.SessionControllerTest do
     assert html_response(conn, 200) =~ "Password"
   end
 
-  test "POST /sessions", %{conn: conn} do
-    Accounts.register_user(%{
-      id: 1,
-      name: "Marc",
-      username: "marcdel",
-      credential: %{
-        email: "marcdel@email.com",
-        password: "password"
-      }
-    })
+  describe "POST /sessions" do
+    test "redirects to auth when user doesn't have a token", %{conn: conn} do
+      Accounts.register_user(%{
+        id: 1,
+        name: "Marc",
+        username: "marcdel",
+        credential: %{
+          email: "marcdel@email.com",
+          password: "password"
+        }
+      })
 
-    conn =
-      post(conn, Routes.session_path(conn, :create),
-        session: %{"email" => "marcdel@email.com", "password" => "password"}
-      )
+      conn =
+        post(conn, Routes.session_path(conn, :create),
+          session: %{"email" => "marcdel@email.com", "password" => "password"}
+        )
 
-    assert get_flash(conn, :info) =~ "Welcome back, Marc!"
-    assert redirected_to(conn) == Routes.auth_path(conn, :request, "twitter")
+      assert redirected_to(conn) == Routes.auth_path(conn, :request, "twitter")
+    end
+
+    test "redirects to user's profile page when user has a token", %{conn: conn} do
+      {:ok, user} = Accounts.register_user(%{
+        id: 1,
+        name: "Marc",
+        username: "marcdel",
+        credential: %{
+          email: "marcdel@email.com",
+          password: "password"
+        }
+      })
+
+      Accounts.add_token(user, %{provider: "twitter", token: "token4321", token_secret: "secret4321"})
+
+      conn =
+        post(conn, Routes.session_path(conn, :create),
+          session: %{"email" => "marcdel@email.com", "password" => "password"}
+        )
+
+      assert get_flash(conn, :info) =~ "Welcome back, Marc!"
+      assert redirected_to(conn) == Routes.user_path(conn, :show, user.id)
+    end
+
   end
 
   test "POST /sessions with invalid password", %{conn: conn} do

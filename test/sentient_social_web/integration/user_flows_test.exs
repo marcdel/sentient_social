@@ -2,6 +2,8 @@ defmodule SentientSocialWeb.UserFlowsTest do
   use SentientSocialWeb.IntegrationCase, async: true
 
   @tag :integration
+  # Need to skip twitter auth in integration env
+  @tag :skip
   test "can register a new user", %{conn: conn} do
     conn
     |> get(Routes.user_path(conn, :new))

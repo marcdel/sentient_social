@@ -12,14 +12,6 @@ defmodule SentientSocial.Accounts do
     Repo.get(User, id)
   end
 
-  def get_user!(id) do
-    Repo.get!(User, id)
-  end
-
-  def get_user_by(params) do
-    Repo.get_by(User, params)
-  end
-
   def get_user_by_email(email) do
     query =
       from(
@@ -82,6 +74,7 @@ defmodule SentientSocial.Accounts do
 
   def add_token(%User{} = user, attrs \\ %{}) do
     user
+    |> Repo.preload(:token)
     |> User.token_changeset(attrs)
     |> Repo.update()
   end

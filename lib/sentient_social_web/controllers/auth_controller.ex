@@ -10,6 +10,7 @@ defmodule SentientSocialWeb.AuthController do
         %{id: user_id} = Auth.current_user(conn)
 
         conn
+        |> Auth.add_auth_token_to_current_user(auth)
         |> put_flash(:info, "Successfully authenticated.")
         |> redirect(to: Routes.user_path(conn, :show, user_id))
     end

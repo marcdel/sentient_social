@@ -77,11 +77,9 @@ defmodule SentientSocialWeb.UserControllerTest do
       )
 
     assert get_flash(conn, :info) =~ "Jane created!"
-    assert %{id: id} = redirected_params(conn)
-    assert redirected_to(conn) == Routes.user_path(conn, :show, id)
+    assert redirected_to(conn) == Routes.auth_path(conn, :request, "twitter")
 
-    conn = get(conn, Routes.user_path(conn, :show, id))
-    assert html_response(conn, 200) =~ "Jane"
+    assert Accounts.get_user_by_email("jane@email.com") != nil
   end
 
   test "POST /users with invalid data", %{conn: conn} do

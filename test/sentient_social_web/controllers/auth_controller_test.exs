@@ -1,26 +1,7 @@
 defmodule SentientSocialWeb.AuthControllerTest do
   use SentientSocialWeb.ConnCase, async: true
-
-  @ueberauth_auth %Ueberauth.Auth{
-    credentials: %Ueberauth.Auth.Credentials{
-      token: "abcd4321",
-      token_type: nil
-    },
-    extra: %Ueberauth.Auth.Extra{
-      raw_info: %{
-        user: %{
-          "id_str" => "1234567",
-          "id" => 1_234_567,
-          "name" => "User's Full Name",
-          "screen_name" => "user"
-        }
-      }
-    },
-    info: %Ueberauth.Auth.Info{
-      email: "user@email.com"
-    },
-    provider: :twitter
-  }
+  alias SentientSocial.Fixtures
+  alias SentientSocialWeb.Auth
 
   describe "when user is not logged in" do
     test "GET callback redirects", %{conn: conn} do
@@ -48,7 +29,7 @@ defmodule SentientSocialWeb.AuthControllerTest do
       {:ok, user: user, conn: conn}
     end
 
-    test "handles authentication failure", %{conn: conn} do
+    test "shows authentication failure message", %{conn: conn} do
       conn =
         conn
         |> assign(:ueberauth_failure, %{})
@@ -57,14 +38,33 @@ defmodule SentientSocialWeb.AuthControllerTest do
       assert get_flash(conn, :error) == "Failed to authenticate."
     end
 
-    test "handles successful Twitter authentication", %{conn: conn, user: user} do
+    test "redirects to the user's profile page", %{conn: conn, user: user} do
       conn =
         conn
-        |> assign(:ueberauth_auth, @ueberauth_auth)
+        |> assign(:ueberauth_auth, Fixtures.ueberauth_auth_response())
         |> get(Routes.auth_path(conn, :callback, "twitter"))
 
       assert get_flash(conn, :info) == "Successfully authenticated."
       assert redirected_to(conn) == Routes.user_path(conn, :show, user.id)
+    end
+
+    test "saves the users auth tokens", %{conn: conn} do
+      ueberauth_auth_response =
+        Fixtures.ueberauth_auth_response(%{
+          credentials: %{token: "token4321", secret: "secret4321"}
+        })
+
+      user =
+        conn
+        |> assign(:ueberauth_auth, ueberauth_auth_response)
+        |> get(Routes.auth_path(conn, :callback, "twitter"))
+        |> Auth.current_user()
+
+      assert %{
+               provider: "twitter",
+               token: "token4321",
+               token_secret: "secret4321"
+             } = user.token
     end
   end
 end

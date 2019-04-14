@@ -26,41 +26,6 @@ defmodule SentientSocial.AccountsTest do
     end
   end
 
-  describe "get_user!/1" do
-    test "returns the user with the specified id or raise" do
-      {:ok, user} = Repo.insert(%User{id: 2, name: "Jackie", username: "jackie"})
-
-      found_user = Accounts.get_user!(2)
-      assert found_user == user
-
-      assert_raise Ecto.NoResultsError, fn ->
-        Accounts.get_user!(1)
-      end
-    end
-  end
-
-  describe "get_user_by/1" do
-    test "returns the user with the specified key or nil" do
-      {:ok, marc} = Repo.insert(%User{id: 1, name: "Marc", username: "marcdel"})
-      {:ok, jackie} = Repo.insert(%User{id: 2, name: "Jackie", username: "jackie"})
-
-      user = Accounts.get_user_by(id: 1)
-      assert user == marc
-
-      user = Accounts.get_user_by(name: "Jackie")
-      assert user == jackie
-
-      user = Accounts.get_user_by(username: "marcdel")
-      assert user == marc
-
-      user = Accounts.get_user_by(id: 2, name: "Jackie", username: "jackie")
-      assert user == jackie
-
-      user = Accounts.get_user_by(id: 666)
-      assert user == nil
-    end
-  end
-
   describe "get_user_by_email/1" do
     setup do
       {:ok, user} =

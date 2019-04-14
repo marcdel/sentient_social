@@ -38,6 +38,21 @@ defmodule SentientSocialWeb.Auth do
     end
   end
 
+  def add_auth_token_to_current_user(conn, auth) do
+    token_params = %{
+      provider: Atom.to_string(auth.provider),
+      token: auth.credentials.token,
+      token_secret: auth.credentials.secret
+    }
+
+    {:ok, user} =
+      conn
+      |> current_user()
+      |> Accounts.add_token(token_params)
+
+    put_current_user(conn, user)
+  end
+
   def logout(conn) do
     configure_session(conn, drop: true)
   end
