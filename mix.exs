@@ -50,7 +50,9 @@ defmodule SentientSocial.MixProject do
       {:cloak, "~> 0.9"},
       {:phoenix_integration, "~> 0.6", only: :test},
       {:ueberauth_twitter, "~> 0.3"},
-      {:oauth, github: "tim/erlang-oauth"}
+      {:oauth, github: "tim/erlang-oauth"},
+      {:extwitter, "~> 0.9"},
+      {:mox, "~> 0.5", only: :test}
     ]
   end
 
