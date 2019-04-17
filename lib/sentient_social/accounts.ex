@@ -9,7 +9,9 @@ defmodule SentientSocial.Accounts do
   end
 
   def get_user(id) do
-    Repo.get(User, id)
+    User
+    |> Repo.get(id)
+    |> Repo.preload(:token)
   end
 
   def get_user_by_email(email) do

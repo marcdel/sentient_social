@@ -1,4 +1,6 @@
-defmodule SentientSocial.Fixtures do
+defmodule Fixtures do
+  alias SentientSocial.Accounts
+
   @default_ueberauth_response %Ueberauth.Auth{
     credentials: %Ueberauth.Auth.Credentials{
       token: "token4321",
@@ -88,5 +90,37 @@ defmodule SentientSocial.Fixtures do
 
   def ueberauth_auth_response(attrs \\ %{}) do
     Map.merge(@default_ueberauth_response, attrs)
+  end
+
+  def registered_authorized_user(attrs \\ %{}) do
+    {:ok, user} =
+      attrs
+      |> registered_user()
+      |> Accounts.add_token(%{
+        provider: "twitter",
+        token: "token4321",
+        token_secret: "secret4321"
+      })
+
+    user
+  end
+
+  def registered_user(attrs \\ %{}) do
+    default_user_attrs = %{
+      id: 1,
+      name: "User1",
+      username: "user1",
+      credential: %{
+        email: "user1@email.com",
+        password: "password"
+      }
+    }
+
+    {:ok, user} =
+      default_user_attrs
+      |> Map.merge(attrs)
+      |> Accounts.register_user()
+
+    user
   end
 end

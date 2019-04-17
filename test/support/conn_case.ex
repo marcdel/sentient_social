@@ -21,6 +21,7 @@ defmodule SentientSocialWeb.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
       alias SentientSocialWeb.Router.Helpers, as: Routes
+      alias SentientSocialWeb.Auth
 
       # The default endpoint for testing
       @endpoint SentientSocialWeb.Endpoint
@@ -29,7 +30,7 @@ defmodule SentientSocialWeb.ConnCase do
         conn
         |> bypass_through(SentientSocialWeb.Router, :browser)
         |> get(Routes.page_path(conn, :index))
-        |> put_session(:user_id, user.id)
+        |> Auth.login(user)
         |> send_resp(:ok, "")
         |> recycle()
       end

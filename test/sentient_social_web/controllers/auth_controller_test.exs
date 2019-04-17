@@ -1,6 +1,5 @@
 defmodule SentientSocialWeb.AuthControllerTest do
   use SentientSocialWeb.ConnCase, async: true
-  alias SentientSocial.Fixtures
   alias SentientSocialWeb.Auth
 
   describe "when user is not logged in" do

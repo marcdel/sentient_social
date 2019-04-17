@@ -17,10 +17,10 @@ defmodule SentientSocial.AccountsTest do
 
   describe "get_user/1" do
     test "returns the user with the specified id or nil" do
-      {:ok, user} = Repo.insert(%User{id: 1, name: "Marc", username: "marcdel"})
+      Repo.insert(%User{id: 1, name: "Marc", username: "marcdel"})
 
       found_user = Accounts.get_user(1)
-      assert found_user == user
+      assert %{name: "Marc", username: "marcdel"} = found_user
 
       assert Accounts.get_user(2) == nil
     end

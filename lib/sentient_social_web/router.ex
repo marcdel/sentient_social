@@ -19,6 +19,7 @@ defmodule SentientSocialWeb.Router do
 
     resources "/users", UserController, only: [:index, :show, :new, :create]
     resources "/sessions", SessionController, only: [:new, :create, :delete]
+    resources "/favorites", FavoriteController, only: [:create]
     get "/", PageController, :index
   end
 
