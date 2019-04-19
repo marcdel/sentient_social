@@ -28,30 +28,19 @@ defmodule SentientSocial.AccountsTest do
 
   describe "get_user_by_email/1" do
     setup do
-      {:ok, user} =
-        Accounts.register_user(%{
-          name: "Marc",
-          username: "marcdel",
-          credential: %{
-            email: "marcdel@email.com",
-            password: "password"
-          }
-        })
-
-      Accounts.add_token(user, %{
-        provider: "twitter",
-        token: "twitter token",
-        token_secret: "twitter token_secret"
+      user = Fixtures.registered_user(%{
+        credential: %{
+          email: "marcdel@email.com",
+          password: "password"
+        }
       })
 
-      :ok
+      {:ok, user: user}
     end
 
     test "returns the user with the specified email or nil" do
       user = Accounts.get_user_by_email("marcdel@email.com")
 
-      assert user.name == "Marc"
-      assert user.username == "marcdel"
       assert user.credential.email == "marcdel@email.com"
     end
 
@@ -63,7 +52,13 @@ defmodule SentientSocial.AccountsTest do
       assert user.credential.password_hash != nil
     end
 
-    test "returns the user's token" do
+    test "returns the user's token", %{user: user} do
+      Accounts.add_token(user, %{
+        provider: "twitter",
+        token: "twitter token",
+        token_secret: "twitter token_secret"
+      })
+
       user = Accounts.get_user_by_email("marcdel@email.com")
 
       assert user.token.provider == "twitter"
@@ -205,8 +200,8 @@ defmodule SentientSocial.AccountsTest do
 
       user =
         user.id
-             |> Accounts.get_user()
-             |> Repo.preload(:search_terms)
+        |> Accounts.get_user()
+        |> Repo.preload(:search_terms)
 
       assert [term1, term2] == user.search_terms
     end
@@ -220,8 +215,7 @@ defmodule SentientSocial.AccountsTest do
     end
 
     test "cannot add a search_term if user is missing" do
-      {:error, changeset} =
-        Accounts.add_search_term(%User{}, %{text: "some search_term"})
+      {:error, changeset} = Accounts.add_search_term(%User{}, %{text: "some search_term"})
 
       assert "can't be blank" in errors_on(changeset).user_id
     end

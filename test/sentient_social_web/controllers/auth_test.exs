@@ -62,11 +62,8 @@ defmodule SentientSocialWeb.AuthTest do
 
   describe("registered user") do
     setup do
-      {:ok, user} =
-        Accounts.register_user(%{
-          id: 1,
-          name: "Marc",
-          username: "marcdel",
+      user =
+        Fixtures.registered_user(%{
           credential: %{
             email: "marcdel@email.com",
             password: "password"

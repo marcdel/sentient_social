@@ -12,16 +12,7 @@ defmodule SentientSocialWeb.AuthControllerTest do
 
   describe "when user is logged in" do
     setup %{conn: conn} do
-      {:ok, user} =
-        SentientSocial.Accounts.register_user(%{
-          id: 1,
-          name: "Marc",
-          username: "marcdel",
-          credential: %{
-            email: "marcdel@email.com",
-            password: "password"
-          }
-        })
+      user = Fixtures.registered_user()
 
       conn = sign_in(conn, user)
 

@@ -10,10 +10,7 @@ defmodule SentientSocialWeb.SessionControllerTest do
 
   describe "POST /sessions" do
     test "redirects to auth when user doesn't have a token", %{conn: conn} do
-      Accounts.register_user(%{
-        id: 1,
-        name: "Marc",
-        username: "marcdel",
+      Fixtures.registered_user(%{
         credential: %{
           email: "marcdel@email.com",
           password: "password"
@@ -29,11 +26,9 @@ defmodule SentientSocialWeb.SessionControllerTest do
     end
 
     test "redirects to user's profile page when user has a token", %{conn: conn} do
-      {:ok, user} =
-        Accounts.register_user(%{
-          id: 1,
+      user =
+        Fixtures.registered_user(%{
           name: "Marc",
-          username: "marcdel",
           credential: %{
             email: "marcdel@email.com",
             password: "password"
