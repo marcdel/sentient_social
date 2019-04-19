@@ -167,17 +167,7 @@ defmodule SentientSocial.AccountsTest do
 
   describe "add_token/2" do
     test "can add a token to a user" do
-      {:ok, user} =
-        Accounts.register_user(%{
-          name: "Marc",
-          username: "marcdel",
-          credential: %{
-            email: "marcdel@email.com",
-            password: "password"
-          }
-        })
-
-      user = SentientSocial.Repo.preload(user, :token)
+      user = Fixtures.registered_user()
 
       {:ok, user} =
         Accounts.add_token(user, %{
@@ -203,6 +193,37 @@ defmodule SentientSocial.AccountsTest do
 
       assert "can't be blank" in errors_on(changeset).name
       assert "can't be blank" in errors_on(changeset).username
+    end
+  end
+
+  describe "add_search_term/2" do
+    test "can add a search_term to a user" do
+      user = Fixtures.registered_user()
+
+      {:ok, term1} = Accounts.add_search_term(user, %{text: "some search_term"})
+      {:ok, term2} = Accounts.add_search_term(user, %{text: "other search_term"})
+
+      user =
+        user.id
+             |> Accounts.get_user()
+             |> Repo.preload(:search_terms)
+
+      assert [term1, term2] == user.search_terms
+    end
+
+    test "cannot add a search_term with invalid parameters" do
+      user = Fixtures.registered_user()
+
+      {:error, changeset} = Accounts.add_search_term(user, %{text: nil})
+
+      assert "can't be blank" in errors_on(changeset).text
+    end
+
+    test "cannot add a search_term if user is missing" do
+      {:error, changeset} =
+        Accounts.add_search_term(%User{}, %{text: "some search_term"})
+
+      assert "can't be blank" in errors_on(changeset).user_id
     end
   end
 end

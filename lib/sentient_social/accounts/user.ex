@@ -1,12 +1,13 @@
 defmodule SentientSocial.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
-  alias SentientSocial.Accounts.{Credential, Token}
+  alias SentientSocial.Accounts.{Credential, SearchTerm, Token}
 
   schema "users" do
     field :name, :string
     field :username, :string
     has_one :credential, Credential
+    has_many :search_terms, SearchTerm
     has_one :token, Token
 
     timestamps()

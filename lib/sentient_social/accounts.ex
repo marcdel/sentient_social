@@ -1,7 +1,7 @@
 defmodule SentientSocial.Accounts do
   import Ecto.Query, warn: false
 
-  alias SentientSocial.Accounts.User
+  alias SentientSocial.Accounts.{SearchTerm, User}
   alias SentientSocial.Repo
 
   def list_users do
@@ -79,5 +79,12 @@ defmodule SentientSocial.Accounts do
     |> Repo.preload(:token)
     |> User.token_changeset(attrs)
     |> Repo.update()
+  end
+
+  def add_search_term(%User{} = user, attrs \\ %{}) do
+    user
+    |> Ecto.build_assoc(:search_terms)
+    |> SearchTerm.changeset(attrs)
+    |> Repo.insert()
   end
 end
