@@ -28,12 +28,13 @@ defmodule SentientSocial.AccountsTest do
 
   describe "get_user_by_email/1" do
     setup do
-      user = Fixtures.registered_user(%{
-        credential: %{
-          email: "marcdel@email.com",
-          password: "password"
-        }
-      })
+      user =
+        Fixtures.registered_user(%{
+          credential: %{
+            email: "marcdel@email.com",
+            password: "password"
+          }
+        })
 
       {:ok, user: user}
     end
@@ -186,8 +187,7 @@ defmodule SentientSocial.AccountsTest do
           token_secret: "some token_secret"
         })
 
-      assert "can't be blank" in errors_on(changeset).name
-      assert "can't be blank" in errors_on(changeset).username
+      assert "can't be blank" in errors_on(changeset).user_id
     end
   end
 
@@ -195,15 +195,10 @@ defmodule SentientSocial.AccountsTest do
     test "can add a search_term to a user" do
       user = Fixtures.registered_user()
 
-      {:ok, term1} = Accounts.add_search_term(user, %{text: "some search_term"})
-      {:ok, term2} = Accounts.add_search_term(user, %{text: "other search_term"})
+      {:ok, user} = Accounts.add_search_term(user, %{text: "some search_term"})
+      {:ok, user} = Accounts.add_search_term(user, %{text: "other search_term"})
 
-      user =
-        user.id
-        |> Accounts.get_user()
-        |> Repo.preload(:search_terms)
-
-      assert [term1, term2] == user.search_terms
+      assert [%{text: "some search_term"}, %{text: "other search_term"}] = user.search_terms
     end
 
     test "cannot add a search_term with invalid parameters" do

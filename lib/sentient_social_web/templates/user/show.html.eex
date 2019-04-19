@@ -9,5 +9,6 @@
   <div>
     <%= text_input f, :search_term, placeholder: "Search Term" %>
     <%= error_tag f, :search_term %>
+    <%= submit "Favorite" %>
   </div>
 <% end %>
