@@ -1,13 +1,16 @@
 defmodule SentientSocialWeb.FavoriteControllerTest do
   use SentientSocialWeb.ConnCase, async: true
   import Mox
+  alias SentientSocial.Accounts
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
 
   setup :verify_on_exit!
 
   setup %{conn: conn} do
-    user = Fixtures.registered_authorized_user()
+    {:ok, user} =
+      Fixtures.registered_authorized_user()
+      |> Accounts.add_search_term(%{text: "test search term"})
 
     conn = sign_in(conn, user)
 
@@ -18,7 +21,7 @@ defmodule SentientSocialWeb.FavoriteControllerTest do
     test "shows a message saying no matching tweets were found", %{conn: conn, user: user} do
       expect(@twitter_client, :search, fn _query, [count: _count] -> [] end)
 
-      conn = post(conn, Routes.favorite_path(conn, :create), search_term: "test search term")
+      conn = post(conn, Routes.favorite_path(conn, :create))
       assert get_flash(conn, :error) =~ "No tweets found matching that search term."
       assert redirected_to(conn) == Routes.user_path(conn, :show, user.id)
     end
@@ -32,7 +35,7 @@ defmodule SentientSocialWeb.FavoriteControllerTest do
         raise %ExTwitter.Error{message: "ExTwitter threw an error!"}
       end)
 
-      conn = post(conn, Routes.favorite_path(conn, :create), search_term: "test search term")
+      conn = post(conn, Routes.favorite_path(conn, :create))
       assert get_flash(conn, :error) =~ "We had some trouble favoriting that tweet for you."
       assert redirected_to(conn) == Routes.user_path(conn, :show, user.id)
     end
@@ -44,14 +47,14 @@ defmodule SentientSocialWeb.FavoriteControllerTest do
       |> expect(:get_tuples, fn -> [] end)
       |> expect(:configure, fn _, _ -> :ok end)
 
-      post(conn, Routes.favorite_path(conn, :create), search_term: "test search term")
+      post(conn, Routes.favorite_path(conn, :create))
     end
 
     test "does not favorite tweets that have already been favorited", %{conn: conn, user: user} do
       @twitter_client
       |> expect(:search, fn _query, [count: _count] -> [%{id: 1, favorited: true}] end)
 
-      conn = post(conn, Routes.favorite_path(conn, :create), search_term: "test search term")
+      conn = post(conn, Routes.favorite_path(conn, :create))
       assert get_flash(conn, :error) =~ "No tweets found matching that search term."
       assert redirected_to(conn) == Routes.user_path(conn, :show, user.id)
     end
@@ -63,7 +66,7 @@ defmodule SentientSocialWeb.FavoriteControllerTest do
       |> expect(:get_tuples, fn -> [] end)
       |> expect(:configure, fn _, _ -> :ok end)
 
-      conn = post(conn, Routes.favorite_path(conn, :create), search_term: "test search term")
+      conn = post(conn, Routes.favorite_path(conn, :create))
       assert get_flash(conn, :info) =~ "Favorited 1 tweet"
       assert redirected_to(conn) == Routes.user_path(conn, :show, user.id)
     end

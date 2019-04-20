@@ -105,4 +105,16 @@ defmodule SentientSocial.Accounts do
         error_result
     end
   end
+
+  def list_search_terms(%User{id: user_id} = user) do
+    query =
+      from(
+        s in SearchTerm,
+        join: u in assoc(s, :user),
+        where: u.id == ^user_id
+      )
+
+    query
+    |> Repo.all()
+  end
 end

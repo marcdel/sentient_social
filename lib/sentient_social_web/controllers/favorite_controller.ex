@@ -1,12 +1,13 @@
 defmodule SentientSocialWeb.FavoriteController do
   use SentientSocialWeb, :controller
   alias SentientSocialWeb.Auth
-  alias SentientSocial.Twitter
+  alias SentientSocial.{Accounts, Twitter}
 
   plug :authenticate_user when action in [:create]
 
-  def create(conn, %{"search_term" => search_term}) do
+  def create(conn, _) do
     user = Auth.current_user(conn)
+    [%{text: search_term} | _] = Accounts.list_search_terms(user)
 
     case Twitter.favorite_tweet_by_search_term(user, search_term) do
       {:ok, _tweet} ->

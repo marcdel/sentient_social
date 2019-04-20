@@ -198,7 +198,8 @@ defmodule SentientSocial.AccountsTest do
       {:ok, user} = Accounts.add_search_term(user, %{text: "some search_term"})
       {:ok, user} = Accounts.add_search_term(user, %{text: "other search_term"})
 
-      assert [%{text: "some search_term"}, %{text: "other search_term"}] = user.search_terms
+      assert [%{text: "some search_term"}, %{text: "other search_term"}] =
+               Accounts.list_search_terms(user)
     end
 
     test "cannot add a search_term with invalid parameters" do

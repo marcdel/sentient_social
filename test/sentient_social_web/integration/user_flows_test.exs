@@ -31,11 +31,28 @@ defmodule SentientSocialWeb.UserFlowsTest do
   end
 
   @tag :integration
+  test "can add a new search term", %{conn: conn} do
+    user = Fixtures.registered_authorized_user()
+
+    conn
+    |> sign_in(user)
+    |> get(Routes.user_path(conn, :show, user.id))
+    |> follow_form(%{
+      text: "new search term"
+    })
+    |> assert_response(
+      status: 200,
+      html: "Search term added",
+      path: Routes.user_path(conn, :show, user.id)
+    )
+  end
+
+  @tag :integration
   test "can favorite tweets for random search terms", %{conn: conn} do
     user = Fixtures.registered_authorized_user()
 
     @twitter_client
-    |> expect(:search, fn _query, [count: _count] -> [%{id: 1}] end)
+    |> expect(:search, fn "new search term", [count: _count] -> [%{id: 1}] end)
     |> expect(:create_favorite, fn tweet_id, [] -> %{id: tweet_id} end)
     |> expect(:get_tuples, fn -> [] end)
     |> expect(:configure, fn _, _ -> :ok end)
@@ -44,8 +61,13 @@ defmodule SentientSocialWeb.UserFlowsTest do
     |> sign_in(user)
     |> get(Routes.user_path(conn, :show, user.id))
     |> follow_form(%{
-      search_term: "things and stuff"
+      text: "new search term"
     })
+    |> assert_response(
+      status: 200,
+      path: Routes.user_path(conn, :show, user.id)
+    )
+    |> follow_button("Favorite")
     |> assert_response(
       status: 200,
       html: "Favorited 1 tweet",

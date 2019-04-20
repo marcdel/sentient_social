@@ -3,12 +3,16 @@
   <%= render "user.html", user: @user %>
 </p>
 
-<h3>Favorite a tweet</h3>
+<h3>Add a search term</h3>
 
-<%= form_for @conn, Routes.favorite_path(@conn, :create), fn f -> %>
+<%= form_for @conn, Routes.search_term_path(@conn, :create), fn f -> %>
   <div>
-    <%= text_input f, :search_term, placeholder: "Search Term" %>
-    <%= error_tag f, :search_term %>
-    <%= submit "Favorite" %>
+    <%= text_input f, :text, placeholder: "Search Term" %>
+    <%= error_tag f, :text %>
+    <%= submit "Add" %>
   </div>
 <% end %>
+
+<h3>Favorite a tweet</h3>
+
+<%= button("Favorite", to: Routes.favorite_path(@conn, :create), method: "post", class: "btn") %>
