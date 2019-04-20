@@ -62,11 +62,14 @@ defmodule SentientSocialWeb.FavoriteControllerTest do
     test "displays the number of tweets favorited", %{conn: conn, user: user} do
       @twitter_client
       |> expect(:search, fn _query, [count: _count] -> [%{id: 1}] end)
-      |> expect(:create_favorite, fn tweet_id, [] -> %{id: tweet_id} end)
+      |> expect(:create_favorite, fn tweet_id, [] ->
+        %{id: tweet_id}
+      end)
       |> expect(:get_tuples, fn -> [] end)
       |> expect(:configure, fn _, _ -> :ok end)
 
       conn = post(conn, Routes.favorite_path(conn, :create))
+
       assert get_flash(conn, :info) =~ "Favorited 1 tweet"
       assert redirected_to(conn) == Routes.user_path(conn, :show, user.id)
     end

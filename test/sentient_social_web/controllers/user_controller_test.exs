@@ -35,6 +35,18 @@ defmodule SentientSocialWeb.UserControllerTest do
       assert html_response(conn2, 200) =~ user2.name
     end
 
+    test "shows user's saved search terms" do
+      {:ok, user} =
+        1
+        |> Accounts.get_user()
+        |> Accounts.add_search_term(%{text: "beep boop"})
+
+      conn = sign_in(conn, user)
+
+      conn = get(conn, Routes.user_path(conn, :show, "1"))
+      assert html_response(conn, 200) =~ "beep boop"
+    end
+
     test "GET /users/:id cannot see another user's profile", %{conn: conn} do
       user1 = Accounts.get_user(1)
       conn = sign_in(conn, user1)

@@ -3,6 +3,15 @@
   <%= render "user.html", user: @user %>
 </p>
 
+<h2>Search Terms</h2>
+<p>
+  <ul>
+    <%= for term <- @search_terms do %>
+        <li><%= term.text %></li>
+      <% end %>
+  </ul>
+</p>
+
 <h3>Add a search term</h3>
 
 <%= form_for @conn, Routes.search_term_path(@conn, :create), fn f -> %>

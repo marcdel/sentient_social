@@ -15,7 +15,8 @@ defmodule SentientSocialWeb.UserController do
   def show(conn, params) do
     if Auth.it_me?(conn, params) do
       user = Auth.current_user(conn)
-      render(conn, "show.html", user: user)
+      search_terms = Accounts.list_search_terms(user)
+      render(conn, "show.html", user: user, search_terms: search_terms)
     else
       conn
       |> put_flash(:error, "That ain't you, friend")
