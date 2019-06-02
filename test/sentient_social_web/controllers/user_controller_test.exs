@@ -35,7 +35,7 @@ defmodule SentientSocialWeb.UserControllerTest do
       assert html_response(conn2, 200) =~ user2.name
     end
 
-    test "shows user's saved search terms" do
+    test "shows user's saved search terms", %{conn: conn} do
       {:ok, user} =
         1
         |> Accounts.get_user()

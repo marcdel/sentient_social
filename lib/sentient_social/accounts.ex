@@ -106,7 +106,7 @@ defmodule SentientSocial.Accounts do
     end
   end
 
-  def list_search_terms(%User{id: user_id} = user) do
+  def list_search_terms(%User{id: user_id}) do
     query =
       from(
         s in SearchTerm,
