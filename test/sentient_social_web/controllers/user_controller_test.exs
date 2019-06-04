@@ -96,6 +96,19 @@ defmodule SentientSocialWeb.UserControllerTest do
     assert Accounts.get_user_by_email("jane@email.com") != nil
   end
 
+  test "POST /users with mismatched passwords", %{conn: conn} do
+    invalid_user = %{
+      "credential" => %{
+        email: "user@email.com",
+        password: "correct",
+        password_confirmation: "incorrect"
+      }
+    }
+
+    create_conn = post(conn, Routes.user_path(conn, :create), user: invalid_user)
+    assert html_response(create_conn, 200) =~ "Oops, something went wrong!"
+  end
+
   test "POST /users with invalid data", %{conn: conn} do
     invalid_user = %{"credential" => %{email: ""}}
     create_conn = post(conn, Routes.user_path(conn, :create), user: invalid_user)

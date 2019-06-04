@@ -13,7 +13,10 @@
       <%= error_tag cf, :email %>
 
       <%= password_input cf, :password, placeholder: "Password" %>
-      <%= error_tag f, :password %>
+      <%= error_tag cf, :password %>
+
+      <%= password_input cf, :password_confirmation, placeholder: "Confirm Password" %>
+      <%= error_tag cf, :password_confirmation %>
     <% end %>
   </div>
   <%= submit "Create User" %>

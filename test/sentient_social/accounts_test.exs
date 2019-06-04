@@ -84,11 +84,25 @@ defmodule SentientSocial.AccountsTest do
         Accounts.register_user(%{
           credential: %{
             email: "marcdel@email.com",
-            password: "password"
+            password: "password",
+            password_confirmation: "password"
           }
         })
 
       assert %{credential: %{email: "marcdel@email.com"}} = user
+    end
+
+    test "cannot create a user without matching passwords" do
+      assert {:error, changeset} =
+               Accounts.register_user(%{
+                 credential: %{
+                   email: "user@email.com",
+                   password: "correct",
+                   password_confirmation: "incorrect"
+                 }
+               })
+
+      assert "passwords do not match" in errors_on(changeset).credential.password_confirmation
     end
 
     test "cannot create a user without a valid credential" do
