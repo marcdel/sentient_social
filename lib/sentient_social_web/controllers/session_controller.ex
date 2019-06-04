@@ -1,6 +1,7 @@
 defmodule SentientSocialWeb.SessionController do
   use SentientSocialWeb, :controller
   alias SentientSocialWeb.Auth
+  alias SentientSocial.Accounts.User
 
   def new(conn, _params) do
     render(conn, "new.html")
@@ -10,10 +11,7 @@ defmodule SentientSocialWeb.SessionController do
     case Auth.login_by_email_and_password(conn, email, password) do
       {:ok, conn} ->
         user = Auth.current_user(conn)
-
-        conn
-        |> put_flash(:info, "Welcome back, #{user.username}!")
-        |> redirect_to_user(user)
+        redirect_to_user(conn, user)
 
       {:error, _reason, conn} ->
         conn
@@ -33,7 +31,9 @@ defmodule SentientSocialWeb.SessionController do
     redirect(conn, to: Routes.auth_path(conn, :request, "twitter"))
   end
 
-  defp redirect_to_user(conn, %{id: user_id}) do
-    redirect(conn, to: Routes.user_path(conn, :show, user_id))
+  defp redirect_to_user(conn, user) do
+    conn
+    |> put_flash(:info, "Welcome back, #{User.username(user)}!")
+    |> redirect(to: Routes.user_path(conn, :show, user.id))
   end
 end

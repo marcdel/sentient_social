@@ -7,8 +7,8 @@ defmodule SentientSocial.AccountsTest do
 
   describe "list_users/0" do
     test "returns all users" do
-      Repo.insert(%User{id: 1, username: "marcdel"})
-      Repo.insert(%User{id: 2, username: "jackie"})
+      Repo.insert(%User{id: 1})
+      Repo.insert(%User{id: 2})
 
       users = Accounts.list_users()
       assert Enum.count(users) == 2
@@ -17,10 +17,10 @@ defmodule SentientSocial.AccountsTest do
 
   describe "get_user/1" do
     test "returns the user with the specified id or nil" do
-      Repo.insert(%User{id: 1, username: "marcdel"})
+      Repo.insert(%User{id: 1})
 
       found_user = Accounts.get_user(1)
-      assert %{username: "marcdel"} = found_user
+      assert %{id: 1} = found_user
 
       assert Accounts.get_user(2) == nil
     end
@@ -54,11 +54,13 @@ defmodule SentientSocial.AccountsTest do
     end
 
     test "returns the user's token", %{user: user} do
-      Accounts.add_token(user, %{
-        provider: "twitter",
-        token: "twitter token",
-        token_secret: "twitter token_secret"
-      })
+      {:ok, _} =
+        Accounts.add_token(user, %{
+          username: "user1",
+          provider: "twitter",
+          token: "twitter token",
+          token_secret: "twitter token_secret"
+        })
 
       user = Accounts.get_user_by_email("marcdel@email.com")
 
@@ -70,21 +72,9 @@ defmodule SentientSocial.AccountsTest do
 
   describe "change_user/1" do
     test "returns a changeset for the user" do
-      user = %User{username: "jackie"}
+      user = %User{credential: %{email: "user@email.com"}}
       %Ecto.Changeset{data: data} = Accounts.change_user(user)
       assert data == user
-    end
-  end
-
-  describe "create_user/1" do
-    test "username must be between 1 and 20 characters" do
-      {:error, changeset} = Accounts.create_user(%{name: "Jackie", username: ""})
-      assert "can't be blank" in errors_on(changeset).username
-
-      {:error, changeset} =
-        Accounts.create_user(%{name: "Marc", username: String.duplicate("a", 21)})
-
-      assert %{username: ["should be at most 20 character(s)"]} = errors_on(changeset)
     end
   end
 
@@ -92,28 +82,22 @@ defmodule SentientSocial.AccountsTest do
     test "can create a user with a credential" do
       {:ok, user} =
         Accounts.register_user(%{
-          username: "marcdel",
           credential: %{
             email: "marcdel@email.com",
             password: "password"
           }
         })
 
-      assert %{
-               username: "marcdel",
-               credential: %{
-                 email: "marcdel@email.com"
-               }
-             } = user
+      assert %{credential: %{email: "marcdel@email.com"}} = user
     end
 
-    test "cannot create a user without a credential" do
-      assert {:error, changeset} =
-               Accounts.register_user(%{
-                 username: "marcdel"
-               })
-
+    test "cannot create a user without a valid credential" do
+      assert {:error, changeset} = Accounts.register_user(%{})
       assert "can't be blank" in errors_on(changeset).credential
+
+      assert {:error, changeset} = Accounts.register_user(%{credential: %{}})
+      assert "can't be blank" in errors_on(changeset).credential.email
+      assert "can't be blank" in errors_on(changeset).credential.password
     end
   end
 
@@ -155,27 +139,28 @@ defmodule SentientSocial.AccountsTest do
 
       {:ok, user} =
         Accounts.add_token(user, %{
+          username: "user1",
           provider: "twitter",
           token: "some token",
           token_secret: "some token_secret"
         })
 
       assert %{
+               username: "user1",
                provider: "twitter",
                token: "some token",
                token_secret: "some token_secret"
              } = user.token
     end
 
-    test "cannot add a token if user is missing" do
-      {:error, changeset} =
-        Accounts.add_token(%User{}, %{
-          provider: "twitter",
-          token: "some token",
-          token_secret: "some token_secret"
-        })
+    test "cannot add a token if user_id, username, provider, or tokens are missing" do
+      {:error, changeset} = Accounts.add_token(%User{})
 
       assert "can't be blank" in errors_on(changeset).user_id
+      assert "can't be blank" in errors_on(changeset).username
+      assert "can't be blank" in errors_on(changeset).provider
+      assert "can't be blank" in errors_on(changeset).token
+      assert "can't be blank" in errors_on(changeset).token_secret
     end
   end
 

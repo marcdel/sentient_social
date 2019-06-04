@@ -1,7 +1,6 @@
 defmodule SentientSocialWeb.AuthTest do
   use SentientSocialWeb.ConnCase, async: true
   alias SentientSocialWeb.Auth
-  alias SentientSocial.Accounts
   alias SentientSocial.Accounts.User
 
   setup %{conn: conn} do
@@ -14,7 +13,7 @@ defmodule SentientSocialWeb.AuthTest do
   end
 
   test "call places user from session into assigns", %{conn: conn} do
-    {:ok, user} = Accounts.create_user(%{id: 2, name: "Jackie", username: "jackie"})
+    user = Fixtures.registered_user()
 
     conn =
       conn

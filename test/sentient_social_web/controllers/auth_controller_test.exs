@@ -41,7 +41,8 @@ defmodule SentientSocialWeb.AuthControllerTest do
     test "saves the users auth tokens", %{conn: conn} do
       ueberauth_auth_response =
         Fixtures.ueberauth_auth_response(%{
-          credentials: %{token: "token4321", secret: "secret4321"}
+          credentials: %{token: "token4321", secret: "secret4321"},
+          info: %{nickname: "user1"}
         })
 
       user =
@@ -51,6 +52,7 @@ defmodule SentientSocialWeb.AuthControllerTest do
         |> Auth.current_user()
 
       assert %{
+               username: "user1",
                provider: "twitter",
                token: "token4321",
                token_secret: "secret4321"

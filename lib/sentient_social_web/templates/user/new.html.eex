@@ -8,10 +8,6 @@
   <% end %>
 
   <div>
-    <%= text_input f, :username, placeholder: "Username" %>
-    <%= error_tag f, :username %>
-  </div>
-  <div>
     <%= inputs_for f, :credential, fn cf -> %>
       <%= text_input cf, :email, placeholder: "Email" %>
       <%= error_tag cf, :email %>

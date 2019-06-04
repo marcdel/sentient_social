@@ -11,6 +11,7 @@ defmodule SentientSocial.Accounts.Token do
     field :token, EncryptedBinary
     field :token_secret, EncryptedBinary
     field :provider, :string
+    field :username, :string
     belongs_to :user, User
 
     timestamps()
@@ -19,7 +20,7 @@ defmodule SentientSocial.Accounts.Token do
   @doc false
   def changeset(token, attrs) do
     token
-    |> cast(attrs, [:provider, :token, :token_secret, :user_id])
-    |> validate_required([:provider, :token, :token_secret, :user_id])
+    |> cast(attrs, [:provider, :username, :token, :token_secret, :user_id])
+    |> validate_required([:provider, :username, :token, :token_secret, :user_id])
   end
 end

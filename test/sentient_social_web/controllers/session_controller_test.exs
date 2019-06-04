@@ -28,7 +28,6 @@ defmodule SentientSocialWeb.SessionControllerTest do
     test "redirects to user's profile page when user has a token", %{conn: conn} do
       user =
         Fixtures.registered_user(%{
-          username: "marcdel",
           credential: %{
             email: "marcdel@email.com",
             password: "password"
@@ -36,6 +35,7 @@ defmodule SentientSocialWeb.SessionControllerTest do
         })
 
       Accounts.add_token(user, %{
+        username: "marcdel",
         provider: "twitter",
         token: "token4321",
         token_secret: "secret4321"

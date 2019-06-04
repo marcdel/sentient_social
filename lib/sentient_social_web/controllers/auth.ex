@@ -50,6 +50,7 @@ defmodule SentientSocialWeb.Auth do
 
   def add_auth_token_to_current_user(conn, auth) do
     token_params = %{
+      username: auth.info.nickname,
       provider: Atom.to_string(auth.provider),
       token: auth.credentials.token,
       token_secret: auth.credentials.secret

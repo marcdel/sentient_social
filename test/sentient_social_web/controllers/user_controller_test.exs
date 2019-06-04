@@ -2,70 +2,66 @@ defmodule SentientSocialWeb.UserControllerTest do
   use SentientSocialWeb.ConnCase, async: true
 
   alias SentientSocial.Accounts
-  alias SentientSocial.Accounts.User
-  alias SentientSocial.Repo
 
-  setup do
-    Repo.insert(%User{id: 1, username: "marcdel"})
-    Repo.insert(%User{id: 2, username: "jackie"})
+  setup %{conn: conn} do
+    user1 =
+      Fixtures.registered_authorized_user(%{
+        username: "user1",
+        credential: %{
+          email: "user1@email.com",
+          password: "password"
+        }
+      })
 
-    :ok
+    user2 =
+      Fixtures.registered_authorized_user(%{
+        username: "user2",
+        credential: %{
+          email: "user2@email.com",
+          password: "password"
+        }
+      })
+
+    {:ok, %{conn: conn, user1: user1, user2: user2}}
   end
 
   describe "when user is logged in" do
-    test "GET /users", %{conn: conn} do
-      user = Accounts.get_user(2)
-      conn = sign_in(conn, user)
+    test "GET /users/:id", %{conn: conn, user1: user1, user2: user2} do
+      conn1 = sign_in(conn, user1)
+      conn1 = get(conn1, Routes.user_path(conn1, :show, user1.id))
+      assert html_response(conn1, 200) =~ user1.token.username
 
-      conn = get(conn, Routes.user_path(conn, :index))
-
-      assert html_response(conn, 200) =~ "marcdel"
-      assert html_response(conn, 200) =~ "jackie"
+      conn2 = sign_in(conn, user2)
+      conn2 = get(conn2, Routes.user_path(conn2, :show, user2.id))
+      assert html_response(conn2, 200) =~ user2.token.username
     end
 
-    test "GET /users/:id", %{conn: conn} do
-      user1 = Accounts.get_user(1)
+    test "shows user's saved search terms", %{conn: conn, user1: user1} do
       conn = sign_in(conn, user1)
-      conn1 = get(conn, Routes.user_path(conn, :show, "1"))
-      assert html_response(conn1, 200) =~ user1.username
 
-      user2 = Accounts.get_user(2)
-      conn = sign_in(conn, user2)
-      conn2 = get(conn, Routes.user_path(conn, :show, "2"))
-      assert html_response(conn2, 200) =~ user2.username
-    end
+      {:ok, user1} = Accounts.add_search_term(user1, %{text: "beep boop"})
 
-    test "shows user's saved search terms", %{conn: conn} do
-      {:ok, user} =
-        1
-        |> Accounts.get_user()
-        |> Accounts.add_search_term(%{text: "beep boop"})
-
-      conn = sign_in(conn, user)
-
-      conn = get(conn, Routes.user_path(conn, :show, "1"))
+      conn = get(conn, Routes.user_path(conn, :show, user1.id))
       assert html_response(conn, 200) =~ "beep boop"
     end
 
-    test "GET /users/:id cannot see another user's profile", %{conn: conn} do
-      user1 = Accounts.get_user(1)
+    test "GET /users/:id cannot see another user's profile", %{
+      conn: conn,
+      user1: user1,
+      user2: user2
+    } do
       conn = sign_in(conn, user1)
 
-      conn = get(conn, Routes.user_path(conn, :show, "1"))
+      conn = get(conn, Routes.user_path(conn, :show, user1.id))
       assert html_response(conn, 200)
 
-      conn = get(conn, Routes.user_path(conn, :show, "2"))
+      conn = get(conn, Routes.user_path(conn, :show, user2.id))
       assert conn.status == 302
       assert conn.halted == true
     end
   end
 
   describe "when user is not logged in" do
-    test "GET /users redirects", %{conn: conn} do
-      conn = get(conn, Routes.user_path(conn, :index))
-      assert html_response(conn, 302) =~ "redirected"
-    end
-
     test "GET /users/:id redirects", %{conn: conn} do
       conn1 = get(conn, Routes.user_path(conn, :show, "1"))
       assert html_response(conn1, 302) =~ "redirected"
@@ -77,7 +73,8 @@ defmodule SentientSocialWeb.UserControllerTest do
 
   test "GET /users/new", %{conn: conn} do
     conn = get(conn, Routes.user_path(conn, :new))
-    assert html_response(conn, 200) =~ "Username"
+    assert html_response(conn, 200) =~ "Email"
+    assert html_response(conn, 200) =~ "Password"
   end
 
   test "POST /users", %{conn: conn} do
@@ -86,7 +83,6 @@ defmodule SentientSocialWeb.UserControllerTest do
         conn,
         Routes.user_path(conn, :create),
         user: %{
-          "username" => "janedoe",
           credential: %{
             email: "jane@email.com",
             password: "password"
@@ -94,14 +90,14 @@ defmodule SentientSocialWeb.UserControllerTest do
         }
       )
 
-    assert get_flash(conn, :info) =~ "janedoe created!"
+    assert get_flash(conn, :info) =~ "Account created!"
     assert redirected_to(conn) == Routes.auth_path(conn, :request, "twitter")
 
     assert Accounts.get_user_by_email("jane@email.com") != nil
   end
 
   test "POST /users with invalid data", %{conn: conn} do
-    invalid_user = %{"username" => ""}
+    invalid_user = %{"credential" => %{email: ""}}
     create_conn = post(conn, Routes.user_path(conn, :create), user: invalid_user)
     assert html_response(create_conn, 200) =~ "Oops, something went wrong!"
   end

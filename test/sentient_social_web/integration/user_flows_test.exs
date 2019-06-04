@@ -8,7 +8,9 @@ defmodule SentientSocialWeb.UserFlowsTest do
   test "can log in a registered user", %{conn: conn} do
     user =
       Fixtures.registered_authorized_user(%{
-        username: "dorkus",
+        token: %{
+          username: "dorkus"
+        },
         credential: %{
           email: "user1@email.com",
           password: "password"

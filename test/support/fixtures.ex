@@ -93,23 +93,25 @@ defmodule Fixtures do
   end
 
   def registered_authorized_user(attrs \\ %{}) do
+    default_token_attrs = %{
+      username: "user1",
+      provider: "twitter",
+      token: "token4321",
+      token_secret: "secret4321"
+    }
+
+    token_attrs = Map.merge(default_token_attrs, Map.get(attrs, :token, %{}))
+
     {:ok, user} =
       attrs
       |> registered_user()
-      |> Accounts.add_token(%{
-        provider: "twitter",
-        token: "token4321",
-        token_secret: "secret4321"
-      })
+      |> Accounts.add_token(token_attrs)
 
     user
   end
 
   def registered_user(attrs \\ %{}) do
     default_user_attrs = %{
-      id: 1,
-      name: "User1",
-      username: "user1",
       credential: %{
         email: "user1@email.com",
         password: "password"

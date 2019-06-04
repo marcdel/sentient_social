@@ -17,7 +17,7 @@ defmodule SentientSocialWeb.Router do
   scope "/", SentientSocialWeb do
     pipe_through :browser
 
-    resources "/users", UserController, only: [:index, :show, :new, :create]
+    resources "/users", UserController, only: [:show, :new, :create]
     resources "/sessions", SessionController, only: [:new, :create, :delete]
     resources "/favorites", FavoriteController, only: [:create]
     resources "/search_terms", SearchTermController, only: [:create]

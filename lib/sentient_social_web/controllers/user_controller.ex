@@ -7,11 +7,6 @@ defmodule SentientSocialWeb.UserController do
 
   plug :authenticate_user when action in [:index, :show]
 
-  def index(conn, _params) do
-    users = Accounts.list_users()
-    render(conn, "index.html", users: users)
-  end
-
   def show(conn, params) do
     if Auth.it_me?(conn, params) do
       user = Auth.current_user(conn)
@@ -35,7 +30,7 @@ defmodule SentientSocialWeb.UserController do
       {:ok, user} ->
         conn
         |> SentientSocialWeb.Auth.login(user)
-        |> put_flash(:info, "#{user.username} created!")
+        |> put_flash(:info, "Account created!")
         |> redirect(to: Routes.auth_path(conn, :request, "twitter"))
 
       {:error, %Ecto.Changeset{} = changeset} ->

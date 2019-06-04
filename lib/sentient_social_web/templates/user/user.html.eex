@@ -1,1 +1,1 @@
-<strong><%= @user.username %></strong> (<%= @user.id %>)
+<strong><%= SentientSocial.Accounts.User.username(@user) %></strong> (<%= @user.id %>)
