@@ -21,7 +21,7 @@ defmodule SentientSocial.Twitter do
 
     try do
       tweet = @twitter_client.create_favorite(tweet_id, [])
-      Logger.info("favorited a tweet for #{user.name}: #{inspect(tweet)}")
+      Logger.info("favorited a tweet for user_id #{user.id}: #{inspect(tweet)}")
 
       {:ok, tweet}
     rescue
@@ -29,7 +29,7 @@ defmodule SentientSocial.Twitter do
         # Twitter API is bullshit and doesn't always return %{favorited: true} when you've already favorited a tweet.
         # ExTwitter raises when you try to favorite a tweet that you've already favorited.
         Logger.info(
-          "Error favoriting tweet for #{user.name}. \n Error: #{inspect(e)} \n Tweet: #{
+          "Error favoriting tweet for user_id #{user.id}. \n Error: #{inspect(e)} \n Tweet: #{
             inspect(tweet)
           } \n"
         )
