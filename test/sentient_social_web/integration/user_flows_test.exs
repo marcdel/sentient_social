@@ -8,7 +8,7 @@ defmodule SentientSocialWeb.UserFlowsTest do
   test "can log in a registered user", %{conn: conn} do
     user =
       Fixtures.registered_authorized_user(%{
-        name: "Dorkus",
+        username: "dorkus",
         credential: %{
           email: "user1@email.com",
           password: "password"
@@ -25,7 +25,7 @@ defmodule SentientSocialWeb.UserFlowsTest do
     })
     |> assert_response(
       status: 200,
-      html: "Welcome back, Dorkus!",
+      html: "Welcome back, dorkus!",
       path: Routes.user_path(conn, :show, user.id)
     )
   end

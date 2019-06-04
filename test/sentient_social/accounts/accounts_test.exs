@@ -7,8 +7,8 @@ defmodule SentientSocial.AccountsTest do
 
   describe "list_users/0" do
     test "returns all users" do
-      Repo.insert(%User{id: 1, name: "Marc", username: "marcdel"})
-      Repo.insert(%User{id: 2, name: "Jackie", username: "jackie"})
+      Repo.insert(%User{id: 1, username: "marcdel"})
+      Repo.insert(%User{id: 2, username: "jackie"})
 
       users = Accounts.list_users()
       assert Enum.count(users) == 2
@@ -17,10 +17,10 @@ defmodule SentientSocial.AccountsTest do
 
   describe "get_user/1" do
     test "returns the user with the specified id or nil" do
-      Repo.insert(%User{id: 1, name: "Marc", username: "marcdel"})
+      Repo.insert(%User{id: 1, username: "marcdel"})
 
       found_user = Accounts.get_user(1)
-      assert %{name: "Marc", username: "marcdel"} = found_user
+      assert %{username: "marcdel"} = found_user
 
       assert Accounts.get_user(2) == nil
     end
@@ -70,21 +70,13 @@ defmodule SentientSocial.AccountsTest do
 
   describe "change_user/1" do
     test "returns a changeset for the user" do
-      user = %User{name: "Jackie", username: "jackie"}
+      user = %User{username: "jackie"}
       %Ecto.Changeset{data: data} = Accounts.change_user(user)
       assert data == user
     end
   end
 
   describe "create_user/1" do
-    test "name and username are required" do
-      {:error, changeset} = Accounts.create_user(%{name: "Marc"})
-      assert "can't be blank" in errors_on(changeset).username
-
-      {:error, changeset} = Accounts.create_user(%{username: "marcdel"})
-      assert "can't be blank" in errors_on(changeset).name
-    end
-
     test "username must be between 1 and 20 characters" do
       {:error, changeset} = Accounts.create_user(%{name: "Jackie", username: ""})
       assert "can't be blank" in errors_on(changeset).username
@@ -100,7 +92,6 @@ defmodule SentientSocial.AccountsTest do
     test "can create a user with a credential" do
       {:ok, user} =
         Accounts.register_user(%{
-          name: "Marc",
           username: "marcdel",
           credential: %{
             email: "marcdel@email.com",
@@ -109,7 +100,6 @@ defmodule SentientSocial.AccountsTest do
         })
 
       assert %{
-               name: "Marc",
                username: "marcdel",
                credential: %{
                  email: "marcdel@email.com"
@@ -120,7 +110,6 @@ defmodule SentientSocial.AccountsTest do
     test "cannot create a user without a credential" do
       assert {:error, changeset} =
                Accounts.register_user(%{
-                 name: "Marc",
                  username: "marcdel"
                })
 
@@ -135,7 +124,6 @@ defmodule SentientSocial.AccountsTest do
     setup do
       {:ok, user} =
         Accounts.register_user(%{
-          name: "Marc",
           username: "marcdel",
           credential: %{
             email: @email,

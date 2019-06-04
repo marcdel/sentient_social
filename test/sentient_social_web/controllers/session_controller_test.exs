@@ -28,7 +28,7 @@ defmodule SentientSocialWeb.SessionControllerTest do
     test "redirects to user's profile page when user has a token", %{conn: conn} do
       user =
         Fixtures.registered_user(%{
-          name: "Marc",
+          username: "marcdel",
           credential: %{
             email: "marcdel@email.com",
             password: "password"
@@ -46,7 +46,7 @@ defmodule SentientSocialWeb.SessionControllerTest do
           session: %{"email" => "marcdel@email.com", "password" => "password"}
         )
 
-      assert get_flash(conn, :info) =~ "Welcome back, Marc!"
+      assert get_flash(conn, :info) =~ "Welcome back, marcdel!"
       assert redirected_to(conn) == Routes.user_path(conn, :show, user.id)
     end
   end

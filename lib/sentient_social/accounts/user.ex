@@ -4,7 +4,6 @@ defmodule SentientSocial.Accounts.User do
   alias SentientSocial.Accounts.{Credential, SearchTerm, Token}
 
   schema "users" do
-    field :name, :string
     field :username, :string
     has_one :credential, Credential
     has_many :search_terms, SearchTerm
@@ -15,8 +14,8 @@ defmodule SentientSocial.Accounts.User do
 
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :username])
-    |> validate_required([:name, :username])
+    |> cast(attrs, [:username])
+    |> validate_required([:username])
     |> validate_length(:username, min: 1, max: 20)
     |> unique_constraint(:username)
   end

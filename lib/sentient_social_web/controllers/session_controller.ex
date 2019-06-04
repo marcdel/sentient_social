@@ -12,7 +12,7 @@ defmodule SentientSocialWeb.SessionController do
         user = Auth.current_user(conn)
 
         conn
-        |> put_flash(:info, "Welcome back, #{user.name}!")
+        |> put_flash(:info, "Welcome back, #{user.username}!")
         |> redirect_to_user(user)
 
       {:error, _reason, conn} ->

@@ -14,7 +14,7 @@
            <ul>
               <li><a href="/">Home</a></li>
               <%= if @current_user do %>
-                <li><%= @current_user.name %></li>
+                <li><%= @current_user.username %></li>
                 <li><%= link "Profile", to: Routes.user_path(@conn, :show, @current_user.id) %></li>
                 <li>
                   <%= link "Log out",

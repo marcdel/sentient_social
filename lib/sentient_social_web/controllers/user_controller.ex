@@ -35,7 +35,7 @@ defmodule SentientSocialWeb.UserController do
       {:ok, user} ->
         conn
         |> SentientSocialWeb.Auth.login(user)
-        |> put_flash(:info, "#{user.name} created!")
+        |> put_flash(:info, "#{user.username} created!")
         |> redirect(to: Routes.auth_path(conn, :request, "twitter"))
 
       {:error, %Ecto.Changeset{} = changeset} ->

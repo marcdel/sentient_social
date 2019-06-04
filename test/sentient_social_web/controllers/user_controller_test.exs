@@ -6,8 +6,8 @@ defmodule SentientSocialWeb.UserControllerTest do
   alias SentientSocial.Repo
 
   setup do
-    Repo.insert(%User{id: 1, name: "Marc", username: "marcdel"})
-    Repo.insert(%User{id: 2, name: "Jackie", username: "jackie"})
+    Repo.insert(%User{id: 1, username: "marcdel"})
+    Repo.insert(%User{id: 2, username: "jackie"})
 
     :ok
   end
@@ -19,20 +19,20 @@ defmodule SentientSocialWeb.UserControllerTest do
 
       conn = get(conn, Routes.user_path(conn, :index))
 
-      assert html_response(conn, 200) =~ "Marc"
-      assert html_response(conn, 200) =~ "Jackie"
+      assert html_response(conn, 200) =~ "marcdel"
+      assert html_response(conn, 200) =~ "jackie"
     end
 
     test "GET /users/:id", %{conn: conn} do
       user1 = Accounts.get_user(1)
       conn = sign_in(conn, user1)
       conn1 = get(conn, Routes.user_path(conn, :show, "1"))
-      assert html_response(conn1, 200) =~ user1.name
+      assert html_response(conn1, 200) =~ user1.username
 
       user2 = Accounts.get_user(2)
       conn = sign_in(conn, user2)
       conn2 = get(conn, Routes.user_path(conn, :show, "2"))
-      assert html_response(conn2, 200) =~ user2.name
+      assert html_response(conn2, 200) =~ user2.username
     end
 
     test "shows user's saved search terms", %{conn: conn} do
@@ -77,7 +77,6 @@ defmodule SentientSocialWeb.UserControllerTest do
 
   test "GET /users/new", %{conn: conn} do
     conn = get(conn, Routes.user_path(conn, :new))
-    assert html_response(conn, 200) =~ "Name"
     assert html_response(conn, 200) =~ "Username"
   end
 
@@ -87,7 +86,6 @@ defmodule SentientSocialWeb.UserControllerTest do
         conn,
         Routes.user_path(conn, :create),
         user: %{
-          "name" => "Jane",
           "username" => "janedoe",
           credential: %{
             email: "jane@email.com",
@@ -96,14 +94,14 @@ defmodule SentientSocialWeb.UserControllerTest do
         }
       )
 
-    assert get_flash(conn, :info) =~ "Jane created!"
+    assert get_flash(conn, :info) =~ "janedoe created!"
     assert redirected_to(conn) == Routes.auth_path(conn, :request, "twitter")
 
     assert Accounts.get_user_by_email("jane@email.com") != nil
   end
 
   test "POST /users with invalid data", %{conn: conn} do
-    invalid_user = %{"name" => "Jane", "username" => ""}
+    invalid_user = %{"username" => ""}
     create_conn = post(conn, Routes.user_path(conn, :create), user: invalid_user)
     assert html_response(create_conn, 200) =~ "Oops, something went wrong!"
   end
