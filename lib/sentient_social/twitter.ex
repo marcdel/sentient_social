@@ -3,13 +3,19 @@ defmodule SentientSocial.Twitter do
 
   @twitter_client Application.get_env(:sentient_social, :twitter_client)
 
-  def favorite_tweets_by_search_term(search_term, user) do
+  def favorite_tweets_by_search_terms(search_terms, user) do
     set_user_access_tokens(user)
 
-    search_term
-    |> @twitter_client.search(count: 1)
+    search_terms
+    |> find_tweets()
     |> favorite_tweets(user)
     |> format_response()
+  end
+
+  defp find_tweets(search_terms) do
+    search_terms
+    |> Enum.map(&Task.async(fn -> @twitter_client.search(&1, count: 1) end))
+    |> Enum.flat_map(&Task.await(&1))
   end
 
   defp favorite_tweets([], _user), do: [{:error, "No tweets found matching that search term."}]

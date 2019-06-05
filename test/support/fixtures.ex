@@ -88,19 +88,26 @@ defmodule Fixtures do
     provider: :twitter
   }
 
+  @default_token_attrs %{
+    username: "user1",
+    provider: "twitter",
+    token: "token4321",
+    token_secret: "secret4321"
+  }
+
+  @default_user_attrs %{
+    credential: %{
+      email: "user1@email.com",
+      password: "password"
+    }
+  }
+
   def ueberauth_auth_response(attrs \\ %{}) do
     Map.merge(@default_ueberauth_response, attrs)
   end
 
   def registered_authorized_user(attrs \\ %{}) do
-    default_token_attrs = %{
-      username: "user1",
-      provider: "twitter",
-      token: "token4321",
-      token_secret: "secret4321"
-    }
-
-    token_attrs = Map.merge(default_token_attrs, Map.get(attrs, :token, %{}))
+    token_attrs = Map.merge(@default_token_attrs, Map.get(attrs, :token, %{}))
 
     {:ok, user} =
       attrs
@@ -111,15 +118,8 @@ defmodule Fixtures do
   end
 
   def registered_user(attrs \\ %{}) do
-    default_user_attrs = %{
-      credential: %{
-        email: "user1@email.com",
-        password: "password"
-      }
-    }
-
     {:ok, user} =
-      default_user_attrs
+      @default_user_attrs
       |> Map.merge(attrs)
       |> Accounts.register_user()
 

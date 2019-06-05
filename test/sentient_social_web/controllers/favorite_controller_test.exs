@@ -61,6 +61,29 @@ defmodule SentientSocialWeb.FavoriteControllerTest do
       post(conn, Routes.favorite_path(conn, :create))
     end
 
+    test "finds and favorites a tweet for each of the user's search terms", %{conn: conn} do
+      user =
+        Fixtures.registered_authorized_user(%{
+          credential: %{
+            email: "different_user@email.com",
+            password: "password"
+          }
+        })
+
+      {:ok, user} = Accounts.add_search_term(user, %{text: "search term 1"})
+      {:ok, user} = Accounts.add_search_term(user, %{text: "search term 2"})
+
+      conn = sign_in(conn, user)
+
+      @twitter_client
+      |> expect(:search, fn "search term 1", _options -> [%{id: 1}] end)
+      |> expect(:search, fn "search term 2", _options -> [%{id: 2}] end)
+      |> expect(:create_favorite, fn 1, _options -> %{id: 1} end)
+      |> expect(:create_favorite, fn 2, _options -> %{id: 2} end)
+
+      post(conn, Routes.favorite_path(conn, :create))
+    end
+
     test "displays the number of tweets favorited", %{conn: conn} do
       stub(@twitter_client, :search, fn _query, _options -> [%{id: 1}] end)
       conn = post(conn, Routes.favorite_path(conn, :create))
