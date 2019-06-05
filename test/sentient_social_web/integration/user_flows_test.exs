@@ -54,10 +54,11 @@ defmodule SentientSocialWeb.UserFlowsTest do
     user = Fixtures.registered_authorized_user()
 
     @twitter_client
-    |> expect(:search, fn "new search term", [count: _count] -> [%{id: 1}] end)
-    |> expect(:create_favorite, fn tweet_id, [] -> %{id: tweet_id} end)
-    |> expect(:get_tuples, fn -> [] end)
-    |> expect(:configure, fn _, _ -> :ok end)
+    |> stub(:get_tuples, fn -> [] end)
+    |> stub(:configure, fn _, _ -> :ok end)
+    |> stub(:search, fn "new search term", _options -> [%{id: 1}] end)
+    |> stub(:show, fn tweet_id, _options -> %{id: tweet_id} end)
+    |> stub(:create_favorite, fn tweet_id, _options -> %{id: tweet_id} end)
 
     conn
     |> sign_in(user)

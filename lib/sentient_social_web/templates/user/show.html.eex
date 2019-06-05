@@ -22,6 +22,6 @@
   </div>
 <% end %>
 
-<h3>Favorite a tweet</h3>
+<h3>Favorite tweets</h3>
 
 <%= button("Favorite", to: Routes.favorite_path(@conn, :create), method: "post", class: "btn") %>
