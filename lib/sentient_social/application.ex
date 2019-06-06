@@ -17,6 +17,17 @@ defmodule SentientSocial.Application do
       SentientSocial.Vault
     ]
 
+    # Setup timber logging
+    :ok =
+      :telemetry.attach(
+        "timber-ecto-query-handler",
+        [:sentient_social, :repo, :query],
+        &Timber.Ecto.handle_event/4,
+        []
+      )
+
+    :ok = Logger.add_translator({Timber.Exceptions.Translator, :translate})
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: SentientSocial.Supervisor]

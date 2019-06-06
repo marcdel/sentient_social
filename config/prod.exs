@@ -70,6 +70,33 @@ config :logger, level: :info
 # separately.
 # import_config "prod.secret.exs"
 
+# ExTwitter config
+twitter_consumer_key =
+  System.get_env("TWITTER_CONSUMER_KEY") || raise "TWITTER_CONSUMER_KEY must be set"
+
+twitter_consumer_secret =
+  System.get_env("TWITTER_CONSUMER_SECRET") || raise "TWITTER_CONSUMER_SECRET must be set"
+
+config :ueberauth, Ueberauth.Strategy.Twitter.OAuth,
+  consumer_key: twitter_consumer_key,
+  consumer_secret: twitter_consumer_secret
+
+config :extwitter, :oauth,
+  consumer_key: twitter_consumer_key,
+  consumer_secret: twitter_consumer_secret
+
+# Cloak config
+cloak_key = System.get_env("CLOAK_KEY") || raise "CLOAK_KEY must be set"
+config :sentient_social, cloak_key: cloak_key
+
+# Timber config
+timber_api_key = System.get_env("TIMBER_API_KEY") || raise "TIMBER_API_KEY must be set"
+timber_source_id = System.get_env("TIMBER_SOURCE_ID") || raise "TIMBER_SOURCE_ID must be set"
+config :timber, api_key: timber_api_key, source_id: timber_source_id
+config :logger, backends: [Timber.LoggerBackends.HTTP]
+config :sentient_social, SentientSocial.Repo, log: false
+config :sentient_social, SentientSocialWeb.Endpoint, instrumenters: [Timber.Phoenix]
+
 secret_key_base = System.get_env("SECRET_KEY_BASE") || raise "SECRET_KEY_BASE must be set"
 
 config :sentient_social_web,

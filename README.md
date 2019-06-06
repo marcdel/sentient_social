@@ -23,11 +23,11 @@
 * ...etc.
 
 ## Twitter Integration Env Vars
-`TWITTER_CONSUMER_KEY=`
-
-`TWITTER_CONSUMER_SECRET=`
-
-`CLOAK_KEY=`
+* `TWITTER_CONSUMER_KEY=`
+* `TWITTER_CONSUMER_SECRET=`
+* `CLOAK_KEY=`
+* `TIMBER_API_KEY=`
+* `TIMBER_SOURCE_ID=`
 
 ## Key generation
 * `:crypto.strong_rand_bytes(32) |> Base.encode64()`

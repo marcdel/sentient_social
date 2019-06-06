@@ -52,7 +52,11 @@ defmodule SentientSocial.MixProject do
       {:ueberauth_twitter, "~> 0.3"},
       {:oauth, github: "tim/erlang-oauth"},
       {:extwitter, "~> 0.9"},
-      {:mox, "~> 0.5", only: :test}
+      {:mox, "~> 0.5", only: :test},
+      {:timber, "~> 3.1"},
+      {:timber_phoenix, "~> 1.0"},
+      {:timber_ecto, "~> 2.0"},
+      {:timber_exceptions, "~> 2.0"}
     ]
   end
 
