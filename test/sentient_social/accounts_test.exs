@@ -197,6 +197,15 @@ defmodule SentientSocial.AccountsTest do
       assert "can't be blank" in errors_on(changeset).text
     end
 
+    test "search_term text must be unique" do
+      user = Fixtures.registered_user()
+
+      {:ok, user} = Accounts.add_search_term(user, %{text: "search_term"})
+      {:error, changeset} = Accounts.add_search_term(user, %{text: "search_term"})
+
+      assert "already exists" in errors_on(changeset).text
+    end
+
     test "cannot add a search_term if user is missing" do
       {:error, changeset} = Accounts.add_search_term(%User{}, %{text: "some search_term"})
 

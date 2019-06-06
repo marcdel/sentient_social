@@ -18,7 +18,7 @@ defmodule SentientSocialWeb.SearchTermControllerTest do
 
     test "shows a message when there's an error adding the search term", %{conn: conn, user: user} do
       conn = post(conn, Routes.search_term_path(conn, :create), text: nil)
-      assert get_flash(conn, :error) =~ "We had some trouble adding that search term for you."
+      assert get_flash(conn, :error) =~ "Whoops! That search term already exists."
       assert redirected_to(conn) == Routes.user_path(conn, :show, user.id)
     end
   end

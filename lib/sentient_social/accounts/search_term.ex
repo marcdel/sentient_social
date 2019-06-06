@@ -14,5 +14,6 @@ defmodule SentientSocial.Accounts.SearchTerm do
     search_term
     |> cast(attrs, [:text, :user_id])
     |> validate_required([:text, :user_id])
+    |> unique_constraint(:text, message: "already exists")
   end
 end

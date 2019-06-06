@@ -16,7 +16,7 @@ defmodule SentientSocialWeb.SearchTermController do
 
       {:error, _changeset} ->
         conn
-        |> put_flash(:error, "We had some trouble adding that search term for you.")
+        |> put_flash(:error, "Whoops! That search term already exists.")
         |> redirect(to: Routes.user_path(conn, :show, Auth.current_user(conn).id))
     end
   end
