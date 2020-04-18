@@ -1,3 +1,0 @@
-# SentientSocial
-
-**TODO: Add description**

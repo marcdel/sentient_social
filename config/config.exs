@@ -1,18 +1,30 @@
 # This file is responsible for configuring your application
 # and its dependencies with the aid of the Mix.Config module.
+#
+# This configuration file is loaded before any dependency and
+# is restricted to this project.
+
+# General application configuration
 use Mix.Config
 
-# By default, the umbrella project as well as each child
-# application will require this configuration file, ensuring
-# they all use the same configuration. While one could
-# configure all applications here, we prefer to delegate
-# back to each application for organization purposes.
-import_config "../apps/*/config/config.exs"
+config :sentient_social,
+  ecto_repos: [SentientSocial.Repo]
+
+# Configures the endpoint
+config :sentient_social, SentientSocialWeb.Endpoint,
+  url: [host: "localhost"],
+  secret_key_base: "2X9Z44LuMH/9+DVzIMft4n3phl8/++3W2Q1YP84VjA//RpaiZAyTyv/Zx7I9WXkk",
+  render_errors: [view: SentientSocialWeb.ErrorView, accepts: ~w(html json), layout: false],
+  pubsub_server: SentientSocial.PubSub,
+  live_view: [signing_salt: "A1/nm/3s"]
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
+# Use Jason for JSON parsing in Phoenix
+config :phoenix, :json_library, Jason
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

@@ -1,30 +1,65 @@
-defmodule SentientSocial.Umbrella.Mixfile do
+defmodule SentientSocial.MixProject do
   use Mix.Project
 
   def project do
     [
-      apps_path: "apps",
+      app: :sentient_social,
+      version: "0.1.0",
+      elixir: "~> 1.7",
+      elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
-      deps: deps(),
-      test_coverage: [tool: ExCoveralls],
-      dialyzer: [ignore_warnings: "dialyzer.ignore-warnings"]
+      aliases: aliases(),
+      deps: deps()
     ]
   end
 
-  # Dependencies listed here are available only for this
-  # project and cannot be accessed from applications inside
-  # the apps folder.
+  # Configuration for the OTP application.
   #
-  # Run "mix help deps" for examples and options.
+  # Type `mix help compile.app` for more information.
+  def application do
+    [
+      mod: {SentientSocial.Application, []},
+      extra_applications: [:logger, :runtime_tools]
+    ]
+  end
+
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
+
+  # Specifies your project dependencies.
+  #
+  # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:distillery, "~> 1.0.0"},
-      {:credo, "~> 0.9.0-rc1", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
-      {:inch_ex, "~> 0.5", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.8", only: :test},
-      {:ex_doc, "~> 0.18", only: :dev, runtime: false},
-      {:mix_test_watch, "~> 0.5", only: :dev, runtime: false}
+      {:phoenix, "~> 1.5.0-rc.0", override: true},
+      {:phoenix_ecto, "~> 4.1"},
+      {:ecto_sql, "~> 3.4"},
+      {:postgrex, ">= 0.0.0"},
+      {:phoenix_html, "~> 2.11"},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_live_dashboard, "~> 0.1.0"},
+      {:telemetry_metrics, "~> 0.4"},
+      {:telemetry_poller, "~> 0.4"},
+      {:gettext, "~> 0.11"},
+      {:jason, "~> 1.0"},
+      {:plug_cowboy, "~> 2.0"}
+    ]
+  end
+
+  # Aliases are shortcuts or tasks specific to the current project.
+  # For example, to install project dependencies and perform other setup tasks, run:
+  #
+  #     $ mix setup
+  #
+  # See the documentation for `Mix` for more info on aliases.
+  defp aliases do
+    [
+      setup: ["deps.get", "ecto.setup", "cmd npm install --prefix assets"],
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end
