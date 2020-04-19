@@ -26,6 +26,29 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# ExTwitter (keys from https://developer.twitter.com/ with personal account)
+access_token =
+  System.get_env("PERSONAL_ACCESS_TOKEN") ||
+    raise("expected the PERSONAL_ACCESS_TOKEN environment variable to be set")
+
+access_token_secret =
+  System.get_env("PERSONAL_ACCESS_SECRET") ||
+    raise("expected the PERSONAL_ACCESS_SECRET environment variable to be set")
+
+consumer_key =
+  System.get_env("PERSONAL_CONSUMER_KEY") ||
+    raise("expected the PERSONAL_CONSUMER_KEY environment variable to be set")
+
+consumer_secret =
+  System.get_env("PERSONAL_CONSUMER_SECRET") ||
+    raise("expected the PERSONAL_CONSUMER_SECRET environment variable to be set")
+
+config :extwitter, :oauth,
+  consumer_key: consumer_key,
+  consumer_secret: consumer_secret,
+  access_token: access_token,
+  access_token_secret: access_token_secret
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
