@@ -26,6 +26,10 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Dependencies
+config :sentient_social, :search_fn, &SentientSocial.Boundary.TwitterClient.search/1
+config :sentient_social, :term_provider_fn, &SentientSocial.SearchTermProvider.terms/0
+
 # ExTwitter (keys from https://developer.twitter.com/ with personal account)
 access_token =
   System.get_env("PERSONAL_ACCESS_TOKEN") ||
