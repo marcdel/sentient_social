@@ -14,9 +14,10 @@ defmodule SentientSocial.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: SentientSocial.PubSub},
       # Start the Endpoint (http/https)
-      SentientSocialWeb.Endpoint
+      SentientSocialWeb.Endpoint,
       # Start a worker by calling: SentientSocial.Worker.start_link(arg)
       # {SentientSocial.Worker, arg}
+      SentientSocial.Boundary.FavoriteManager
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

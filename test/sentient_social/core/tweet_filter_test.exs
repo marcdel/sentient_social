@@ -13,6 +13,6 @@ defmodule SentientSocial.Core.TweetFilterTest do
 
     filtered_tweets = TweetFilter.filter(tweets)
 
-    assert Enum.map(filtered_tweets, &(&1.id)) == [1]
+    assert Enum.map(filtered_tweets, & &1.id) == [1]
   end
 end

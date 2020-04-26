@@ -20,13 +20,16 @@ defmodule SentientSocialWeb.Telemetry do
   def metrics do
     [
       # Phoenix Metrics
-      summary("phoenix.endpoint.stop.duration",
-        unit: {:native, :millisecond}
-      ),
+      summary("phoenix.endpoint.stop.duration", unit: {:native, :millisecond}),
       summary("phoenix.router_dispatch.stop.duration",
         tags: [:route],
         unit: {:native, :millisecond}
       ),
+
+      # App Metrics
+      counter("sentient_social.favorited_tweets.count"),
+      summary("sentient_social.favorited_tweets.count"),
+      summary("sentient_social.favorited_tweets.duration"),
 
       # Database Metrics
       summary("sentient_social.repo.query.total_time", unit: {:native, :millisecond}),
