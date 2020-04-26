@@ -25,6 +25,7 @@ defmodule SentientSocial.Boundary.FavoriteManager do
     schedule_next()
 
     updated_tweets = Enum.take(favorited_tweets ++ state.favorited_tweets, 100)
+
     {:noreply, %{state | favorited_tweets: updated_tweets}}
   end
 
