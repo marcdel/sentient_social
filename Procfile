@@ -1,2 +1,1 @@
-release: mix ecto.migrate
-web: MIX_ENV=prod mix phx.server
+web: mix ecto.migrate && mix phx.server
