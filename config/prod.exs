@@ -55,7 +55,7 @@ config :sentient_social, SentientSocialWeb.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [
     host: System.get_env("APP_NAME") <> ".gigalixirapp.com",
-    port: 4000,
+    port: 4000
   ],
   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE"),
   server: true
