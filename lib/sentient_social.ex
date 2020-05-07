@@ -16,20 +16,11 @@ defmodule SentientSocial do
       search_fn.(term)
       |> Enum.map(&TweetMapper.map/1)
       |> TweetFilter.filter()
-      |> InlineLogger.info(label: "potential favorites")
       |> Enum.random()
       |> InlineLogger.info(label: "favorited tweet")
       |> create_favorite(favorite_fn)
     end)
     |> List.flatten()
-  end
-
-  def find_tweets(search_fn \\ @search_fn, term_provider_fn \\ @term_provider_fn) do
-    term_provider_fn.()
-    |> Enum.map(fn term -> search_fn.(term) end)
-    |> List.flatten()
-    |> Enum.map(&TweetMapper.map/1)
-    |> TweetFilter.filter()
   end
 
   def create_favorite(tweet, favorite_fn \\ @favorite_fn)
