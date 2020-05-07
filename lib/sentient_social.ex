@@ -17,8 +17,8 @@ defmodule SentientSocial do
       |> Enum.map(&TweetMapper.map/1)
       |> TweetFilter.filter()
       |> Enum.random()
-      |> InlineLogger.info(label: "favorited tweet")
       |> create_favorite(favorite_fn)
+      |> InlineLogger.info(label: "favorited tweet")
     end)
     |> List.flatten()
   end

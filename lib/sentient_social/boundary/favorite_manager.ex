@@ -30,7 +30,7 @@ defmodule SentientSocial.Boundary.FavoriteManager do
   end
 
   defp schedule_next do
-    Process.send_after(self(), :favorite, duration_in_minutes(1))
+    Process.send_after(self(), :favorite, next_interval())
   end
 
   defp initial_state do
@@ -44,7 +44,9 @@ defmodule SentientSocial.Boundary.FavoriteManager do
     {result, duration}
   end
 
-  defp duration_in_minutes(minutes) do
-    minutes * 60 * 1000
+  defp next_interval() do
+    1..30
+    |> Enum.random()
+    |> :timer.minutes()
   end
 end
