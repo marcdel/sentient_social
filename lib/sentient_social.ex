@@ -1,6 +1,6 @@
 defmodule SentientSocial do
   alias SentientSocial.Boundary.TweetMapper
-  alias SentientSocial.Core.TweetFilter
+  alias SentientSocial.Core.{TweetChooser, TweetFilter}
 
   @search_fn Application.get_env(:sentient_social, :search_fn)
   @favorite_fn Application.get_env(:sentient_social, :favorite_fn)
@@ -16,7 +16,7 @@ defmodule SentientSocial do
       search_fn.(term)
       |> Enum.map(&TweetMapper.map/1)
       |> TweetFilter.filter()
-      |> Enum.random()
+      |> TweetChooser.choose()
       |> create_favorite(favorite_fn)
       |> InlineLogger.info(label: "favorited tweet")
     end)
