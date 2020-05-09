@@ -7,6 +7,7 @@ defmodule SentientSocial do
   @term_provider_fn Application.get_env(:sentient_social, :term_provider_fn)
 
   def find_and_favorite_tweets(
+        previously_favorited_tweets,
         search_fn \\ @search_fn,
         term_provider_fn \\ @term_provider_fn,
         favorite_fn \\ @favorite_fn
@@ -15,11 +16,12 @@ defmodule SentientSocial do
     |> Enum.map(fn term ->
       search_fn.(term)
       |> Enum.map(&TweetMapper.map/1)
-      |> TweetFilter.filter()
+      |> TweetFilter.filter(previously_favorited_tweets)
       |> TweetChooser.choose()
       |> create_favorite(favorite_fn)
       |> InlineLogger.info(label: "favorited tweet")
     end)
+    |> Enum.reject(&is_nil/1)
     |> List.flatten()
   end
 

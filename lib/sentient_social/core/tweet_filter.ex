@@ -1,5 +1,7 @@
 defmodule SentientSocial.Core.TweetFilter do
-  def filter(tweets) do
+  def filter(tweets, previously_favorited_tweets \\ []) do
+    tweets = MapSet.difference(MapSet.new(tweets), MapSet.new(previously_favorited_tweets))
+
     Enum.filter(tweets, &do_filter/1)
   end
 

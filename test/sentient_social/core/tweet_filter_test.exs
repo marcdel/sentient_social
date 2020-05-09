@@ -26,9 +26,30 @@ defmodule SentientSocial.Core.TweetFilterTest do
         Factory.build_tweet(id: 4, hashtags: ["1", "2", "3", "4", "5", "6", "7"])
       ]
 
-      filtered_tweets = TweetFilter.filter(tweets)
+      filtered_tweet_ids =
+        tweets
+        |> TweetFilter.filter()
+        |> Enum.map(& &1.id)
+        |> Enum.sort()
 
-      assert Enum.map(filtered_tweets, & &1.id) == [1, 2, 3]
+      assert filtered_tweet_ids == [1, 2, 3]
+    end
+
+    test "filters out previously favorited tweets" do
+      tweets = [
+        Factory.build_tweet(id: 1),
+        Factory.build_tweet(id: 2),
+        Factory.build_tweet(id: 3)
+      ]
+
+      previously_favorited_tweets = [
+        Factory.build_tweet(id: 3),
+        Factory.build_tweet(id: 4)
+      ]
+
+      filtered_tweets = TweetFilter.filter(tweets, previously_favorited_tweets)
+
+      assert Enum.map(filtered_tweets, & &1.id) == [1, 2]
     end
   end
 end

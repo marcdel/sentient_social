@@ -15,7 +15,9 @@ defmodule SentientSocial.Boundary.FavoriteManager do
   @impl GenServer
   def handle_info(:favorite, state) do
     {favorited_tweets, duration} =
-      timed_function(fn -> SentientSocial.find_and_favorite_tweets() end)
+      timed_function(fn ->
+        SentientSocial.find_and_favorite_tweets(state.favorited_tweets)
+      end)
 
     :telemetry.execute(
       [:sentient_social, :favorited_tweets],
