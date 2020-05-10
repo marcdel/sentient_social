@@ -26,6 +26,18 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Admin
+admin_name =
+  System.get_env("ADMIN_NAME") ||
+    raise("expected the ADMIN_NAME environment variable to be set")
+
+admin_password =
+  System.get_env("ADMIN_PASSWORD") ||
+    raise("expected the ADMIN_PASSWORD environment variable to be set")
+
+config :sentient_social, :admin_name, admin_name
+config :sentient_social, :admin_password, admin_password
+
 # Dependencies
 config :sentient_social, :search_fn, &SentientSocial.Boundary.TwitterClient.search/1
 config :sentient_social, :favorite_fn, &SentientSocial.Boundary.TwitterClient.create_favorite/1

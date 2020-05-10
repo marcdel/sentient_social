@@ -57,6 +57,7 @@ config :sentient_social, SentientSocialWeb.Endpoint,
     host: System.get_env("APP_NAME") <> ".gigalixirapp.com",
     port: 4000
   ],
+  check_origin: ["//twitterbot.gigalixirapp.com"],
   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE"),
   server: true
 

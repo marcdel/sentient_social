@@ -1,6 +1,12 @@
 defmodule SentientSocialWeb.Router do
   use SentientSocialWeb, :router
 
+  import Plug.BasicAuth
+  import Phoenix.LiveDashboard.Router
+
+  @admin_name Application.get_env(:sentient_social, :admin_name)
+  @admin_password Application.get_env(:sentient_social, :admin_password)
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -13,10 +19,19 @@ defmodule SentientSocialWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :admins_only do
+    plug :basic_auth, username: @admin_name, password: @admin_password
+  end
+
   scope "/", SentientSocialWeb do
     pipe_through :browser
 
     get "/", PageController, :index
+  end
+
+  scope "/" do
+    pipe_through [:browser, :admins_only]
+    live_dashboard "/dashboard"
   end
 
   # Other scopes may use custom stacks.
