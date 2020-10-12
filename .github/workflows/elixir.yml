@@ -1,0 +1,137 @@
+# Modifying the actions? Don't like pushing to GitHub to find out whether your changes worked?
+# Consider act: https://github.com/nektos/act
+#
+# WARNING: you'll need the 18.2GB GitHub-compatible Docker image:
+#   act -P ubuntu-18.04=nektos/act-environments-ubuntu:18.04
+
+name: Elixir CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+  PERSONAL_ACCESS_SECRET: ${{ secrets.PERSONAL_ACCESS_SECRET }}
+  PERSONAL_CONSUMER_KEY: ${{ secrets.PERSONAL_CONSUMER_KEY }}
+  PERSONAL_CONSUMER_SECRET: ${{ secrets.PERSONAL_CONSUMER_SECRET }}
+  ADMIN_NAME: ${{ secrets.ADMIN_NAME }}
+  ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+
+jobs:
+  check:
+    runs-on: ubuntu-18.04
+    name: Format/Lint (Elixir ${{matrix.elixir}} on OTP ${{matrix.otp}})
+    strategy:
+      matrix:
+        otp: ["23.0"]
+        elixir: ["1.10"]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master # Checkout out master instead of the latest commit
+      - name: Set up Elixir
+        uses: actions/setup-elixir@v1
+        with:
+          elixir-version: ${{matrix.elixir}}
+          otp-version: ${{matrix.otp}}
+      - name: Restore dependencies cache
+        uses: actions/cache@v2
+        env:
+          cache-name: deps
+        with:
+          path: deps
+          key: ${{ runner.os }}-${{ matrix.elixir }}-${{ matrix.otp }}-${{ env.cache-name }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.elixir }}-${{ matrix.otp }}-${{ env.cache-name }}-
+      - name: Restore _build cache
+        uses: actions/cache@v1.1.2
+        env:
+          cache-name: _build
+        with:
+          path: _build
+          key: ${{ runner.os }}-${{ matrix.elixir }}-${{ matrix.otp }}-${{ env.cache-name }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.elixir }}-${{ matrix.otp }}-${{ env.cache-name }}-
+      - name: mix deps.get
+        run: |
+          mix deps.get
+          mix deps.unlock --unused
+          mix deps.clean --unused
+          git diff --exit-code mix.lock
+      - name: mix compile
+        run: |
+          mix deps.compile
+          mix compile
+      - name: mix format
+        run: |
+          mix format --check-formatted --dry-run --check-equivalent
+
+  test:
+    runs-on: ubuntu-18.04
+    name: Unit Tests (Elixir ${{matrix.elixir}} on OTP ${{matrix.otp}})
+    strategy:
+      matrix:
+        otp: ["23.0"]
+        elixir: ["1.10"]
+    services:
+      test_db:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pears_test
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master # Checkout out master instead of the latest commit
+      - name: Set up Elixir
+        uses: actions/setup-elixir@v1
+        with:
+          elixir-version: ${{matrix.elixir}}
+          otp-version: ${{matrix.otp}}
+      - name: Restore dependencies cache
+        uses: actions/cache@v2
+        env:
+          cache-name: deps
+        with:
+          path: deps
+          key: ${{ runner.os }}-${{ matrix.elixir }}-${{ matrix.otp }}-${{ env.cache-name }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.elixir }}-${{ matrix.otp }}-${{ env.cache-name }}-
+      - name: Restore _build cache
+        uses: actions/cache@v1.1.2
+        env:
+          cache-name: _build
+        with:
+          path: _build
+          key: ${{ runner.os }}-${{ matrix.elixir }}-${{ matrix.otp }}-${{ env.cache-name }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.elixir }}-${{ matrix.otp }}-${{ env.cache-name }}-
+      - name: mix deps.get
+        run: mix deps.get
+      - name: mix test
+        run: mix test --trace
+
+  deploy:
+    runs-on: ubuntu-18.04
+    name: Deploy to Production
+    needs: [check, test]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master # Checkout out master instead of the latest commit
+          fetch-depth: 0 # Checkout the whole branch
+      - name: deploy
+        uses: mhanberg/gigalixir-action@v0.3.0
+        if: github.ref == 'refs/heads/master'
+        with:
+          GIGALIXIR_USERNAME: ${{ secrets.GIGALIXIR_USERNAME }}
+          GIGALIXIR_PASSWORD: ${{ secrets.GIGALIXIR_PASSWORD }}
+          GIGALIXIR_APP: pears
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          MIGRATIONS: false
