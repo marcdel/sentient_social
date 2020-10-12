@@ -12,7 +12,7 @@ defmodule SentientSocial.SearchTermProvider.InMemory do
       "#BaseCS",
       "#GirlsWhoCode",
       "#MyElixirStatus",
-      "#301DaysOfCode",
+      "#301DaysOfCode"
     ]
   end
 end
