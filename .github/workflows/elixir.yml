@@ -132,6 +132,6 @@ jobs:
         with:
           GIGALIXIR_USERNAME: ${{ secrets.GIGALIXIR_USERNAME }}
           GIGALIXIR_PASSWORD: ${{ secrets.GIGALIXIR_PASSWORD }}
-          GIGALIXIR_APP: pears
+          GIGALIXIR_APP: twitterbot
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           MIGRATIONS: false
