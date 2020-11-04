@@ -1,6 +1,6 @@
 # Sentient Social
 
-[![Travis](https://img.shields.io/travis/marcdel/sentient_social.svg)](https://travis-ci.org/marcdel/sentient_social)
+![Build, Test, Deploy](https://github.com/marcdel/sentient_social/workflows/Build,%20Test,%20Deploy/badge.svg)
 
 ## Pre-commit steps
 * `mix credo && mix dialyzer && MIX_ENV=test mix coveralls.html`
