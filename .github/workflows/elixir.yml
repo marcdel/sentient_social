@@ -128,7 +128,7 @@ jobs:
           ref: master # Checkout out master instead of the latest commit
           fetch-depth: 0 # Checkout the whole branch
       - name: deploy
-        uses: mhanberg/gigalixir-action@v0.3.0
+        uses: mhanberg/gigalixir-action@v0.4.3
         if: github.ref == 'refs/heads/master'
         with:
           GIGALIXIR_USERNAME: ${{ secrets.GIGALIXIR_USERNAME }}
