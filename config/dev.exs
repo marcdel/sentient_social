@@ -74,3 +74,12 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :opentelemetry,
+  processors: [
+    otel_batch_processor: %{
+      exporter:
+        {OpenTelemetry.Honeycomb.Exporter,
+         write_key: Map.fetch!(System.get_env(), "HONEYCOMB_KEY"), dataset: "sentient_social_dev"}
+    }
+  ]

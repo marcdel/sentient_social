@@ -1,5 +1,6 @@
 defmodule SentientSocial.Boundary.FavoriteManager do
   use GenServer
+  use OpenTelemetryDecorator
 
   def start_link(options \\ []) do
     GenServer.start_link(__MODULE__, initial_state(), Keyword.merge([name: __MODULE__], options))
@@ -13,15 +14,13 @@ defmodule SentientSocial.Boundary.FavoriteManager do
   end
 
   @impl GenServer
+  @decorate trace("favorite_manager.favorite")
   def handle_info(:favorite, state) do
-    {favorited_tweets, duration} =
-      timed_function(fn ->
-        SentientSocial.find_and_favorite_tweets(state.favorited_tweets)
-      end)
+    favorited_tweets = SentientSocial.find_and_favorite_tweets(state.favorited_tweets)
 
-    :telemetry.execute(
-      [:sentient_social, :favorited_tweets],
-      %{duration: duration, count: Enum.count(favorited_tweets)}
+    O11y.set_attributes(
+      previously_favorited_tweets: Enum.count(state.favorited_tweets),
+      favorited_tweets: Enum.count(favorited_tweets)
     )
 
     schedule_next()
@@ -37,13 +36,6 @@ defmodule SentientSocial.Boundary.FavoriteManager do
 
   defp initial_state do
     %{favorited_tweets: []}
-  end
-
-  defp timed_function(function) do
-    start_time = :erlang.monotonic_time(:milli_seconds)
-    result = function.()
-    duration = :erlang.monotonic_time(:milli_seconds) - start_time
-    {result, duration}
   end
 
   defp next_interval() do

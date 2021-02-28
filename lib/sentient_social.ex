@@ -1,4 +1,6 @@
 defmodule SentientSocial do
+  use OpenTelemetryDecorator
+
   alias SentientSocial.Boundary.TweetMapper
   alias SentientSocial.Core.{TweetChooser, TweetFilter}
 
@@ -6,6 +8,7 @@ defmodule SentientSocial do
   @favorite_fn Application.get_env(:sentient_social, :favorite_fn)
   @term_provider_fn Application.get_env(:sentient_social, :term_provider_fn)
 
+  @decorate trace("sentient_social.find_and_favorite_tweets")
   def find_and_favorite_tweets(
         previously_favorited_tweets,
         search_fn \\ @search_fn,
@@ -29,7 +32,8 @@ defmodule SentientSocial do
 
   def create_favorite(nil, _), do: nil
 
-  def create_favorite(%{id: id}, favorite_fn) do
+  @decorate trace("sentient_social.create_favorite", include: [:tweet])
+  def create_favorite(%{id: id} = tweet, favorite_fn) do
     id
     |> favorite_fn.()
     |> TweetMapper.map()

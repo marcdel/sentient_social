@@ -15,6 +15,8 @@ defmodule SentientSocial.Boundary.TweetMapper do
     }
   end
 
+  def map(_), do: nil
+
   defp get_text(%{text: text, full_text: nil}), do: text
   defp get_text(%{text: nil, full_text: text}), do: text
 

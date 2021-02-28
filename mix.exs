@@ -33,21 +33,27 @@ defmodule SentientSocial.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.0"},
-      {:phoenix_pubsub, "~> 2.0"},
-      {:phoenix_ecto, "~> 4.1"},
       {:ecto_sql, "~> 3.4"},
-      {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.11"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_dashboard, "~> 0.3.6"},
-      {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"},
+      {:extwitter, "~> 0.12"},
       {:gettext, "~> 0.11"},
+      {:hackney, ">= 1.11.0"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.1"},
       {:oauther, "~> 1.1"},
-      {:extwitter, "~> 0.12"}
+      {:open_telemetry_decorator, "~> 0.5.3"},
+      {:opentelemetry, "~> 0.5.0"},
+      {:opentelemetry_api, "~> 0.5.0"},
+      {:opentelemetry_honeycomb, "~> 0.5.0-rc.1"},
+      {:phoenix, "~> 1.5.0"},
+      {:phoenix_ecto, "~> 4.1"},
+      {:phoenix_html, "~> 2.11"},
+      {:phoenix_live_dashboard, "~> 0.3.6"},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_pubsub, "~> 2.0"},
+      {:poison, ">= 1.5.0"},
+      {:plug_cowboy, "~> 2.1"},
+      {:postgrex, ">= 0.0.0"},
+      {:telemetry_metrics, "~> 0.4"},
+      {:telemetry_poller, "~> 0.4"}
     ]
   end
 

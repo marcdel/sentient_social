@@ -1,8 +1,20 @@
 defmodule SentientSocial.Core.TweetFilter do
-  def filter(tweets, previously_favorited_tweets \\ []) do
-    tweets = MapSet.difference(MapSet.new(tweets), MapSet.new(previously_favorited_tweets))
+  use OpenTelemetryDecorator
 
-    Enum.filter(tweets, &do_filter/1)
+  @decorate trace("tweet_filter.filter")
+  def filter(tweets, previously_favorited_tweets \\ []) do
+    unfavorited_tweets =
+      MapSet.difference(MapSet.new(tweets), MapSet.new(previously_favorited_tweets))
+
+    filtered_tweets = Enum.filter(unfavorited_tweets, &do_filter/1)
+
+    O11y.set_attributes(
+      tweets: Enum.count(tweets),
+      unfavorited_tweets: Enum.count(unfavorited_tweets),
+      filtered_tweets: Enum.count(filtered_tweets)
+    )
+
+    filtered_tweets
   end
 
   defp do_filter(tweet) do

@@ -6,6 +6,8 @@ defmodule SentientSocial.Application do
   use Application
 
   def start(_type, _args) do
+    OpenTelemetry.register_application_tracer(:sentient_social)
+
     children = [
       # Start the Ecto repository
       SentientSocial.Repo,

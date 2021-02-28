@@ -44,4 +44,8 @@ defmodule SentientSocial.Boundary.TweetMapperTest do
     assert %{text: "sometimes tweets have the full_text field instead"} =
              TweetMapper.map(full_text_tweet)
   end
+
+  test "when error returns nil" do
+    assert TweetMapper.map(%RuntimeError{message: "oops"}) == nil
+  end
 end

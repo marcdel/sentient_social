@@ -7,12 +7,12 @@ defmodule SentientSocial.SearchTermProvider.InMemory do
 
   def terms do
     [
-      "#CodeNewbie",
       "#100DaysOfCode",
+      "#301DaysOfCode",
       "#BaseCS",
+      "#CodeNewbie",
       "#GirlsWhoCode",
-      "#MyElixirStatus",
-      "#301DaysOfCode"
+      "#MyElixirStatus"
     ]
   end
 end

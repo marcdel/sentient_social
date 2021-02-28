@@ -67,6 +67,15 @@ config :sentient_social, SentientSocial.Repo,
   ssl: true,
   pool_size: 2
 
+config :opentelemetry,
+  processors: [
+    otel_batch_processor: %{
+      exporter:
+        {OpenTelemetry.Honeycomb.Exporter,
+         write_key: Map.fetch!(System.get_env(), "HONEYCOMB_KEY"), dataset: "sentient_social"}
+    }
+  ]
+
 # Finally import the config/prod.secret.exs which loads secrets
 # and configuration from environment variables.
 import_config "prod.secret.exs"
