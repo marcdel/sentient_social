@@ -19,6 +19,7 @@ env:
   PERSONAL_CONSUMER_SECRET: ${{ secrets.PERSONAL_CONSUMER_SECRET }}
   ADMIN_NAME: ${{ secrets.ADMIN_NAME }}
   ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+  HONEYCOMB_KEY: ${{ secrets.HONEYCOMB_KEY }}
 
 jobs:
   check:
